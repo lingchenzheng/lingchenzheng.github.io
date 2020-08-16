@@ -132,45 +132,73 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      flex布局之成员属性flex
+      前端获取wma文件时长
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <time datetime="2020-07-18T00:00:00.000Z" style="display: flex; align-items: center;">
+    <time datetime="2020-08-16T01:49:09.029Z" style="display: flex; align-items: center;">
       <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
-      <span>2020-07-18</span>
+      <span>2020-08-16</span>
     </time>
     
     <span class="dot"></span>
     
-    <a href="/categories/css/" class="post-meta-link">css</a>
+    <a href="/categories/其他/" class="post-meta-link">其他</a>
     
     
     
     <span class="dot"></span>
-    <span>0 字</span>
+    <span>307 字</span>
     
+  </div>
+  
+  <div class="post-meta post-show-meta" style="margin-top: -10px;">
+    <div style="display: flex; align-items: center;">
+      <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
+      
+      
+        <a href="/tags/解决方案/" class="post-meta-link">解决方案</a>
+      
+    </div>
   </div>
   
   </header>
   <div id="section" class="post-content">
-    
+    <p><strong>简介</strong></p>
+<blockquote>
+<p>wma 是微软推出的一种音频存储格式，由于版权问题，目前浏览器的 audio/vedio 标签都不支持播放 wma 文件，由于项目需求需要前端读取本地音频时长等相关信息传到后端，所以只能另辟蹊径。</p>
+</blockquote>
+<p><strong>思路</strong></p>
+<blockquote>
+<p>读取二进制文件，根据文件头来解析文件属性信息，获取音频时长</p>
+</blockquote>
+<p>下图为通过 windows media 工具来读取 wma 文件，分析文件内容组成<br><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="/images/other/%E5%89%8D%E7%AB%AFjs%E8%8E%B7%E5%8F%96wma%E6%96%87%E4%BB%B6%E6%97%B6%E9%95%BF/1.png" class="lozad post-image"src="/images/other/%E5%89%8D%E7%AB%AFjs%E8%8E%B7%E5%8F%96wma%E6%96%87%E4%BB%B6%E6%97%B6%E9%95%BF/1.png"></p>
+<p><strong>经过多个文件分析对比，得出如下结果:</strong></p>
+<ol>
+<li>头对象由多个部分组成</li>
+<li>不同文件，头部大小不一样，头对象组成部分个数不一样，组成部分排列顺序也不一样</li>
+<li>文件属性内容固定，Object ID 都一样（文件时长相关信息在此）</li>
+<li>文件的前 30 个字节固定，16 个字节标识这是 wma 文件，然后 8 个字节存储头文件大小，4 字节存储头有几个组成部分，最后 2 个是保留字节。</li>
+</ol>
+<p><strong>根据上面的结论，我们需要拿到头组成部分中的文件属性这个部分就可以解析出文件时长</strong></p>
+<p><img src="/images/other/%E5%89%8D%E7%AB%AFjs%E8%8E%B7%E5%8F%96wma%E6%96%87%E4%BB%B6%E6%97%B6%E9%95%BF/2.png" alt="文件属性" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="/images/other/%E5%89%8D%E7%AB%AFjs%E8%8E%B7%E5%8F%96wma%E6%96%87%E4%BB%B6%E6%97%B6%E9%95%BF/2.png" class="lozad post-image"></p>
+
   </div>
 </article>
 <div class="nav">
   
-  <div class="nav-item-prev">
-    <a href="/2020/08/16/other/前端js获取wma文件时长/" class="nav-link">
-      <i class="iconfont icon-left nav-prev-icon"></i>
+  
+  <div class="nav-item-next">
+    <a href="/2020/07/18/css/我/" class="nav-link">
       <div>
-        <div class="nav-label">上一篇</div>
+        <div class="nav-label">下一篇</div>
         
-        <div class="nav-title">前端获取wma文件时长 </div>
+        <div class="nav-title">flex布局之成员属性flex </div>
         
       </div>
+      <i class="iconfont icon-right nav-next-icon"></i>
     </a>
   </div>
-  
   
 </div>
 
