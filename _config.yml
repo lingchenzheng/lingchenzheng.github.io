@@ -104,3 +104,10 @@ theme: kaze
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
     type: ''
+
+## mermaid diagram
+mermaid: ## mermaid url https://github.com/knsv/mermaid
+    enable: true
+    version: '7.1.2'
+    options:
+        startOnload: true

@@ -70,6 +70,15 @@
   </script>
   <script>loadScript("https://www.googletagmanager.com/gtag/js?id=" + "<%= theme.analytics.google.id %>", googleAnalytics)</script>
   <% } %>
+
+  <% if (config.mermaid.enable) { %>
+  <script src='https://unpkg.com/mermaid@<%= config.mermaid.version %>/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'forest'});
+    }
+  </script>
+  <% } %>
 </body>
 
 </html>
