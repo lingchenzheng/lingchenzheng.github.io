@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+<meta  lang="zh-CN" >
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="theme-color" content="#fff" id="theme-color">
+  <link rel="icon" href="/images/me.jpg">
+  <title>我的博客</title>
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+    var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+      }
+    };
+    setDarkmode();
+  </script>
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  </script>
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_vpj3dq9ceqa.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  
+  <link rel="preload" href="//cdn.jsdelivr.net/npm/fslightbox@3.1.0/index.min.js" as="script">
+  
+  
+  <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="/css/main.css">
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_vpj3dq9ceqa.css">
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+
+  
+  
+  
+<meta name="generator" content="Hexo 5.0.2"></head>
+
+
+<body>
+  <div class="wrapper">
+    
+    <nav class="navbar">
+  <div class="navbar-logo">
+    <span class="navbar-logo-main">
+      
+      <img class="navbar-logo-img" src="/images/me.jpg">
+      
+      <span class="navbar-logo-dsc">我的博客</span>
+    </span>
+  </div>
+  <div class="navbar-menu">
+    
+    <a href="/" class="navbar-menu-item">首页 </a>
+    
+    <a href="/archives" class="navbar-menu-item">归档 </a>
+    
+    <a href="/tags" class="navbar-menu-item">标签 </a>
+    
+    <a href="/categories" class="navbar-menu-item">分类 </a>
+    
+    <a href="/about" class="navbar-menu-item">关于 </a>
+    
+    <a href="/links" class="navbar-menu-item">友链 </a>
+    
+    <a class="navbar-menu-item" id="dark"><i class="iconfont icon-weather"></i></a>
+  </div>
+</nav>
+    
+    <div class="section-wrap">
+      <div class="container">
+        <div class="columns">
+          <main class="main-column">
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      webpack导入svg图标
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <time datetime="2020-04-24T00:00:00.000Z" style="display: flex; align-items: center;">
+      <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
+      <span>2020-04-24</span>
+    </time>
+    
+    <span class="dot"></span>
+    
+    <a href="/categories/webpack/" class="post-meta-link">webpack</a>
+    
+    
+    
+    <span class="dot"></span>
+    <span>1.1k 字</span>
+    
+  </div>
+  
+  </header>
+  <div id="section" class="post-content">
+    <p><strong>简介</strong><br>svg 是一种基于 XML 格式的图像描述语音，它是矢量图，相比较与 canvas,放大时不会失真，相对于图像来说，因为它本就是文本形式存在，尺寸会更小。传统使用方式，我们会将 svg 复制到需要用到的地方，或者到处 import，这样代码不仅不美观，而且维护起来很麻烦，特别时图标多了的时候。接下来我们讲讲怎么以组件的方式使用 svg 图标（以 vue 为例 react 同理）。</p>
+<p><strong>实现原理</strong><br>利用 svg 的 symbol 标签建立图标（不会显示出来），然后通过 use 标签引用，将对应 symbol 里的图形展示在页面</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">svg</span></span><br><span class="hljs-tag">    <span class="hljs-attr">xmlns</span>=<span class="hljs-string">&quot;http://www.w3.org/2000/svg&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">xmlns:xlink</span>=<span class="hljs-string">&quot;http://www.w3.org/1999/xlink&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">style</span>=<span class="hljs-string">&quot;position: absolute; width: 0; height: 0&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">aria-hidden</span>=<span class="hljs-string">&quot;true&quot;</span></span><br><span class="hljs-tag">    <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;__SVG_SPRITE_NODE__&quot;</span></span><br><span class="hljs-tag">&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">symbol</span></span><br><span class="hljs-tag">        <span class="hljs-attr">xmlns</span>=<span class="hljs-string">&quot;http://www.w3.org/2000/svg&quot;</span></span><br><span class="hljs-tag">        <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;icon&quot;</span></span><br><span class="hljs-tag">        <span class="hljs-attr">viewBox</span>=<span class="hljs-string">&quot;0 0 1024 1024&quot;</span></span><br><span class="hljs-tag">        <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;icon-back&quot;</span></span><br><span class="hljs-tag">    &gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">path</span></span><br><span class="hljs-tag">            <span class="hljs-attr">d</span>=<span class="hljs-string">&quot;M724 218.3V141c0-6.7-7.7-10.4-12.9-6.3L260.3 486.8c-16.4 12.8-16.4 37.5 0 50.3l450.8 352.1c5.3 4.1 12.9 0.4 12.9-6.3v-77.3c0-4.9-2.3-9.6-6.1-12.6l-360-281 360-281.1c3.8-3 6.1-7.7 6.1-12.6z&quot;</span></span><br><span class="hljs-tag">            <span class="hljs-attr">p-id</span>=<span class="hljs-string">&quot;7787&quot;</span></span><br><span class="hljs-tag">            <span class="hljs-attr">fill</span>=<span class="hljs-string">&quot;#999999&quot;</span></span><br><span class="hljs-tag">        &gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">path</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">symbol</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">symbol</span></span><br><span class="hljs-tag">        <span class="hljs-attr">xmlns</span>=<span class="hljs-string">&quot;http://www.w3.org/2000/svg&quot;</span></span><br><span class="hljs-tag">        <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;icon&quot;</span></span><br><span class="hljs-tag">        <span class="hljs-attr">viewBox</span>=<span class="hljs-string">&quot;0 0 1024 1024&quot;</span></span><br><span class="hljs-tag">        <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;icon-close&quot;</span></span><br><span class="hljs-tag">    &gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">path</span></span><br><span class="hljs-tag">            <span class="hljs-attr">d</span>=<span class="hljs-string">&quot;M794.843 794.843c-14.001 14.001-36.911 14.001-50.912 0L229.157 280.069c-14.001-14.001-14.001-36.911 0-50.912 14.001-14.001 36.911-14.001 50.912 0l514.774 514.774c14 14.001 14 36.911 0 50.912z&quot;</span></span><br><span class="hljs-tag">            <span class="hljs-attr">p-id</span>=<span class="hljs-string">&quot;2135&quot;</span></span><br><span class="hljs-tag">            <span class="hljs-attr">fill</span>=<span class="hljs-string">&quot;#4E5B75&quot;</span></span><br><span class="hljs-tag">        &gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">path</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">path</span></span><br><span class="hljs-tag">            <span class="hljs-attr">d</span>=<span class="hljs-string">&quot;M794.843 229.157c14.001 14.001 14.001 36.911 0 50.912L280.069 794.843c-14.001 14.001-36.911 14.001-50.912 0-14.001-14.001-14.001-36.911 0-50.912l514.774-514.774c14.001-14 36.911-14 50.912 0z&quot;</span></span><br><span class="hljs-tag">            <span class="hljs-attr">p-id</span>=<span class="hljs-string">&quot;2136&quot;</span></span><br><span class="hljs-tag">            <span class="hljs-attr">fill</span>=<span class="hljs-string">&quot;#4E5B75&quot;</span></span><br><span class="hljs-tag">        &gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">path</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">symbol</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">svg</span>&gt;</span><br></code></pre>
+
+<p>如上这段 svg 代码，里面包含两个图标，嵌入 html 页面是不会显示的，当我们需要使用某个图标时（id=”icon-close”）为例，可以在 html 页面如下引用:</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">svg</span> <span class="hljs-attr">width</span>=<span class="hljs-string">&quot;20px&quot;</span> <span class="hljs-attr">height</span>=<span class="hljs-string">&quot;20px&quot;</span> <span class="hljs-attr">aria-hidden</span>=<span class="hljs-string">&quot;true&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;svg-icon #icon-close&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">use</span> <span class="hljs-attr">xlink:href</span>=<span class="hljs-string">&quot;#icon-close&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">use</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">svg</span>&gt;</span><br></code></pre>
+
+<p>这样思路就出来了，首先我们将所有 svg 文件打包成一个 svg 标签里，并且每个 symbol 标签都设置 id，这里我们可以通过 webpack 的 svg-sprite-lpader 来实现，如下:</p>
+<pre class="highlight"><code class="hljs json">&#123;<br>    <span class="hljs-attr">&quot;test&quot;</span>: /\.svg$/,<br>    <span class="hljs-attr">&quot;loader&quot;</span>: <span class="hljs-string">&quot;svg-sprite-loader&quot;</span>,<br>    <span class="hljs-attr">&quot;include&quot;</span>: [resolve(<span class="hljs-string">&quot;src/icons/svgs&quot;</span>)],<br>    <span class="hljs-attr">&quot;options&quot;</span>: &#123;<br>        <span class="hljs-attr">&quot;symbolId&quot;</span>: <span class="hljs-string">&quot;icon-[name]&quot;</span><br>    &#125;<br>&#125;<br></code></pre>
+
+<p>一般我们会将作为图标使用的 svg 文件全部放在某个文件夹下，然后通过 include 处理这个文件下的 svg 文件，为了防止处理其他不要需要通过这个方式使用的 svg 被处理。</p>
+<p>接下来我们要考虑怎么导入所有问 svg 文件，这里我们使用 webpack 的 require.context 来实现</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> Vue <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;vue&#x27;</span><br><span class="hljs-keyword">import</span> SvgIcon <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@/components/SvgIcon&#x27;</span><br>Vue.component(<span class="hljs-string">&#x27;svg-icon&#x27;</span>, SvgIcon)<br><br><span class="hljs-keyword">let</span> req = <span class="hljs-built_in">require</span>.context(<span class="hljs-string">&#x27;./svgs&#x27;</span>, <span class="hljs-literal">false</span>, <span class="hljs-regexp">/\.svg$/</span>)<br><span class="hljs-keyword">let</span> importAll = <span class="hljs-function"><span class="hljs-params">r</span> =&gt;</span> r.keys().map(r)<br>importAll(req)<br></code></pre>
+
+<p>首先我们将 SvgIcon 注册成全局组件，这样就不用到处 import 了，下面三行代码就是 require.context 动态引入 svgs 下的以.svg 结尾的文件，这里我们生成一个局部 webpack 上下文，即 svgs 文件夹路径，里面的文件导入基于这个上下文。最后在 index.js 引入这个文件即可。</p>
+<p>最后来实现 SvgIcon 组件</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">svg</span></span><br><span class="hljs-tag">        <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;svg-icon&quot;</span></span><br><span class="hljs-tag">        <span class="hljs-attr">:width</span>=<span class="hljs-string">&quot;w&quot;</span></span><br><span class="hljs-tag">        <span class="hljs-attr">:height</span>=<span class="hljs-string">&quot;h&quot;</span></span><br><span class="hljs-tag">        <span class="hljs-attr">:class</span>=<span class="hljs-string">&quot;iconName&quot;</span></span><br><span class="hljs-tag">        <span class="hljs-attr">aria-hidden</span>=<span class="hljs-string">&quot;true&quot;</span></span><br><span class="hljs-tag">        <span class="hljs-attr">v-on</span>=<span class="hljs-string">&quot;$listeners&quot;</span></span><br><span class="hljs-tag">    &gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">use</span> <span class="hljs-attr">:xlink:href</span>=<span class="hljs-string">&quot;iconName&quot;</span> /&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">svg</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><br><span class="javascript">    <span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> &#123;</span><br><span class="javascript">        name: <span class="hljs-string">&#x27;SvgIcon&#x27;</span>,</span><br>        props: &#123;<br>            icon: &#123;<br><span class="javascript">                type: <span class="hljs-built_in">String</span>,</span><br><span class="javascript">                required: <span class="hljs-literal">true</span></span><br>            &#125;,<br>            w: &#123;<br><span class="javascript">                type: [<span class="hljs-built_in">Number</span>, <span class="hljs-built_in">String</span>],</span><br><span class="javascript">                <span class="hljs-keyword">default</span>: <span class="hljs-string">&#x27;20px&#x27;</span></span><br>            &#125;,<br>            h: &#123;<br><span class="javascript">                type: [<span class="hljs-built_in">Number</span>, <span class="hljs-built_in">String</span>],</span><br><span class="javascript">                <span class="hljs-keyword">default</span>: <span class="hljs-string">&#x27;20px&#x27;</span></span><br>            &#125;<br>        &#125;,<br>        computed: &#123;<br>            iconName() &#123;<br><span class="javascript">                <span class="hljs-keyword">return</span> <span class="hljs-string">&#x27;#icon-&#x27;</span> + <span class="hljs-built_in">this</span>.icon</span><br>            &#125;<br>        &#125;<br>    &#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">style</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;scss&quot;</span>&gt;</span><br><span class="css">    <span class="hljs-selector-class">.svg-icon</span> &#123;</span><br>        vertical-align: middle;<br>    &#125;<br><span class="hljs-tag">&lt;/<span class="hljs-name">style</span>&gt;</span><br></code></pre>
+
+<p>然后在组件中使用</p>
+<pre class="highlight"><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">svg-icon</span> <span class="hljs-attr">icon</span>=<span class="hljs-string">&quot;close&quot;</span> /&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">template</span>&gt;</span><br></code></pre>
+
+<p>如果文章对您有帮助请进入链接 (<a target="_blank" rel="noopener" href="https://github.com/lingchenzheng/lingchenzheng.github.io">https://github.com/lingchenzheng/lingchenzheng.github.io</a>) 给一个 star 吧 😄</p>
+
+  </div>
+</article>
+<div class="nav">
+  
+  <div class="nav-item-prev">
+    <a href="/2020/07/18/css/我/" class="nav-link">
+      <i class="iconfont icon-left nav-prev-icon"></i>
+      <div>
+        <div class="nav-label">上一篇</div>
+        
+        <div class="nav-title">flex布局之成员属性flex </div>
+        
+      </div>
+    </a>
+  </div>
+  
+  
+  <div class="nav-item-next">
+    <a href="/2019/06/27/es/深拷贝/" class="nav-link">
+      <div>
+        <div class="nav-label">下一篇</div>
+        
+        <div class="nav-title">js深拷贝 </div>
+        
+      </div>
+      <i class="iconfont icon-right nav-next-icon"></i>
+    </a>
+  </div>
+  
+</div>
+
+<div class="card card-content toc-card" id="mobiletoc">
+  <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+
+</div></main>
+          <aside class="left-column">
+            
+            <div class="card card-author">
+              
+<img src="/images/avatar.jpg" class="author-img">
+
+<p class="author-name">Chenzheng Ling</p>
+<p class="author-description">Front End Developer</p>
+<div class="author-message">
+  <a class="author-posts-count" href="/archives">
+    <span>4</span>
+    <span>文章</span>
+  </a>
+  <a class="author-categories-count" href="/categories">
+    <span>4</span>
+    <span>分类</span>
+  </a>
+  <a class="author-tags-count" href="/tags">
+    <span>2</span>
+    <span>标签</span>
+  </a>
+</div>
+
+            </div>
+            
+            <div class="sticky-tablet">
+  
+  
+  <article class="display-when-two-columns spacer">
+    <div class="card card-content toc-card">
+      <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+
+    </div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <div class="categories-card">
+  <div class="categories-header"><i class="iconfont icon-fenlei" style="padding-right: 2px;"></i>分类</div>
+  <div class="categories-list">
+    
+      <a href="/categories/css">
+        <div class="categories-list-item">
+          css
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/es">
+        <div class="categories-list-item">
+          es
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/其他">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/webpack">
+        <div class="categories-list-item">
+          webpack
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content">
+    <div class="tags-card">
+  <div class="tags-header"><i class="iconfont icon-biaoqian" style="padding-right: 2px;"></i>热门标签</div>
+  <div class="tags-list">
+    
+    <a href="\tags\解决方案" title="解决方案"><div class="tags-list-item">解决方案</div></a>
+    
+    <a href="\tags\js基础" title="js基础"><div class="tags-list-item">js基础</div></a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+          </aside>
+          <aside class="right-column">
+            <div class="sticky-widescreen">
+  
+  
+  <article class="card card-content toc-card">
+    <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+
+  </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header"><i class="iconfont icon-wenzhang_huaban" style="padding-right: 2px;"></i>最近文章</div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2020-08-16</div>
+        <a href="/2020/08/16/other/前端js获取wma文件时长/"><div class="recent-posts-item-content">前端获取wma文件时长</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2020-07-18</div>
+        <a href="/2020/07/18/css/我/"><div class="recent-posts-item-content">flex布局之成员属性flex</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2020-04-24</div>
+        <a href="/2020/04/24/webpack/webpack模块化导入svg标签/"><div class="recent-posts-item-content">webpack导入svg图标</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2019-06-27</div>
+        <a href="/2019/06/27/es/深拷贝/"><div class="recent-posts-item-content">js深拷贝</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <footer class="footer">
+  <div class="footer-container">
+    <div class="copyright">
+      <div>
+        <span id="copyYear">Copyright ©
+          
+          2020 -
+          
+          2020
+        </span>
+        <a href="/" class="footer-link">我的博客 </a>
+      </div>
+    </div>
+
+    
+    <div class="footer-dsc">
+      
+      
+      Powered by
+      <a href="https://hexo.io/" class="footer-link" target="_blank" rel="nofollow noopener noreferrer">&nbsp;Hexo </a>
+      
+      
+      <span>&nbsp;|&nbsp;</span>
+      
+      
+      
+      Theme -
+      <a href="https://github.com/theme-kaze" class="footer-link" target="_blank"
+        rel="nofollow noopener noreferrer">&nbsp;Kaze</a>
+      
+    </div>
+    
+    
+    
+    
+</footer>
+  <a role="button" id="scrollbutton" class="basebutton" >
+  <i class="iconfont icon-arrowleft button-icon"></i>
+</a>
+<a role="button" id="menubutton" class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a role="button" id="popbutton" class="basebutton">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+
+  
+  
+  
+  <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img');
+    var i;
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a');
+      wrapper.setAttribute('data-fslightbox', 'gallery');
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'));
+      wrapper.setAttribute('style', 'width: 100%; display: flex; justify-content: center;');
+      img[i].parentElement.insertBefore(wrapper, img[i]);
+      wrapper.appendChild(img[i]);
+    }
+    refreshFsLightbox();
+  }
+</script>
+<script>loadScript("//cdn.jsdelivr.net/npm/fslightbox@3.1.0/index.min.js", addImgLayout)</script>
+  
+  
+  
+<script src="/js/main.js"></script>
+
+  
+  
+  <script>
+    var addLazyload = function () {
+      var observer = lozad('.lozad', {
+        load: function (el) {
+          el.srcset = el.getAttribute('data-src');
+        },
+        loaded: function (el) {
+          el.classList.add('loaded');
+        }
+      });
+      observer.observe();
+    }
+  </script>
+  <script>loadScript("/js/lib/lozad.min.js", addLazyload)</script>
+  
+  
+</body>
+
+</html>

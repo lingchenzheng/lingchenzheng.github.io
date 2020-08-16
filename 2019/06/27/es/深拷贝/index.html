@@ -132,57 +132,78 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      flex布局之成员属性flex
+      js深拷贝
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <time datetime="2020-07-18T00:00:00.000Z" style="display: flex; align-items: center;">
+    <time datetime="2019-06-27T00:00:00.000Z" style="display: flex; align-items: center;">
       <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
-      <span>2020-07-18</span>
+      <span>2019-06-27</span>
     </time>
     
     <span class="dot"></span>
     
-    <a href="/categories/css/" class="post-meta-link">css</a>
+    <a href="/categories/es/" class="post-meta-link">es</a>
     
     
     
     <span class="dot"></span>
-    <span>0 字</span>
+    <span>876 字</span>
     
+  </div>
+  
+  <div class="post-meta post-show-meta" style="margin-top: -10px;">
+    <div style="display: flex; align-items: center;">
+      <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
+      
+      
+        <a href="/tags/js基础/" class="post-meta-link">js基础</a>
+      
+    </div>
   </div>
   
   </header>
   <div id="section" class="post-content">
-    
+    <p><strong>简介</strong><br>在说拷贝之前，先说说 js 中的数据存储，我们知道 js 这广义上数据类型分为两种，原始数据类型和引用数据类型，原始数据类型包括 string,boolean,number,null,undefined,symbol,引用类型有 Function,Array,Object,Date,RegExp 等等其实这些都可以归为 Object 类型。</p>
+<p>对于原始类型数据，赋值即是拷贝，因为原始类型栈里存的就是其值。对于复杂类型来说，变量存储的是对象在堆空间里的地址值，如果进行赋值，赋值仅仅是将其地址值给另一个变量，实际上这两个变量都指向同一地址。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">//原始类型赋值，a,b的值相互不影响</span><br><span class="hljs-keyword">let</span> a = <span class="hljs-number">23</span><br><span class="hljs-keyword">let</span> b = a<br><span class="hljs-comment">//复杂类型，当d的name改变，c的name改变，因为它们指向的就是同一对象</span><br><span class="hljs-keyword">let</span> c = &#123;<br>    name: <span class="hljs-string">&#x27;sd&#x27;</span><br>&#125;<br><span class="hljs-keyword">let</span> d = c<br></code></pre>
+
+<p>现在，我们知道了拷贝就是为了生成两份互相不影响的数据，同时我们知道原始类型的赋值即拷贝，而对象的属性可能由原始数据类型组成，也有可能由对象类型组成，所以我们分类考虑。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> obj = &#123;<br>    name: <span class="hljs-string">&#x27;张三&#x27;</span>,<br>    time: <span class="hljs-number">12312313</span><br>&#125;<br><span class="hljs-comment">//1、赋值操作</span><br><span class="hljs-keyword">let</span> obj2 = obj<br><span class="hljs-comment">//2、拷贝</span><br><span class="hljs-keyword">let</span> obj3 = &#123;&#125;<br><span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> key <span class="hljs-keyword">in</span> obj) &#123;<br>    obj3[key] = obj[key]<br>&#125;<br></code></pre>
+
+<p>如上，第二个我们简单实现了拷贝。不过稍微思考一下，我们会发现，如果 obj 的属性也是一个复杂类型呢?</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> obj = &#123;<br>    o: &#123;<br>        name: <span class="hljs-string">&#x27;asd&#x27;</span><br>    &#125;,<br>    age: <span class="hljs-number">23</span><br>&#125;<br><span class="hljs-keyword">let</span> obj2 = &#123;&#125;<br><span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> key <span class="hljs-keyword">in</span> obj) &#123;<br>    obj2[key] = obj[key]<br>&#125;<br>obj2.o.name = <span class="hljs-string">&#x27;张三&#x27;</span><br>obj.o.name <span class="hljs-comment">//张三</span><br></code></pre>
+
+<p>如上代码，按照开始的方法我们进行拷贝，拷贝后，我们发现 obj.o 与 obj2.o 指向的还是同一对象。如果我们需要完全拷贝，就得对 obj.o 也进行遍历。</p>
+<p><strong>结论</strong></p>
+<ul>
+<li>浅拷贝：浅拷贝是会将对象的每个属性进行依次复制，但是当对象的属性值是引用类型时，实质复制的是其引用，当引用指向的值改变时也会跟着变化。（ES6 的 Object.assign 方法就是进行浅拷贝）。</li>
+<li>深拷贝：深拷贝复制变量值，对于非基本类型的变量，则递归至基本类型变量后，再复制。 深拷贝后的对象与原来的对象是完全隔离的，互不影响，对一个对象的修改并不会影响另一个对象。</li>
+</ul>
+<p><strong>实现深拷贝</strong></p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">deepCopy</span>(<span class="hljs-params">o</span>) </span>&#123;<br>    <span class="hljs-keyword">if</span> (o <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Date</span>) <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(o) <span class="hljs-comment">//日期类直接返回</span><br>    <span class="hljs-keyword">if</span> (o <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">RegExp</span>) <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">RegExp</span>(o) <span class="hljs-comment">//正则直接返回</span><br>    <span class="hljs-keyword">if</span> (o === <span class="hljs-literal">null</span> || <span class="hljs-keyword">typeof</span> o !== <span class="hljs-string">&#x27;object&#x27;</span>) <span class="hljs-keyword">return</span> o <span class="hljs-comment">//原始类型直接返回</span><br>    <span class="hljs-keyword">let</span> c = <span class="hljs-keyword">new</span> o.constructor()<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> key <span class="hljs-keyword">in</span> o) &#123;<br>        <span class="hljs-keyword">if</span> (o.hasOwnProperty(key)) &#123;<br>            c[key] = deepCopy(o[key])<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> c<br>&#125;<br></code></pre>
+
+<p>优化，上面的深拷贝还有一点问题，如果出现循环引用，将会陷入死递归，导致程序崩溃。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">deepCopy</span>(<span class="hljs-params">o, map = new WeakMap()</span>) </span>&#123;<br>    <span class="hljs-keyword">if</span> (o <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">Date</span>) <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(o) <span class="hljs-comment">//日期类直接返回</span><br>    <span class="hljs-keyword">if</span> (o <span class="hljs-keyword">instanceof</span> <span class="hljs-built_in">RegExp</span>) <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">RegExp</span>(o) <span class="hljs-comment">//正则直接返回</span><br>    <span class="hljs-keyword">if</span> (o === <span class="hljs-literal">null</span> || <span class="hljs-keyword">typeof</span> o !== <span class="hljs-string">&#x27;object&#x27;</span>) <span class="hljs-keyword">return</span> o <span class="hljs-comment">//原始类型直接返回</span><br>    <span class="hljs-keyword">if</span> (map.has(o)) &#123;<br>        <span class="hljs-keyword">return</span> map.get(o)<br>    &#125;<br>    <span class="hljs-keyword">let</span> c = <span class="hljs-keyword">new</span> o.constructor()<br>    map.set(o, c)<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> key <span class="hljs-keyword">in</span> o) &#123;<br>        <span class="hljs-keyword">if</span> (o.hasOwnProperty(key)) &#123;<br>            c[key] = deepCopy(o[key])<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">return</span> c<br>&#125;<br></code></pre>
+
+<p>如果文章对您有帮助请进入链接 (<a target="_blank" rel="noopener" href="https://github.com/lingchenzheng/lingchenzheng.github.io">https://github.com/lingchenzheng/lingchenzheng.github.io</a>) 给一个 star 吧 😄</p>
+
   </div>
 </article>
 <div class="nav">
   
   <div class="nav-item-prev">
-    <a href="/2020/08/16/other/前端js获取wma文件时长/" class="nav-link">
+    <a href="/2020/04/24/webpack/webpack模块化导入svg标签/" class="nav-link">
       <i class="iconfont icon-left nav-prev-icon"></i>
       <div>
         <div class="nav-label">上一篇</div>
         
-        <div class="nav-title">前端获取wma文件时长 </div>
-        
-      </div>
-    </a>
-  </div>
-  
-  
-  <div class="nav-item-next">
-    <a href="/2020/04/24/webpack/webpack模块化导入svg标签/" class="nav-link">
-      <div>
-        <div class="nav-label">下一篇</div>
-        
         <div class="nav-title">webpack导入svg图标 </div>
         
       </div>
-      <i class="iconfont icon-right nav-next-icon"></i>
     </a>
   </div>
+  
   
 </div>
 

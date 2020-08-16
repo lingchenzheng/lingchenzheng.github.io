@@ -136,7 +136,7 @@
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <time datetime="2020-08-16T01:49:09.029Z" style="display: flex; align-items: center;">
+    <time datetime="2020-08-16T13:30:17.137Z" style="display: flex; align-items: center;">
       <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
       <span>2020-08-16</span>
     </time>
@@ -148,7 +148,7 @@
     
     
     <span class="dot"></span>
-    <span>307 字</span>
+    <span>742 字</span>
     
   </div>
   
@@ -182,6 +182,20 @@
 </ol>
 <p><strong>根据上面的结论，我们需要拿到头组成部分中的文件属性这个部分就可以解析出文件时长</strong></p>
 <p><img src="/images/other/%E5%89%8D%E7%AB%AFjs%E8%8E%B7%E5%8F%96wma%E6%96%87%E4%BB%B6%E6%97%B6%E9%95%BF/2.png" alt="文件属性" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="/images/other/%E5%89%8D%E7%AB%AFjs%E8%8E%B7%E5%8F%96wma%E6%96%87%E4%BB%B6%E6%97%B6%E9%95%BF/2.png" class="lozad post-image"></p>
+<p><strong>实现步骤设计如下</strong></p>
+<ol>
+<li>截取 0-16 个字节，判断是否为 wma 文件(如果确定为 wma 文件可以省略)</li>
+<li>截取 16-24 个字节，获取头对象的大小</li>
+<li>根据第二步获取的头大小，截取头部数据</li>
+<li>拿到头部二进制数据，从 30 个字节往后，截取 16 个字节，根据这 16 个字节判断是否为文件属性部分</li>
+<li>如果是，根据图二的结构，设置偏移量，获取文件时长二进制数组</li>
+<li>如果不是，则再往后读取 8 个字节，获取当前部分大小</li>
+<li>通过第七步获取的大小设置偏移量，重复第四步</li>
+</ol>
+<p><strong>简单实现代码如下</strong></p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> input = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&#x27;input&#x27;</span>)<br>input.addEventListener(<span class="hljs-string">&#x27;change&#x27;</span>, <span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> &#123;<br>    <span class="hljs-keyword">let</span> file = e.target.files[<span class="hljs-number">0</span>]<br>    file.slice(<span class="hljs-number">0</span>, <span class="hljs-number">16</span>)<br>        .arrayBuffer()<br>        .then(<span class="hljs-function"><span class="hljs-params">buffer</span> =&gt;</span> &#123;<br>            <span class="hljs-built_in">console</span>.log(buffer)<br>        &#125;)<br>    <span class="hljs-keyword">return</span><br>    <span class="hljs-keyword">if</span> (file &amp;&amp; file <span class="hljs-keyword">instanceof</span> Blob) &#123;<br>        <span class="hljs-keyword">let</span> reader = <span class="hljs-keyword">new</span> FileReader()<br>        reader.onload = <span class="hljs-function"><span class="hljs-params">evt</span> =&gt;</span> &#123;<br>            <span class="hljs-keyword">let</span> &#123; result &#125; = evt.target<br>            <span class="hljs-built_in">console</span>.log(result)<br>            <span class="hljs-comment">// parseFile(result)</span><br>        &#125;<br>        reader.readAsArrayBuffer(file.slice(<span class="hljs-number">0</span>, <span class="hljs-number">16</span>))<br>    &#125;<br>&#125;)<br><span class="hljs-keyword">const</span> FILE_PROPERTY_ID = [<br>    <span class="hljs-number">0xa1</span>,<br>    <span class="hljs-number">0xdc</span>,<br>    <span class="hljs-number">0xab</span>,<br>    <span class="hljs-number">0x8c</span>,<br>    <span class="hljs-number">0x47</span>,<br>    <span class="hljs-number">0xa9</span>,<br>    <span class="hljs-number">0xcf</span>,<br>    <span class="hljs-number">0x11</span>,<br>    <span class="hljs-number">0x8e</span>,<br>    <span class="hljs-number">0xe4</span>,<br>    <span class="hljs-number">0x00</span>,<br>    <span class="hljs-number">0xc0</span>,<br>    <span class="hljs-number">0x0c</span>,<br>    <span class="hljs-number">0x20</span>,<br>    <span class="hljs-number">0x53</span>,<br>    <span class="hljs-number">0x65</span><br>]<br><span class="hljs-keyword">const</span> ID_BYTE_LEN = <span class="hljs-number">16</span><br><span class="hljs-keyword">const</span> DURATION_OFFSET = <span class="hljs-number">64</span><br><span class="hljs-keyword">const</span> START = <span class="hljs-number">30</span><br><span class="hljs-keyword">const</span> BIT_LEN = <span class="hljs-number">8</span><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseFile</span>(<span class="hljs-params">ab</span>) </span>&#123;<br>    <span class="hljs-keyword">let</span> uint8 = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Uint8Array</span>(ab)<br>    <span class="hljs-keyword">let</span> getFilePropertiesBytes = <span class="hljs-function"><span class="hljs-params">index</span> =&gt;</span> &#123;<br>        <span class="hljs-keyword">let</span> start = index<br>        <span class="hljs-keyword">let</span> end = start + ID_BYTE_LEN<br>        <span class="hljs-keyword">let</span> idBytes = uint8.slice(start, end)<br>        <span class="hljs-comment">//id相等，则当前fram tag为文件属性</span><br>        <span class="hljs-keyword">if</span> (idBytes.toString() === FILE_PROPERTY_ID.toString()) &#123;<br>            start = start + DURATION_OFFSET<br>            end = start + BIT_LEN<br>            <span class="hljs-keyword">let</span> durationBytes = uint8.slice(start, end)<br>            <span class="hljs-keyword">return</span> toNum(durationBytes)<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-keyword">let</span> countBytes = uint8.slice(end, end + BIT_LEN)<br>            <span class="hljs-keyword">let</span> framLen = toNum(countBytes)<br>            start = start + framLen<br>            <span class="hljs-keyword">return</span> getFilePropertiesBytes(start)<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">let</span> duration = getFilePropertiesBytes(START)<br>    <span class="hljs-built_in">console</span>.log(duration)<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">toNum</span>(<span class="hljs-params">bytes</span>) </span>&#123;<br>    <span class="hljs-keyword">let</span> total = <span class="hljs-number">0</span><br>    <span class="hljs-comment">//采用的小端存储</span><br>    bytes.forEach(<span class="hljs-function">(<span class="hljs-params">num, i</span>) =&gt;</span> &#123;<br>        <span class="hljs-keyword">if</span> (num &gt; <span class="hljs-number">0</span>) &#123;<br>            total += num * <span class="hljs-built_in">Math</span>.pow(<span class="hljs-number">2</span>, i * BIT_LEN)<br>        &#125;<br>    &#125;)<br>    <span class="hljs-keyword">return</span> total<br>&#125;<br></code></pre>
+
+<p>如果文章对您有帮助请进入链接 (<a target="_blank" rel="noopener" href="https://github.com/lingchenzheng/lingchenzheng.github.io">https://github.com/lingchenzheng/lingchenzheng.github.io</a>) 给一个 star 吧 😄</p>
 
   </div>
 </article>
@@ -216,15 +230,15 @@
 <p class="author-description">Front End Developer</p>
 <div class="author-message">
   <a class="author-posts-count" href="/archives">
-    <span>2</span>
+    <span>4</span>
     <span>文章</span>
   </a>
   <a class="author-categories-count" href="/categories">
-    <span>2</span>
+    <span>4</span>
     <span>分类</span>
   </a>
   <a class="author-tags-count" href="/tags">
-    <span>1</span>
+    <span>2</span>
     <span>标签</span>
   </a>
 </div>
@@ -254,9 +268,23 @@
         </div>
       </a>
     
+      <a href="/categories/es">
+        <div class="categories-list-item">
+          es
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
       <a href="/categories/其他">
         <div class="categories-list-item">
           其他
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/webpack">
+        <div class="categories-list-item">
+          webpack
           <span class="categories-list-item-badge">1</span>
         </div>
       </a>
@@ -271,6 +299,8 @@
   <div class="tags-list">
     
     <a href="\tags\解决方案" title="解决方案"><div class="tags-list-item">解决方案</div></a>
+    
+    <a href="\tags\js基础" title="js基础"><div class="tags-list-item">js基础</div></a>
     
   </div>
 </div>
@@ -302,6 +332,16 @@
       <div class="recent-posts-item">
         <div class="recent-posts-item-title">2020-07-18</div>
         <a href="/2020/07/18/css/我/"><div class="recent-posts-item-content">flex布局之成员属性flex</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2020-04-24</div>
+        <a href="/2020/04/24/webpack/webpack模块化导入svg标签/"><div class="recent-posts-item-content">webpack导入svg图标</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2019-06-27</div>
+        <a href="/2019/06/27/es/深拷贝/"><div class="recent-posts-item-content">js深拷贝</div></a>
       </div>
     
   </div>
