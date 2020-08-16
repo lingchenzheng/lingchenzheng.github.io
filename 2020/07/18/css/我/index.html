@@ -148,13 +148,16 @@
     
     
     <span class="dot"></span>
-    <span>0 字</span>
+    <span>6 字</span>
     
   </div>
   
   </header>
   <div id="section" class="post-content">
-    
+    <pre class="mermaid">   sequenceDiagram
+
+   A->>B:what is you?</pre>
+
   </div>
 </article>
 <div class="nav">
@@ -413,6 +416,15 @@
   </script>
   <script>loadScript("/js/lib/lozad.min.js", addLazyload)</script>
   
+  
+
+  
+  <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'forest'});
+    }
+  </script>
   
 </body>
 
