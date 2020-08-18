@@ -132,43 +132,80 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      flex布局之成员属性flex
+      webpack打包image优化
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <time datetime="2020-07-18T00:00:00.000Z" style="display: flex; align-items: center;">
+    <time datetime="2019-09-25T00:00:00.000Z" style="display: flex; align-items: center;">
       <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
-      <span>2020-07-18</span>
+      <span>2019-09-25</span>
     </time>
     
     <span class="dot"></span>
     
-    <a href="/categories/css/" class="post-meta-link">css</a>
+    <a href="/categories/webpack/" class="post-meta-link">webpack</a>
     
     
     
     <span class="dot"></span>
-    <span>6 字</span>
+    <span>563 字</span>
     
+  </div>
+  
+  <div class="post-meta post-show-meta" style="margin-top: -10px;">
+    <div style="display: flex; align-items: center;">
+      <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
+      
+      
+        <a href="/tags/工具/" class="post-meta-link">工具</a>
+      
+    </div>
   </div>
   
   </header>
   <div id="section" class="post-content">
-    <pre class="mermaid">   sequenceDiagram
+    <h5 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h5><p>在一个web应用中，可能图片的大小就占了整个应用的一半，所以我们需要对图片进行优化，大概可以分为以下两种情况：</p>
+<blockquote>
+<ul>
+<li>有时候我们会使用一些小的图片icon，虽然这些icon尺寸很小，但是浏览器加载每个icon都会创建一个http请求，创建http请求是昂贵的，所以这明显是不合理的。</li>
+<li>对与比较大的图片，一个是比较占用带宽，另一个是加载慢，影响用户体验。</li>
+</ul>
+</blockquote>
+<h5 id="优化方案"><a href="#优化方案" class="headerlink" title="优化方案"></a>优化方案</h5><blockquote>
+<p>针对第一种情况，我们可以根据图片的大小，将较小的图片转换成base64，然后以data url的方式内嵌在css或者js中，这样在加载css或js的时候一起把图片加载，不需要额外的http请求。</p>
+</blockquote>
+<ol>
+<li>url-loader<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// webpack.config.js</span><br><span class="hljs-built_in">module</span>.exports = &#123;<br>  <span class="hljs-built_in">module</span>: &#123;<br>    rules: [<br>      &#123;<br>        test: <span class="hljs-regexp">/\.(jpe?g|png|gif)$/</span>,<br>        loader: <span class="hljs-string">&#x27;url-loader&#x27;</span>,<br>        options: &#123;<br>          <span class="hljs-comment">// 小于10240字节的图片将被转换成base64嵌入js代码中</span><br>          limit: <span class="hljs-number">20</span> * <span class="hljs-number">1024</span>,<br>        &#125;,<br>      &#125;,<br>    ],<br>  &#125;<br>&#125;<br></code></pre></li>
+</ol>
+<p><em>注意：图片转换成base64后，大小会比原来大1/3左右，所以应该根据图片大小来斟酌使用，同时应该开启gzip压缩</em></p>
+<ol start="2">
+<li>svg-url-loader<blockquote>
+<p>svg图片也可以使用url-loader来处理成base64，但是由于svg本身就是一个纯文本文件，所以采用svg-url-loader使用URL encoding处理尺寸会更小。</p>
+</blockquote>
+</li>
+</ol>
+<pre class="highlight"><code class="hljs javascript">    <span class="hljs-comment">// webpack.config.js</span><br><span class="hljs-built_in">module</span>.exports = &#123;<br>  <span class="hljs-built_in">module</span>: &#123;<br>    rules: [<br>      &#123;<br>        test: <span class="hljs-regexp">/\.svg$/</span>,<br>        loader: <span class="hljs-string">&#x27;svg-url-loader&#x27;</span>,<br>        options: &#123;<br>          <span class="hljs-comment">// 小于10240的进行URL编码</span><br>          limit: <span class="hljs-number">20</span> * <span class="hljs-number">1024</span>,<br>          <span class="hljs-comment">// 移除引号</span><br>          <span class="hljs-comment">// (they’re unnecessary in most cases)</span><br>          noquotes: <span class="hljs-literal">true</span>,<br>        &#125;,<br>      &#125;,<br>    ],<br>  &#125;,<br>&#125;<br></code></pre>
+<ol start="3">
+<li>image-webpack-loader<blockquote>
+<p>image-webpack-loader可以支持JPG, PNG, GIF and SVG 图片的压缩，因为它仅仅是压缩作用，不会将图片嵌入应用，因此我们需要与url-loader和svg-url-loader一起使用，为了不需要在每个loader里复制一遍image-webpack-loader的配置，我们可单独将其配置在一个规则中，并使用enfore:”pre”让它最先执行。</p>
+</blockquote>
+</li>
+</ol>
+<pre class="highlight"><code class="hljs javascript"> <span class="hljs-comment">// webpack.config.js</span><br><span class="hljs-built_in">module</span>.exports = &#123;<br>  <span class="hljs-built_in">module</span>: &#123;<br>    rules: [<br>      &#123;<br>        test: <span class="hljs-regexp">/\.(jpe?g|png|gif|svg)$/</span>,<br>        loader: <span class="hljs-string">&#x27;image-webpack-loader&#x27;</span>,<br>        <span class="hljs-comment">// This will apply the loader before the other ones</span><br>        enforce: <span class="hljs-string">&#x27;pre&#x27;</span>,<br>      &#125;,<br>    ],<br>  &#125;,<br>&#125;<br></code></pre>
 
-   A->>B:what is you?</pre>
+<p>如果文章对您有帮助请进入链接 (<a target="_blank" rel="noopener" href="https://github.com/lingchenzheng/lingchenzheng.github.io">https://github.com/lingchenzheng/lingchenzheng.github.io</a>) 给一个 star 吧 😄</p>
 
   </div>
 </article>
 <div class="nav">
   
   <div class="nav-item-prev">
-    <a href="/2020/08/18/other/前端js获取wma文件时长/" class="nav-link">
+    <a href="/2020/04/24/utils/webpack/webpack模块化导入svg标签/" class="nav-link">
       <i class="iconfont icon-left nav-prev-icon"></i>
       <div>
         <div class="nav-label">上一篇</div>
         
-        <div class="nav-title">前端获取wma文件时长 </div>
+        <div class="nav-title">webpack导入svg图标 </div>
         
       </div>
     </a>
@@ -176,11 +213,11 @@
   
   
   <div class="nav-item-next">
-    <a href="/2020/04/24/utils/webpack/webpack模块化导入svg标签/" class="nav-link">
+    <a href="/2019/06/27/es/深拷贝/" class="nav-link">
       <div>
         <div class="nav-label">下一篇</div>
         
-        <div class="nav-title">webpack导入svg图标 </div>
+        <div class="nav-title">js深拷贝 </div>
         
       </div>
       <i class="iconfont icon-right nav-next-icon"></i>
@@ -191,7 +228,7 @@
 
 <div class="card card-content toc-card" id="mobiletoc">
   <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
-
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88"><span class="toc-text">优化方案</span></a></li></ol>
 </div></main>
           <aside class="left-column">
             
@@ -224,7 +261,7 @@
   <article class="display-when-two-columns spacer">
     <div class="card card-content toc-card">
       <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
-
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88"><span class="toc-text">优化方案</span></a></li></ol>
     </div>
   </article>
   
@@ -297,7 +334,7 @@
   
   <article class="card card-content toc-card">
     <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
-
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E6%96%B9%E6%A1%88"><span class="toc-text">优化方案</span></a></li></ol>
   </article>
   
   
