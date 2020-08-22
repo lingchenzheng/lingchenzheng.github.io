@@ -132,23 +132,23 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      前端获取wma文件时长
+      get与post的区别
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <time datetime="2020-08-20T07:44:39.201Z" style="display: flex; align-items: center;">
+    <time datetime="2019-04-06T00:00:00.000Z" style="display: flex; align-items: center;">
       <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
-      <span>2020-08-20</span>
+      <span>2019-04-06</span>
     </time>
     
     <span class="dot"></span>
     
-    <a href="/categories/其他/" class="post-meta-link">其他</a>
+    <a href="/categories/http/" class="post-meta-link">http</a>
     
     
     
     <span class="dot"></span>
-    <span>742 字</span>
+    <span>1k 字</span>
     
   </div>
   
@@ -157,57 +157,56 @@
       <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
       
       
-        <a href="/tags/解决方案/" class="post-meta-link">解决方案</a>
+        <a href="/tags/网络/" class="post-meta-link">网络</a>
       
     </div>
   </div>
   
   </header>
   <div id="section" class="post-content">
-    <p><strong>简介</strong></p>
+    <p><strong>前言</strong></p>
 <blockquote>
-<p>wma 是微软推出的一种音频存储格式，由于版权问题，目前浏览器的 audio/vedio 标签都不支持播放 wma 文件，由于项目需求需要前端读取本地音频时长等相关信息传到后端，所以只能另辟蹊径。</p>
+<p>首先，不管是 get 还是 post，都是 http 请求方法中的一种，都是用来数据传输。如果我们从网上来搜索它们的区别，比如（w3c）等，一般会得到如下答案：</p>
 </blockquote>
-<p><strong>思路</strong></p>
+<ul>
+<li>get 用来获取数据，post 用来提交数据。</li>
+<li>get 请求参数通过 querystring 拼接在 url 后 ，post 请求参数放在请求体。</li>
+<li>get 提交表单不安全，因为表单数据拼接在 url 后，而 get 请求是可以被缓存得，别人可以通过浏览器记录查看表单数据；post 请求放在请求体且不会被缓存。</li>
+<li>get 请求请求数据长度有限，post 请求的数据更大。</li>
+<li>get 方式只能支持 ASCII 字符，向服务器传的中文字符可能会乱码，post 支持标准字符集，可以正确传递中文字符。</li>
+</ul>
+<p><strong>本质分析</strong></p>
 <blockquote>
-<p>读取二进制文件，根据文件头来解析文件属性信息，获取音频时长</p>
+<p>对于上面的答案，从 RPC 规范的角度来看，确实是没问题，但是这些只是一些使用现象上的区别，关于它们的本质，应该从如下几个方面来看。</p>
 </blockquote>
-<p>下图为通过 windows media 工具来读取 wma 文件，分析文件内容组成<br><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="/images/other/%E5%89%8D%E7%AB%AFjs%E8%8E%B7%E5%8F%96wma%E6%96%87%E4%BB%B6%E6%97%B6%E9%95%BF/1.png" class="lozad post-image"src="/images/other/%E5%89%8D%E7%AB%AFjs%E8%8E%B7%E5%8F%96wma%E6%96%87%E4%BB%B6%E6%97%B6%E9%95%BF/1.png"></p>
-<p><strong>经过多个文件分析对比，得出如下结果:</strong></p>
-<ol>
-<li>头对象由多个部分组成</li>
-<li>不同文件，头部大小不一样，头对象组成部分个数不一样，组成部分排列顺序也不一样</li>
-<li>文件属性内容固定，Object ID 都一样（文件时长相关信息在此）</li>
-<li>文件的前 30 个字节固定，16 个字节标识这是 wma 文件，然后 8 个字节存储头文件大小，4 字节存储头有几个组成部分，最后 2 个是保留字节。</li>
-</ol>
-<p><strong>根据上面的结论，我们需要拿到头组成部分中的文件属性这个部分就可以解析出文件时长</strong></p>
-<p><img src="/images/other/%E5%89%8D%E7%AB%AFjs%E8%8E%B7%E5%8F%96wma%E6%96%87%E4%BB%B6%E6%97%B6%E9%95%BF/2.png" alt="文件属性" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="/images/other/%E5%89%8D%E7%AB%AFjs%E8%8E%B7%E5%8F%96wma%E6%96%87%E4%BB%B6%E6%97%B6%E9%95%BF/2.png" class="lozad post-image"></p>
-<p><strong>实现步骤设计如下</strong></p>
-<ol>
-<li>截取 0-16 个字节，判断是否为 wma 文件(如果确定为 wma 文件可以省略)</li>
-<li>截取 16-24 个字节，获取头对象的大小</li>
-<li>根据第二步获取的头大小，截取头部数据</li>
-<li>拿到头部二进制数据，从 30 个字节往后，截取 16 个字节，根据这 16 个字节判断是否为文件属性部分</li>
-<li>如果是，根据图二的结构，设置偏移量，获取文件时长二进制数组</li>
-<li>如果不是，则再往后读取 8 个字节，获取当前部分大小</li>
-<li>通过第七步获取的大小设置偏移量，重复第四步</li>
-</ol>
-<p><strong>简单实现代码如下</strong></p>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> input = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&#x27;input&#x27;</span>)<br>input.addEventListener(<span class="hljs-string">&#x27;change&#x27;</span>, <span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> &#123;<br>    <span class="hljs-keyword">let</span> file = e.target.files[<span class="hljs-number">0</span>]<br>    file.slice(<span class="hljs-number">0</span>, <span class="hljs-number">16</span>)<br>        .arrayBuffer()<br>        .then(<span class="hljs-function"><span class="hljs-params">buffer</span> =&gt;</span> &#123;<br>            <span class="hljs-built_in">console</span>.log(buffer)<br>        &#125;)<br>    <span class="hljs-keyword">return</span><br>    <span class="hljs-keyword">if</span> (file &amp;&amp; file <span class="hljs-keyword">instanceof</span> Blob) &#123;<br>        <span class="hljs-keyword">let</span> reader = <span class="hljs-keyword">new</span> FileReader()<br>        reader.onload = <span class="hljs-function"><span class="hljs-params">evt</span> =&gt;</span> &#123;<br>            <span class="hljs-keyword">let</span> &#123; result &#125; = evt.target<br>            <span class="hljs-built_in">console</span>.log(result)<br>            <span class="hljs-comment">// parseFile(result)</span><br>        &#125;<br>        reader.readAsArrayBuffer(file.slice(<span class="hljs-number">0</span>, <span class="hljs-number">16</span>))<br>    &#125;<br>&#125;)<br><span class="hljs-keyword">const</span> FILE_PROPERTY_ID = [<br>    <span class="hljs-number">0xa1</span>,<br>    <span class="hljs-number">0xdc</span>,<br>    <span class="hljs-number">0xab</span>,<br>    <span class="hljs-number">0x8c</span>,<br>    <span class="hljs-number">0x47</span>,<br>    <span class="hljs-number">0xa9</span>,<br>    <span class="hljs-number">0xcf</span>,<br>    <span class="hljs-number">0x11</span>,<br>    <span class="hljs-number">0x8e</span>,<br>    <span class="hljs-number">0xe4</span>,<br>    <span class="hljs-number">0x00</span>,<br>    <span class="hljs-number">0xc0</span>,<br>    <span class="hljs-number">0x0c</span>,<br>    <span class="hljs-number">0x20</span>,<br>    <span class="hljs-number">0x53</span>,<br>    <span class="hljs-number">0x65</span><br>]<br><span class="hljs-keyword">const</span> ID_BYTE_LEN = <span class="hljs-number">16</span><br><span class="hljs-keyword">const</span> DURATION_OFFSET = <span class="hljs-number">64</span><br><span class="hljs-keyword">const</span> START = <span class="hljs-number">30</span><br><span class="hljs-keyword">const</span> BIT_LEN = <span class="hljs-number">8</span><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseFile</span>(<span class="hljs-params">ab</span>) </span>&#123;<br>    <span class="hljs-keyword">let</span> uint8 = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Uint8Array</span>(ab)<br>    <span class="hljs-keyword">let</span> getFilePropertiesBytes = <span class="hljs-function"><span class="hljs-params">index</span> =&gt;</span> &#123;<br>        <span class="hljs-keyword">let</span> start = index<br>        <span class="hljs-keyword">let</span> end = start + ID_BYTE_LEN<br>        <span class="hljs-keyword">let</span> idBytes = uint8.slice(start, end)<br>        <span class="hljs-comment">//id相等，则当前fram tag为文件属性</span><br>        <span class="hljs-keyword">if</span> (idBytes.toString() === FILE_PROPERTY_ID.toString()) &#123;<br>            start = start + DURATION_OFFSET<br>            end = start + BIT_LEN<br>            <span class="hljs-keyword">let</span> durationBytes = uint8.slice(start, end)<br>            <span class="hljs-keyword">return</span> toNum(durationBytes)<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-keyword">let</span> countBytes = uint8.slice(end, end + BIT_LEN)<br>            <span class="hljs-keyword">let</span> framLen = toNum(countBytes)<br>            start = start + framLen<br>            <span class="hljs-keyword">return</span> getFilePropertiesBytes(start)<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">let</span> duration = getFilePropertiesBytes(START)<br>    <span class="hljs-built_in">console</span>.log(duration)<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">toNum</span>(<span class="hljs-params">bytes</span>) </span>&#123;<br>    <span class="hljs-keyword">let</span> total = <span class="hljs-number">0</span><br>    <span class="hljs-comment">//采用的小端存储</span><br>    bytes.forEach(<span class="hljs-function">(<span class="hljs-params">num, i</span>) =&gt;</span> &#123;<br>        <span class="hljs-keyword">if</span> (num &gt; <span class="hljs-number">0</span>) &#123;<br>            total += num * <span class="hljs-built_in">Math</span>.pow(<span class="hljs-number">2</span>, i * BIT_LEN)<br>        &#125;<br>    &#125;)<br>    <span class="hljs-keyword">return</span> total<br>&#125;<br></code></pre>
-
-<p>如果文章对您有帮助请进入链接 (<a target="_blank" rel="noopener" href="https://github.com/lingchenzheng/lingchenzheng.github.io">https://github.com/lingchenzheng/lingchenzheng.github.io</a>) 给一个 star 吧 😄</p>
+<ul>
+<li><p><strong>用途问题，get 获取数据，post 请求数据</strong><br>这个问题我们可以从两个方面看，一个是浏览器的请求，另一个是 XHR 请求。<br>在 http 协议被设计的最初之时，XHR 还没有出现，get 确实是被用来获取数据，比如请求服务器一个 html 页面。而 post 则是用来提交 html 中的表单（当然 get 也可以提交）。</p>
+<p>从 XHR 的角度来看，我们将它作为接口传输协议的场景，开发者对这些请求的行为有 100%的控制权，比如，你可以通过 post 来获取数据，get 来提交数据，这并没有问题，只要前后端定义好就行。</p>
+</li>
+<li><p><strong>关于请求数据长度的问题</strong><br>get 请求数据长度有限，并不是 get 本身的限制，而是 url 长度的限制，是浏览器和服务器对 url 长度的限制。理论上来说，只要满足 url 结构，长度可以是无限的，但是不同浏览器对 url 的长度做了不同限制。</p>
+</li>
+<li><p><strong>关于安全问题</strong><br>不管是 get 还是 post 都是不安全的，因为 http 采用的是明文传输，每个请求都可能在某个链路上被人劫持，获取数据，这完全不是一个“是否容易在浏览器地址栏上或者浏览器记录里看到“的问题。<br>如果要解决这个问题，我们应该采用 https 协议。</p>
+</li>
+<li><p><strong>url 编码问题</strong><br>上面说的 get 只支持 ASCII 编码，post 支持任意编码，是只的 url 用的什么编码和请求体用的什么编码。<br>实际上规范中 url 只能使用[a-zA-Z0-9$-_.+!*’(),]字符串，这仅仅是 ASCII 编码的一个子集，它们是可以不经过编码直接在 http url 中使用。</p>
+<p>实际情况中，我们是可以在 url 中使用中文，是因为浏览器会对 url 进行 url 编码，url 编码会对除上述子集外的字符串进行编码，使用一个<code>%</code>加两个表示字符 ASCII 码的十六进制值。</p>
+</li>
+</ul>
+<p><strong>总结</strong></p>
+<blockquote>
+<p>不管是 get 还是 post，或者是 put,delete 等等，都是 http 请求方法中的一种，都是基于 TCP/IP 协议栈上层的，本质上没有区别，只是根据语义或者规范，客户端和服务端的一种约定，只要客户端和服务端相互认同，就能工作。在常规情况下，我们应该尽量按照规范去做，这样会避免很多问题，同时语义化更强。比如 RESTful 风格 api。但是我们也不能将思路限制死，应该根据合适的场景选择合适的方案。<br>Elastic Search 的_search 接口使用 GET，却用 body 来表达查询，因为查询很复杂，用 querystring 很麻烦，必须用 json 格式才舒服，在请求体用 json 编码更加容易，不用折腾 percent encoding。</p>
+</blockquote>
 
   </div>
 </article>
 <div class="nav">
   
   <div class="nav-item-prev">
-    <a href="/2020/08/20/markdown/markdown基础入门/" class="nav-link">
+    <a href="/2019/06/27/es/深拷贝/" class="nav-link">
       <i class="iconfont icon-left nav-prev-icon"></i>
       <div>
         <div class="nav-label">上一篇</div>
         
-        <div class="nav-title">markdown基础入门 </div>
+        <div class="nav-title">js深拷贝 </div>
         
       </div>
     </a>
@@ -215,11 +214,11 @@
   
   
   <div class="nav-item-next">
-    <a href="/2020/07/18/css/我/" class="nav-link">
+    <a href="/2019/04/03/http/http基础/" class="nav-link">
       <div>
         <div class="nav-label">下一篇</div>
         
-        <div class="nav-title">flex布局之成员属性flex </div>
+        <div class="nav-title">http基础 </div>
         
       </div>
       <i class="iconfont icon-right nav-next-icon"></i>
@@ -242,7 +241,7 @@
 <p class="author-description">Front End Developer</p>
 <div class="author-message">
   <a class="author-posts-count" href="/archives">
-    <span>7</span>
+    <span>8</span>
     <span>文章</span>
   </a>
   <a class="author-categories-count" href="/categories">
@@ -287,6 +286,13 @@
         </div>
       </a>
     
+      <a href="/categories/http">
+        <div class="categories-list-item">
+          http
+          <span class="categories-list-item-badge">2</span>
+        </div>
+      </a>
+    
       <a href="/categories/markdown">
         <div class="categories-list-item">
           markdown
@@ -305,13 +311,6 @@
         <div class="categories-list-item">
           webpack
           <span class="categories-list-item-badge">2</span>
-        </div>
-      </a>
-    
-      <a href="/categories/http">
-        <div class="categories-list-item">
-          http
-          <span class="categories-list-item-badge">1</span>
         </div>
       </a>
     
@@ -355,13 +354,13 @@
   <div class="recent-posts-list">
     
       <div class="recent-posts-item">
-        <div class="recent-posts-item-title">2020-08-20</div>
-        <a href="/2020/08/20/markdown/markdown基础入门/"><div class="recent-posts-item-content">markdown基础入门</div></a>
+        <div class="recent-posts-item-title">2020-08-22</div>
+        <a href="/2020/08/22/markdown/markdown基础入门/"><div class="recent-posts-item-content">markdown基础入门</div></a>
       </div>
     
       <div class="recent-posts-item">
-        <div class="recent-posts-item-title">2020-08-20</div>
-        <a href="/2020/08/20/other/前端js获取wma文件时长/"><div class="recent-posts-item-content">前端获取wma文件时长</div></a>
+        <div class="recent-posts-item-title">2020-08-22</div>
+        <a href="/2020/08/22/other/前端js获取wma文件时长/"><div class="recent-posts-item-content">前端获取wma文件时长</div></a>
       </div>
     
       <div class="recent-posts-item">
