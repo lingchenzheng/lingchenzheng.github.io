@@ -132,23 +132,23 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      Accept相关请求头部
+      Symbol对象
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <time datetime="2019-05-14T00:00:00.000Z" style="display: flex; align-items: center;">
+    <time datetime="2019-06-26T00:00:00.000Z" style="display: flex; align-items: center;">
       <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
-      <span>2019-05-14</span>
+      <span>2019-06-26</span>
     </time>
     
     <span class="dot"></span>
     
-    <a href="/categories/http/" class="post-meta-link">http</a>
+    <a href="/categories/es/" class="post-meta-link">es</a>
     
     
     
     <span class="dot"></span>
-    <span>416 字</span>
+    <span>585 字</span>
     
   </div>
   
@@ -157,82 +157,51 @@
       <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
       
       
-        <a href="/tags/网络/" class="post-meta-link">网络</a>
+        <a href="/tags/js基础/" class="post-meta-link">js基础</a>
       
     </div>
   </div>
   
   </header>
   <div id="section" class="post-content">
-    <ol>
-<li><p><strong>Accept</strong></p>
-<ul>
-<li><p><strong>类型</strong><br>请求头部</p>
-</li>
-<li><p><strong>例子</strong><br>Accept:text/*,image/*</p>
-<p><em>注意：*是一个特殊的通配符，*/*表示接受所有媒体类型</em></p>
-</li>
-<li><p><strong>作用</strong><br>客户端通过 accept 首部来告诉服务器可以接受哪些媒体类型。</p>
-</li>
-</ul>
-</li>
-<li><p><strong>Accept-Charset</strong></p>
-<ul>
-<li><strong>类型</strong><br>请求首部</li>
-<li><strong>例子</strong><br>Accept-Charset:iso-llatin-1</li>
-<li><strong>作用</strong><br>客户端通过 Accept-Charset 告诉服务器它可以接受哪些字符集或优选字符集。</li>
-</ul>
-</li>
-<li><p><strong>Accept-Encoding</strong></p>
-<ul>
-<li><strong>类型</strong><br>请求首部</li>
-<li><strong>例子</strong><ul>
-<li>Accept-Encoding: deflate, gzip;q=1.0, \*;q=0.5</li>
-<li>Accept-Encoding: compress</li>
-<li>Accept-Encoding: gzip</li>
-</ul>
-</li>
-<li><strong>作用</strong><br>客户端通过 Accept-Charset 告诉服务器它可以接受哪些字符集或优选字符集。</li>
-</ul>
-</li>
-<li><p><strong>Accept-Language</strong></p>
-<ul>
-<li><strong>类型</strong><br>请求首部</li>
-<li><strong>例子</strong><ul>
-<li>Accept-Language: en</li>
-<li>Accept-Language: en;q=0.7, en-gb;q=0.5</li>
-</ul>
-</li>
-<li><strong>作用</strong><br>客户端通过 Accept-Language 告诉服务器它可以接受或优选哪些语言。</li>
-</ul>
-</li>
-<li><p><strong>Accept-Ranges</strong></p>
-<ul>
-<li><strong>类型</strong><br>响应首部</li>
-<li><strong>例子</strong><ul>
-<li>Accept-Ranges: none</li>
-<li>Accept-Ranges: bytes</li>
-</ul>
-</li>
-<li><strong>作用</strong><br>与其他首部不同，Accept-Ranges 是一个响应首部，是服务器用来告诉客户端它们是否接受请求某个资源的请求范围。如果这个首部有值的话，这个值说明了服务器允许对指定资源的哪个范围进行访问。</li>
-</ul>
-</li>
-</ol>
-<p><strong><em>关于 q(质量值)</em></strong><br>http 协议中定义了质量值，允许客户端为每种偏好类型列出多种选项，并未每种选项定义一个优先级顺序。<br>q 的取值范围从 0.0-1.0（0.0 最低，1.0 最高）。</p>
-<p><code>Accept-Language: en;q=0.5, fr;q=1.0, tr;q=0.0</code></p>
-<p>如上面，表示客户端最愿意接受法语，其次是英语，最后是土耳其语。</p>
+    <p><strong>简介</strong></p>
+<blockquote>
+<p>Symbol 对象是 ES6 新增的一种基本类型数据，属于原始类型数据，表示独一无二的值。</p>
+</blockquote>
+<p><strong>创建 Symbol 对象</strong></p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">//通过Symbol函数来创建一个symbol对象</span><br><span class="hljs-keyword">let</span> s = <span class="hljs-built_in">Symbol</span>()<br><span class="hljs-comment">//可以传入一个字符串参数来描述当前symbol对象</span><br><span class="hljs-keyword">let</span> s2 = <span class="hljs-built_in">Symbol</span>(<span class="hljs-string">&#x27;hello&#x27;</span>)<br><span class="hljs-keyword">typeof</span> s <span class="hljs-comment">// symbol</span><br></code></pre>
+
+<p><strong>symbol 不能与任何类型进行运算，否则报错，symbol 可以转换成字符串，或者 boolean 类型</strong></p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> s = <span class="hljs-built_in">Symbol</span>(<span class="hljs-string">&#x27;hello&#x27;</span>)<br><br><span class="hljs-built_in">String</span>(s) <span class="hljs-comment">// &#x27;Symbol(&quot;hello&quot;)&#x27;</span><br>s.toString() <span class="hljs-comment">// &#x27;Symbol(&quot;hello&quot;)&#x27;</span><br><span class="hljs-built_in">Boolean</span>(s) <span class="hljs-comment">// true</span><br><span class="hljs-keyword">if</span> (s) &#123;<br>&#125; <span class="hljs-comment">// true</span><br></code></pre>
+
+<p><strong>使用 symbol 作为对象属性的 key，ES5 中，对象属性的都是字符串，这就导致，有时候我们需要给某个对象拓展属性，可能会造成命名冲突，覆盖原来的属性值，使用 symbol 可以解决这个问题，因为 symbol 是独一无二的。</strong></p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> s = <span class="hljs-built_in">Symbol</span>(<span class="hljs-string">&#x27;foo&#x27;</span>)<br><span class="hljs-keyword">const</span> obj = &#123;<br>    s: <span class="hljs-string">&#x27;tom&#x27;</span><br>&#125;<br>obj[s] = <span class="hljs-string">&#x27;张三&#x27;</span><br>obj.s <span class="hljs-comment">//tom</span><br>obj[s] <span class="hljs-comment">//张三</span><br></code></pre>
+
+<p><em>注意：symbol 作为对象属性不能通过属性访问器来访问和设置，只能通过[s]来访问。而且 symbol 作为对象属性键，不能没枚举，也就是不能被 for in 和 for of 命中。也不能被 Object.keys()、Object.getOwnPropertyNames()、JSON.stringify()返回。</em></p>
+<p><strong>消除魔术字符，魔术字符串指的是，在代码之中多次出现、与代码形成强耦合的某一个具体的字符串或者数值。我们可以将这个字符串声明为一个变量，变量值为一个 symbol 对象</strong></p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">//比如表示某个状态</span><br><span class="hljs-keyword">const</span> status = <span class="hljs-built_in">Symbol</span>(<span class="hljs-string">&#x27;uploading&#x27;</span>)<br></code></pre>
+
+<p><strong>单例模式</strong></p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> FOO_KEY = <span class="hljs-built_in">Symbol</span>.for(<span class="hljs-string">&#x27;foo&#x27;</span>)<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">A</span>(<span class="hljs-params"></span>) </span>&#123;<br>    <span class="hljs-built_in">this</span>.foo = <span class="hljs-string">&#x27;hello&#x27;</span><br>&#125;<br><span class="hljs-keyword">if</span> (!<span class="hljs-built_in">global</span>[FOO_KEY]) &#123;<br>    <span class="hljs-built_in">global</span>[FOO_KEY] = <span class="hljs-keyword">new</span> A()<br>&#125;<br><span class="hljs-built_in">module</span>.exports = <span class="hljs-built_in">global</span>[FOO_KEY]<br></code></pre>
+
+<p><strong>Symbol.for()与 Symbol.keyFor()</strong></p>
+<p>有时，我们希望重新使用同一个 Symbol 值，Symbol.for 方法可以做到这一点。它接受一个字符串作为参数，然后搜索有没有以该参数作为名称的 Symbol 值。如果有，就返回这个 Symbol 值，否则就新建并返回一个以该字符串为名称的 Symbol 值。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> s1 = <span class="hljs-built_in">Symbol</span>.for(<span class="hljs-string">&#x27;foo&#x27;</span>)<br><span class="hljs-keyword">let</span> s2 = <span class="hljs-built_in">Symbol</span>.for(<span class="hljs-string">&#x27;foo&#x27;</span>)<br><br>s1 === s2 <span class="hljs-comment">// true</span><br></code></pre>
+
+<p>Symbol.keyFor 方法返回一个已登记的 Symbol 类型值的 key。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> s1 = <span class="hljs-built_in">Symbol</span>.for(<span class="hljs-string">&#x27;foo&#x27;</span>)<br><span class="hljs-built_in">Symbol</span>.keyFor(s1) <span class="hljs-comment">// &quot;foo&quot;</span><br><span class="hljs-keyword">let</span> s2 = <span class="hljs-built_in">Symbol</span>(<span class="hljs-string">&#x27;foo&#x27;</span>)<br><span class="hljs-built_in">Symbol</span>.keyFor(s2) <span class="hljs-comment">// undefined</span><br></code></pre>
 
   </div>
 </article>
 <div class="nav">
   
   <div class="nav-item-prev">
-    <a href="/2019/06/26/es/symbol/" class="nav-link">
+    <a href="/2019/06/27/es/深拷贝/" class="nav-link">
       <i class="iconfont icon-left nav-prev-icon"></i>
       <div>
         <div class="nav-label">上一篇</div>
         
-        <div class="nav-title">Symbol对象 </div>
+        <div class="nav-title">js深拷贝 </div>
         
       </div>
     </a>
@@ -240,11 +209,11 @@
   
   
   <div class="nav-item-next">
-    <a href="/2019/04/27/es/防抖与节流/" class="nav-link">
+    <a href="/2019/05/14/http/http请求头部-Accept/" class="nav-link">
       <div>
         <div class="nav-label">下一篇</div>
         
-        <div class="nav-title">防抖与节流 </div>
+        <div class="nav-title">Accept相关请求头部 </div>
         
       </div>
       <i class="iconfont icon-right nav-next-icon"></i>

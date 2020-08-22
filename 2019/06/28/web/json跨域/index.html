@@ -132,23 +132,23 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      Accept相关请求头部
+      jsonp跨域
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <time datetime="2019-05-14T00:00:00.000Z" style="display: flex; align-items: center;">
+    <time datetime="2019-06-28T00:00:00.000Z" style="display: flex; align-items: center;">
       <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
-      <span>2019-05-14</span>
+      <span>2019-06-28</span>
     </time>
     
     <span class="dot"></span>
     
-    <a href="/categories/http/" class="post-meta-link">http</a>
+    <a href="/categories/web/" class="post-meta-link">web</a>
     
     
     
     <span class="dot"></span>
-    <span>416 字</span>
+    <span>383 字</span>
     
   </div>
   
@@ -157,82 +157,38 @@
       <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
       
       
-        <a href="/tags/网络/" class="post-meta-link">网络</a>
+        <a href="/tags/解决方案/" class="post-meta-link">解决方案</a>
       
     </div>
   </div>
   
   </header>
   <div id="section" class="post-content">
-    <ol>
-<li><p><strong>Accept</strong></p>
-<ul>
-<li><p><strong>类型</strong><br>请求头部</p>
+    <p><strong>前言</strong></p>
+<blockquote>
+<p>首先，jsonp 的出现是为了解决跨域请求的。跨域是由于浏览器的同源策源造成的，同源策略限制了从同一个源加载的文档或脚本如何与来自另一个源的资源进行交互。这是一个用于隔离潜在恶意文件的重要安全机制。同源是指协议、域名和端口号相同，如果三者有一不同则出现跨域。</p>
+</blockquote>
+<p><strong>实现机制</strong></p>
+<ol>
+<li><p>虽然 ajax 受到同源策略的限制，但是 script 标签的 src 属性不会受到同源策略的限制，可以任意获取服务器上的脚本并执行，这是 jsonp 实现的前提。</p>
 </li>
-<li><p><strong>例子</strong><br>Accept:text/*,image/*</p>
-<p><em>注意：*是一个特殊的通配符，*/*表示接受所有媒体类型</em></p>
-</li>
-<li><p><strong>作用</strong><br>客户端通过 accept 首部来告诉服务器可以接受哪些媒体类型。</p>
-</li>
-</ul>
-</li>
-<li><p><strong>Accept-Charset</strong></p>
-<ul>
-<li><strong>类型</strong><br>请求首部</li>
-<li><strong>例子</strong><br>Accept-Charset:iso-llatin-1</li>
-<li><strong>作用</strong><br>客户端通过 Accept-Charset 告诉服务器它可以接受哪些字符集或优选字符集。</li>
-</ul>
-</li>
-<li><p><strong>Accept-Encoding</strong></p>
-<ul>
-<li><strong>类型</strong><br>请求首部</li>
-<li><strong>例子</strong><ul>
-<li>Accept-Encoding: deflate, gzip;q=1.0, \*;q=0.5</li>
-<li>Accept-Encoding: compress</li>
-<li>Accept-Encoding: gzip</li>
-</ul>
-</li>
-<li><strong>作用</strong><br>客户端通过 Accept-Charset 告诉服务器它可以接受哪些字符集或优选字符集。</li>
-</ul>
-</li>
-<li><p><strong>Accept-Language</strong></p>
-<ul>
-<li><strong>类型</strong><br>请求首部</li>
-<li><strong>例子</strong><ul>
-<li>Accept-Language: en</li>
-<li>Accept-Language: en;q=0.7, en-gb;q=0.5</li>
-</ul>
-</li>
-<li><strong>作用</strong><br>客户端通过 Accept-Language 告诉服务器它可以接受或优选哪些语言。</li>
-</ul>
-</li>
-<li><p><strong>Accept-Ranges</strong></p>
-<ul>
-<li><strong>类型</strong><br>响应首部</li>
-<li><strong>例子</strong><ul>
-<li>Accept-Ranges: none</li>
-<li>Accept-Ranges: bytes</li>
-</ul>
-</li>
-<li><strong>作用</strong><br>与其他首部不同，Accept-Ranges 是一个响应首部，是服务器用来告诉客户端它们是否接受请求某个资源的请求范围。如果这个首部有值的话，这个值说明了服务器允许对指定资源的哪个范围进行访问。</li>
-</ul>
+<li><p>实现 jsonp 的思路是，在客户端口动态创建 script 标签，设置其 src 为服务端接口地址，将脚本插入文档，通过 script 向服务端发送请求,在这之前，首先在全局对象上挂载一个全局函数作为 jsonp 的回调函数，也就是服务端口将返回这个函数的调用作为 script 标签的内容，并将数据作为函数的参数返回，数据返回后再从文档删除此标签。</p>
 </li>
 </ol>
-<p><strong><em>关于 q(质量值)</em></strong><br>http 协议中定义了质量值，允许客户端为每种偏好类型列出多种选项，并未每种选项定义一个优先级顺序。<br>q 的取值范围从 0.0-1.0（0.0 最低，1.0 最高）。</p>
-<p><code>Accept-Language: en;q=0.5, fr;q=1.0, tr;q=0.0</code></p>
-<p>如上面，表示客户端最愿意接受法语，其次是英语，最后是土耳其语。</p>
+<p><strong>代码</strong></p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">jsonp</span>(<span class="hljs-params">url, params, cb</span>) </span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Promise</span>(<span class="hljs-function">(<span class="hljs-params">res, rej</span>) =&gt;</span> &#123;<br>        <span class="hljs-keyword">let</span> sp = <span class="hljs-built_in">document</span>.createElement(<span class="hljs-string">&#x27;script&#x27;</span>)<br>        <span class="hljs-built_in">window</span>[cb] = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">data</span>) </span>&#123;<br>            res(data)<br>            <span class="hljs-built_in">document</span>.body.removeChild(sp)<br>        &#125;<br>        <span class="hljs-keyword">let</span> arr = []<br>        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> key <span class="hljs-keyword">in</span> params) &#123;<br>            arr.push(<span class="hljs-string">`<span class="hljs-subst">$&#123;key&#125;</span>=<span class="hljs-subst">$&#123;params[key]&#125;</span>`</span>)<br>        &#125;<br>        <span class="hljs-keyword">let</span> query = arr.join(<span class="hljs-string">&#x27;&amp;&#x27;</span>)<br>        sp.src = <span class="hljs-string">`<span class="hljs-subst">$&#123;url&#125;</span>?callback=<span class="hljs-subst">$&#123;cb&#125;</span>&amp;query`</span><br>        <span class="hljs-built_in">document</span>.body.appendChild(sp)<br>    &#125;)<br>&#125;<br></code></pre>
 
   </div>
 </article>
 <div class="nav">
   
   <div class="nav-item-prev">
-    <a href="/2019/06/26/es/symbol/" class="nav-link">
+    <a href="/2019/09/25/utils/webpack/webpack打包优化之image优化/" class="nav-link">
       <i class="iconfont icon-left nav-prev-icon"></i>
       <div>
         <div class="nav-label">上一篇</div>
         
-        <div class="nav-title">Symbol对象 </div>
+        <div class="nav-title">webpack打包image优化 </div>
         
       </div>
     </a>
@@ -240,11 +196,11 @@
   
   
   <div class="nav-item-next">
-    <a href="/2019/04/27/es/防抖与节流/" class="nav-link">
+    <a href="/2019/06/27/es/深拷贝/" class="nav-link">
       <div>
         <div class="nav-label">下一篇</div>
         
-        <div class="nav-title">防抖与节流 </div>
+        <div class="nav-title">js深拷贝 </div>
         
       </div>
       <i class="iconfont icon-right nav-next-icon"></i>
