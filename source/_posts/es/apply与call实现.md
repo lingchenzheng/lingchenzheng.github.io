@@ -34,7 +34,13 @@ fn.call(obj[, param1[,param2,[...params]]])
 1. apply 实现
 
 ```javascript
+const __this__ = globalThis
 Function.prototype.apply = function (context) {
+    context = context === null || context === undefined ? __this__ : context
+    if (typeof context !== 'object' || typeof context !== 'function') {
+        let Cotor = context.constructor
+        context = new Cotor(context)
+    }
     var args
     if (arguments.length > 1) {
         args = arguments[1]
@@ -49,7 +55,13 @@ Function.prototype.apply = function (context) {
 2. call 实现
 
 ```javascript
+const __this__ = globalThis
 Function.prototype.call = function (context) {
+    context = context === null || context === undefined ? __this__ : context
+    if (typeof context !== 'object' || typeof context !== 'function') {
+        let Cotor = context.constructor
+        context = new Cotor(context)
+    }
     var args = [...arguments].slice(1)
     context.fn = this
     var result = context.fn(...args)
