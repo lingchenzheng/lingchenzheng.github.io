@@ -148,7 +148,7 @@
     
     
     <span class="dot"></span>
-    <span>175 字</span>
+    <span>235 字</span>
     
   </div>
   
@@ -185,12 +185,12 @@
 <ol>
 <li>apply 实现</li>
 </ol>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-built_in">Function</span>.prototype.apply = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">context</span>) </span>&#123;<br>    <span class="hljs-keyword">var</span> args<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">arguments</span>.length &gt; <span class="hljs-number">1</span>) &#123;<br>        args = <span class="hljs-built_in">arguments</span>[<span class="hljs-number">1</span>]<br>    &#125;<br>    context.fn = <span class="hljs-built_in">this</span><br>    <span class="hljs-keyword">var</span> result = context.fn(...args)<br>    <span class="hljs-keyword">delete</span> context.fn<br>    <span class="hljs-keyword">return</span> result<br>&#125;<br></code></pre>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> __this__ = globalThis<br><span class="hljs-built_in">Function</span>.prototype.apply = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">context</span>) </span>&#123;<br>    context = context === <span class="hljs-literal">null</span> || context === <span class="hljs-literal">undefined</span> ? __this__ : context<br>    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> context !== <span class="hljs-string">&#x27;object&#x27;</span> || <span class="hljs-keyword">typeof</span> context !== <span class="hljs-string">&#x27;function&#x27;</span>) &#123;<br>        <span class="hljs-keyword">let</span> Cotor = context.constructor<br>        context = <span class="hljs-keyword">new</span> Cotor(context)<br>    &#125;<br>    <span class="hljs-keyword">var</span> args<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">arguments</span>.length &gt; <span class="hljs-number">1</span>) &#123;<br>        args = <span class="hljs-built_in">arguments</span>[<span class="hljs-number">1</span>]<br>    &#125;<br>    context.fn = <span class="hljs-built_in">this</span><br>    <span class="hljs-keyword">var</span> result = context.fn(...args)<br>    <span class="hljs-keyword">delete</span> context.fn<br>    <span class="hljs-keyword">return</span> result<br>&#125;<br></code></pre>
 
 <ol start="2">
 <li>call 实现</li>
 </ol>
-<pre class="highlight"><code class="hljs javascript"><span class="hljs-built_in">Function</span>.prototype.call = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">context</span>) </span>&#123;<br>    <span class="hljs-keyword">var</span> args = [...arguments].slice(<span class="hljs-number">1</span>)<br>    context.fn = <span class="hljs-built_in">this</span><br>    <span class="hljs-keyword">var</span> result = context.fn(...args)<br>    <span class="hljs-keyword">delete</span> context.fn<br>    <span class="hljs-keyword">return</span> result<br>&#125;<br></code></pre>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> __this__ = globalThis<br><span class="hljs-built_in">Function</span>.prototype.call = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">context</span>) </span>&#123;<br>    context = context === <span class="hljs-literal">null</span> || context === <span class="hljs-literal">undefined</span> ? __this__ : context<br>    <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> context !== <span class="hljs-string">&#x27;object&#x27;</span> || <span class="hljs-keyword">typeof</span> context !== <span class="hljs-string">&#x27;function&#x27;</span>) &#123;<br>        <span class="hljs-keyword">let</span> Cotor = context.constructor<br>        context = <span class="hljs-keyword">new</span> Cotor(context)<br>    &#125;<br>    <span class="hljs-keyword">var</span> args = [...arguments].slice(<span class="hljs-number">1</span>)<br>    context.fn = <span class="hljs-built_in">this</span><br>    <span class="hljs-keyword">var</span> result = context.fn(...args)<br>    <span class="hljs-keyword">delete</span> context.fn<br>    <span class="hljs-keyword">return</span> result<br>&#125;<br></code></pre>
 
   </div>
 </article>
@@ -364,13 +364,13 @@
   <div class="recent-posts-list">
     
       <div class="recent-posts-item">
-        <div class="recent-posts-item-title">2020-08-23</div>
-        <a href="/2020/08/23/markdown/markdown基础入门/"><div class="recent-posts-item-content">markdown基础入门</div></a>
+        <div class="recent-posts-item-title">2020-08-24</div>
+        <a href="/2020/08/24/markdown/markdown基础入门/"><div class="recent-posts-item-content">markdown基础入门</div></a>
       </div>
     
       <div class="recent-posts-item">
-        <div class="recent-posts-item-title">2020-08-23</div>
-        <a href="/2020/08/23/other/前端js获取wma文件时长/"><div class="recent-posts-item-content">前端获取wma文件时长</div></a>
+        <div class="recent-posts-item-title">2020-08-24</div>
+        <a href="/2020/08/24/other/前端js获取wma文件时长/"><div class="recent-posts-item-content">前端获取wma文件时长</div></a>
       </div>
     
       <div class="recent-posts-item">
