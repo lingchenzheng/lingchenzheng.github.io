@@ -1,6 +1,7 @@
 ---
 title: prettier格式化svg文件
-category: 工具
+category: 其他
+tag: 工具
 date: 2018/12/20
 ---
 
