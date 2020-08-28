@@ -132,87 +132,279 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      浏览器的渲染过程
+      markdown绘制时序图
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <time datetime="2019-08-11T00:00:00.000Z" style="display: flex; align-items: center;">
+    <time datetime="2019-07-14T00:00:00.000Z" style="display: flex; align-items: center;">
       <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
-      <span>2019-08-11</span>
+      <span>2019-07-14</span>
     </time>
     
     <span class="dot"></span>
     
-    <a href="/categories/web/" class="post-meta-link">web</a>
+    <a href="/categories/markdown/" class="post-meta-link">markdown</a>
     
     
     
     <span class="dot"></span>
-    <span>1.1k 字</span>
+    <span>1.4k 字</span>
     
+  </div>
+  
+  <div class="post-meta post-show-meta" style="margin-top: -10px;">
+    <div style="display: flex; align-items: center;">
+      <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
+      
+      
+        <a href="/tags/工具/" class="post-meta-link">工具</a>
+      
+    </div>
   </div>
   
   </header>
   <div id="section" class="post-content">
-    <h5 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h5><p>这篇文章主要介绍浏览器如何将 html,css,js 解析成用户浏览的网页。</p>
-<p><strong>浏览器是什么?</strong></p>
-<p>在一般人看来，浏览器就是一个软件，一个可以加载远程服务器文件或者本地文件，然后在屏幕显示文件内容，并为我们提供交互的软件。</p>
-<p>然而，在浏览器内部，要将这些文件展示到屏幕，要结果处理器一些列处理才能展现到页面，我们把这个处理其称为浏览器引擎(browser engine)。</p>
-<p>浏览器引擎是浏览内部的一个核心组件，不同浏览器厂商引擎也不一样，比如 firefox 叫做 Gecko，chrome 叫做 blink，是 webkit 的升级版。</p>
-<h5 id="dom-tree-解析"><a href="#dom-tree-解析" class="headerlink" title="dom tree 解析"></a>dom tree 解析</h5><p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="/images/web/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%B8%B2%E6%9F%93%E8%BF%87%E7%A8%8B/1.png" class="lozad post-image"src="/images/web/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%B8%B2%E6%9F%93%E8%BF%87%E7%A8%8B/1.png"></p>
-<p>首先，浏览器请求服务器，加载 html 文件后，得到的是二进制数据，因为网络传输数据是以字节包发送的。<br>浏览器引擎并不认识二进制数据。浏览器对象需要的 DOM（文档对象模型），所以我们要做的是如果将 raw 字节转化成 DOM。</p>
+    <p><strong>什么是时序图</strong></p>
+<blockquote>
+<p>时序图（Sequence Diagram），亦称为序列图、循序图或顺序图，时序图描述系统中类和类之间的交互, 将这些交互建模成消息交换, 时序图描述了类以及类之间的交换以完成的期望行为的消息, 时序图中每条消息都代表了类的一个操作 或者 引起状态机改变的触发事件。</p>
+</blockquote>
+<p><strong>作用</strong></p>
+<blockquote>
+<p>展示对象之间交互的顺序。将交互行为建模为消息传递，通过描述消息是如何在对象间发送和接收的来动态展示对象之间的交互；相对于其他 UML 图，时序图更强调交互的时间顺序；可以直观的描述并发进程。</p>
+</blockquote>
+<p><strong>markdown 中使用时序图</strong><br>与 meraid 流程图一样，大部分 markdown 引擎也支持 mermaid 时序图。</p>
+<p>简单使用</p>
+<pre class="highlight"><code class="hljs plain">sequenceDiagram<br>participant Tom<br>participant Jack<br><br>Tom --&gt; Jack: what&#39;s your name?<br>Jack --&gt; Tom: i&#39;m Jack.<br><br></code></pre>
+
+<p>效果</p>
+<pre class="mermaid">sequenceDiagram
+participant Tom
+participant Jack
+
+Tom ->> Jack: what's your name?
+Jack --> Tom: i'm Jack.
+Tom ->> Jack: hello</pre>
+
+<p><strong>语法</strong></p>
 <ul>
-<li>bytes =&gt; charcaters</li>
+<li><p><code>title</code> 定义标题</p>
+</li>
+<li><p><code>participant</code> 用来定义对象</p>
+</li>
 </ul>
-<p>所以第一步，浏览器必须将二进制字节转成成字符，也就是我们写的 html,css 和 js 代码。</p>
-<p>处理成字符后，虽然我们认识，但这不是最终结果。</p>
-<ul>
-<li>charcaters =&gt; tokens</li>
-</ul>
-<p>如果仅仅是字符串，浏览器会将 html 代码像纯文本一样展示，这并没有什么意义。</p>
-<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="/images/web/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%B8%B2%E6%9F%93%E8%BF%87%E7%A8%8B/2.png" class="lozad post-image"src="/images/web/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%B8%B2%E6%9F%93%E8%BF%87%E7%A8%8B/2.png"></p>
-<p>所以接下来，浏览器需要将这些字符标记化(tokenization)，转化成 tokens，浏览器会认识每个尖括号，比如<code>&lt;html&gt;,&lt;div&gt;,&lt;span&gt;</code>等等。</p>
-<p>我们可以抽象地表示一下一个 a 标签 token 化的过程</p>
-<pre class="highlight"><code class="hljs plain">&lt;a&gt;&lt;&#x2F;a&gt;<br><br>start-tag token<br>    a: with no attributes<br>end-tag token<br>    a: with no attributes<br></code></pre>
+<pre class="highlight"><code class="hljs plain">sequenceDiagram<br>participant Tom<br>participant Jack<br></code></pre>
+
+<pre class="mermaid">    sequenceDiagram
+    participant Tom
+    participant Jack</pre>
 
 <ul>
-<li>tokens =&gt; nodes</li>
+<li>使用 <code>as</code> 关键字来给对象指定别名</li>
 </ul>
-<p>相比较字符，tokens 要好很多，但这仍不是最终结果，接下来，浏览器需要将 tokens 转化成 nodes(节点)，一个节点就是一个对象，实际上就是我们 DOM 中的节点，不过个时候它们还是相互独立的，没有关系。</p>
-<ul>
-<li>nodes =&gt; DOM Tree</li>
-</ul>
-<p>得到 nodes 后，浏览器引擎将 nodes 连接在一个类树得数据结构中，也就是我们所说的 DOM Tree。DOM Tree 建立了节点之间的父子关系，相邻兄弟关系等等。</p>
-<p>看起来就像这样</p>
-<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="/images/web/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%B8%B2%E6%9F%93%E8%BF%87%E7%A8%8B/3.png" class="lozad post-image"src="/images/web/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%B8%B2%E6%9F%93%E8%BF%87%E7%A8%8B/3.png"></p>
-<h5 id="cssom-tree-解析"><a href="#cssom-tree-解析" class="headerlink" title="cssom tree 解析"></a>cssom tree 解析</h5><p>html 已经解析好了，一个典型的 html 应该包含一些样式，如下</p>
-<pre class="highlight"><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">&quot;stylesheet&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text/css&quot;</span> <span class="hljs-attr">media</span>=<span class="hljs-string">&quot;screen&quot;</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;main.css&quot;</span> /&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre>
+<pre class="highlight"><code class="hljs plain">sequenceDiagram<br>participant A as Tom<br>participant B as Jack<br></code></pre>
 
-<p>当浏览器接受到二进制字节数据并将其处理成 DOM Tree 的过程中，遇到 link 标签时，浏览器会向服务器发送一个请求 main.css 文件，接着继续往下解析，这个过程并不阻塞 DOM Tree 的解析。</p>
-<p>当浏览器接受到 css 文件的二进制字节数据后，与解析 html 相似，浏览器会进行如下处理</p>
-<p><code>bytes =&gt; tokens =&gt; nodes =&gt; CSSOM</code></p>
-<p>最终将其转化成 CSSOM Tree(css 规则树)</p>
-<p>所以，我们可以知道，浏览器是不认识 html 和 css 的二进制数据的，必须转换成它认识的结构，也就是 DOM 和 CSSOM。</p>
-<h5 id="生成渲染树-render-tree"><a href="#生成渲染树-render-tree" class="headerlink" title="生成渲染树(render tree)"></a>生成渲染树(render tree)</h5><p>dom tree 和 cssom tree 是两个独立的结构，dom tree 包含了页面上所有 html 元素的关系信息。cssom tree 则包含了这些元素的风格信息。</p>
-<p>浏览器将 dom tree 和 cssom tree 合并成 render tree</p>
-<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="/images/web/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%B8%B2%E6%9F%93%E8%BF%87%E7%A8%8B/4.png" class="lozad post-image"src="/images/web/%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E6%B8%B2%E6%9F%93%E8%BF%87%E7%A8%8B/4.png"></p>
-<p>渲染数包含了页面上所有可见 dom 的内容，以及不同节点所需要的 cssom 信息。<br><em>注意：<code>display:none</code>的元素将不会出现在 render tree 中</em><br>有了 render tree，浏览器可以进入下一阶段：layout</p>
-<h5 id="布局-layout"><a href="#布局-layout" class="headerlink" title="布局(layout)"></a>布局(layout)</h5><p>得到 render tree 后，浏览器创建 layout 为每个 render tree 节点，layout 由节点的尺寸（像素）和它在屏幕中的位置信息组成。</p>
-<p><em>这个过程也称为回流或浏览器回流，也可以在滚动、调整窗口大小或操作 DOM 元素时发生。</em></p>
-<h5 id="绘制-paint"><a href="#绘制-paint" class="headerlink" title="绘制(paint)"></a>绘制(paint)</h5><p>布局完成后，浏览器开始绘制，由于“渲染树”中的元素（或子树）可以彼此重叠，并且它们的特性可以使它们经常更改外观、位置或几何体，因此浏览器采用分层(layer)绘制。</p>
-<p>图层创建完后，浏览器将他们合成并绘制在屏幕，完成最终渲染。</p>
+<pre class="mermaid">sequenceDiagram
+participant A as Tom
+participant B as Jack
+A ->> B: hello</pre>
+
+<ul>
+<li><p>连线类型</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-&gt;</td>
+<td>不带箭头的实线</td>
+</tr>
+<tr>
+<td>–&gt;</td>
+<td>不带箭头的虚线</td>
+</tr>
+<tr>
+<td>-&gt;&gt;</td>
+<td>带箭头实线</td>
+</tr>
+<tr>
+<td>–&gt;&gt;</td>
+<td>带箭头虚线</td>
+</tr>
+<tr>
+<td>-x</td>
+<td>带 x 的实线 (async)</td>
+</tr>
+<tr>
+<td>–x</td>
+<td>带 x 的虚线 (async)</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<p>代码</p>
+<pre class="highlight"><code class="hljs plain">sequenceDiagram<br>participant A as Tom<br>participant B as Jack<br>A -&gt; B: 不带箭头实线<br>A -&gt;&gt; B: 箭头实线<br>A --&gt; B: 不带箭头虚线<br>A --&gt;&gt; B: 箭头虚线<br>A -x B: x实线<br>A --x B: x虚线<br></code></pre>
+
+<p>效果</p>
+<pre class="mermaid">sequenceDiagram
+participant A as Tom
+participant B as Jack
+A -> B: 不带箭头实线
+A ->> B: 箭头实线
+A --> B: 不带箭头虚线
+A -->> B: 箭头虚线
+A -x B: x实线
+A --x B: x虚线</pre>
+
+<ul>
+<li>激活状态 <code>activate</code> 与 <code>deactivate</code> 关键字</li>
+</ul>
+<pre class="highlight"><code class="hljs plain">sequenceDiagram<br>participant A as Tom<br>participant B as Jack<br><br>A -&gt;&gt; B: hello<br>activate B<br>B -&gt;&gt; A: great!<br>deactivate B<br></code></pre>
+
+<pre class="mermaid">sequenceDiagram
+participant A as Tom
+participant B as Jack
+
+A ->> B: hello
+activate B
+B -->> A: great!
+deactivate B</pre>
+
+<p>使用<code>+</code>和<code>-</code>表示激活态</p>
+<pre class="highlight"><code class="hljs plain">sequenceDiagram<br>Alice-&gt;&gt;+John: Hello John, how are you?<br>Alice-&gt;&gt;+John: John, can you hear me?<br>John--&gt;&gt;-Alice: Hi Alice, I can hear you!<br>John--&gt;&gt;-Alice: I feel great!<br></code></pre>
+
+<pre class="mermaid">sequenceDiagram
+Alice->>+John: Hello John, how are you?
+Alice->>+John: John, can you hear me?
+John-->>-Alice: Hi Alice, I can hear you!
+John-->>-Alice: I feel great!</pre>
+
+<ul>
+<li>注释<code>Note</code>关键字</li>
+</ul>
+<p>语法：<br>Note left/right of Actor: message</p>
+<pre class="highlight"><code class="hljs plain">sequenceDiagram<br>participant A as Tom<br>participant B as Jack<br>A -&gt;&gt; B: some thing<br>Note right of A: 注释文字<br><br></code></pre>
+
+<pre class="mermaid">sequenceDiagram
+participant A as Tom
+participant B as Jack
+A ->> B: some thing
+Note right of A: 注释文字</pre>
+
+<ul>
+<li><code>loop</code>循环，使用<code>end</code>关键字指定循环范围</li>
+</ul>
+<pre class="highlight"><code class="hljs plain">sequenceDiagram<br>participant A as Tom<br>participant B as Jack<br>loop 循环体<br>A -&gt;&gt; B: some thing<br>B --&gt;&gt;A: yes<br>end<br></code></pre>
+
+<pre class="mermaid">sequenceDiagram
+participant A as Tom
+participant B as Jack
+loop 循环体
+A ->> B: some thing
+B -->>A: yes
+end</pre>
+
+<ul>
+<li><code>alt</code>和<code>opt</code>关键字，条件判断，alt 用于多个分支，opt 表示只有一个分支</li>
+</ul>
+<pre class="highlight"><code class="hljs plain">sequenceDiagram<br>Alice-&gt;&gt;Bob: Hello Bob, how are you?<br>alt is sick<br>    Bob-&gt;&gt;Alice: Not so good :(<br>else is well<br>    Bob-&gt;&gt;Alice: Feeling fresh like a daisy<br>end<br>opt Extra response<br>    Bob-&gt;&gt;Alice: Thanks for asking<br>end<br></code></pre>
+
+<pre class="mermaid">sequenceDiagram
+Alice->>Bob: Hello Bob, how are you?
+alt is sick
+    Bob->>Alice: Not so good :(
+else is well
+    Bob->>Alice: Feeling fresh like a daisy
+end
+opt Extra response
+    Bob->>Alice: Thanks for asking
+end</pre>
+
+<ul>
+<li><code>par and</code>并行(Parallel)</li>
+</ul>
+<pre class="highlight"><code class="hljs plain">sequenceDiagram<br>participant A<br>participant B<br>participant C<br>par 并行<br>    A -&gt;&gt; B: text<br>and<br>    A -&gt;&gt; C: text<br>end<br></code></pre>
+
+<pre class="mermaid">    sequenceDiagram
+    participant A
+    participant B
+    participant C
+    par 并行
+        A ->> B: text
+    and
+        A ->> C: text
+    end</pre>
+
+<p><em>循环，条件判断，并行语句是可以相互嵌套的</em></p>
+<ul>
+<li><code>rect</code>指定背景颜色</li>
+</ul>
+<pre class="highlight"><code class="hljs plain">sequenceDiagram<br>participant A<br>participant B<br>participant C<br><br>rect rgb(0, 0, 255)<br>    par 并行<br>        A -&gt;&gt; B: text<br>    and<br>        A -&gt;&gt; C: text<br>    end<br>end<br></code></pre>
+
+<p><img src="/images/markdown/mermaid%E6%97%B6%E5%BA%8F%E5%9B%BE/1.png" alt="设置背景色" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="/images/markdown/mermaid%E6%97%B6%E5%BA%8F%E5%9B%BE/1.png" class="lozad post-image"></p>
+<p><em>hexo 插件无法解析背景色</em></p>
+<h5 id="一个例子"><a href="#一个例子" class="headerlink" title="一个例子"></a>一个例子</h5><p>代码</p>
+<pre class="highlight"><code class="hljs plain">sequenceDiagram<br>title: 文件上传时序图<br>participant A as 用户<br>participant B as 文件队列<br>participant C as 控制器<br>participant D as CRC模块<br>participant E as 服务器<br>A-&gt;&gt;C:选择文件<br>activate C<br>activate C<br>C-&gt;&gt;C:初始化<br>deactivate C<br>C-&gt;&gt;B:加入队列<br>deactivate C<br>Note left of C: 将文件加入队列<br>B-&gt;&gt;C: 返回文件队列<br>loop 文件队列<br>    activate C<br>    alt 上传数是否小于3?<br>        par 上传文件<br>            C-&gt;&gt;E:上传请求<br>            E--&gt;&gt;C:响应<br>            alt crc计算完成?<br>                C-&gt;&gt;E:校验文件请求<br>                E-&gt;&gt;C:返回校验结果<br>                C-&gt;&gt;A:提示用户<br>            else<br>                C-&gt;&gt;C:设置文件id<br>            end<br>        and 计算crc32<br>            C-&gt;&gt;D:crc32<br>            D--&gt;&gt;C:计算完成crc32<br>            alt 文件是否上传完成?<br>                C-&gt;&gt;E:校验文件请求<br>                E-&gt;&gt;C:返回校验结果<br>                C-&gt;&gt;A:提示用户<br>            else<br>                C-&gt;&gt;C:设置文件crc<br>            end<br>        end<br>    else<br>        C-&gt;&gt;C:终止循环<br>    end<br>    deactivate C<br>end<br></code></pre>
+
+<pre class="mermaid">    sequenceDiagram
+    title: 文件上传时序图
+    participant A as 用户
+    participant B as 文件队列
+    participant C as 控制器
+    participant D as CRC模块
+    participant E as 服务器
+    A->>C:选择文件
+    activate C
+    activate C
+    C->>C:初始化
+    deactivate C
+    C->>B:加入队列
+    deactivate C
+    Note left of C: 将文件加入队列
+    B->>C: 返回文件队列
+    loop 文件队列
+        activate C
+        alt 上传数是否小于3?
+            par 上传文件
+                C->>E:上传请求
+                E-->>C:响应
+                alt crc计算完成?
+                    C->>E:校验文件请求
+                    E->>C:返回校验结果
+                    C->>A:提示用户
+                else
+                    C->>C:设置文件id
+                end
+            and 计算crc32
+                C->>D:crc32
+                D-->>C:计算完成crc32
+                alt 文件是否上传完成?
+                    C->>E:校验文件请求
+                    E->>C:返回校验结果
+                    C->>A:提示用户
+                else
+                    C->>C:设置文件crc
+                end
+            end
+        else
+            C->>C:终止循环
+        end
+        deactivate C
+    end</pre>
 
   </div>
 </article>
 <div class="nav">
   
   <div class="nav-item-prev">
-    <a href="/2019/08/28/other/前端获取设备cpu个数/" class="nav-link">
+    <a href="/2019/08/11/web/浏览器的渲染过程/" class="nav-link">
       <i class="iconfont icon-left nav-prev-icon"></i>
       <div>
         <div class="nav-label">上一篇</div>
         
-        <div class="nav-title">前端js获取cpu个数 </div>
+        <div class="nav-title">浏览器的渲染过程 </div>
         
       </div>
     </a>
@@ -220,11 +412,11 @@
   
   
   <div class="nav-item-next">
-    <a href="/2019/07/14/markdown/mermaind时序图/" class="nav-link">
+    <a href="/2019/07/05/markdown/mermaid流程图/" class="nav-link">
       <div>
         <div class="nav-label">下一篇</div>
         
-        <div class="nav-title">markdown绘制时序图 </div>
+        <div class="nav-title">markdown制作mermaid流程图 </div>
         
       </div>
       <i class="iconfont icon-right nav-next-icon"></i>
@@ -235,7 +427,7 @@
 
 <div class="card card-content toc-card" id="mobiletoc">
   <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
-<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#dom-tree-%E8%A7%A3%E6%9E%90"><span class="toc-text">dom tree 解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#cssom-tree-%E8%A7%A3%E6%9E%90"><span class="toc-text">cssom tree 解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E6%B8%B2%E6%9F%93%E6%A0%91-render-tree"><span class="toc-text">生成渲染树(render tree)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%B8%83%E5%B1%80-layout"><span class="toc-text">布局(layout)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%BB%98%E5%88%B6-paint"><span class="toc-text">绘制(paint)</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90"><span class="toc-text">一个例子</span></a></li></ol>
 </div></main>
           <aside class="left-column">
             
@@ -268,7 +460,7 @@
   <article class="display-when-two-columns spacer">
     <div class="card card-content toc-card">
       <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
-<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#dom-tree-%E8%A7%A3%E6%9E%90"><span class="toc-text">dom tree 解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#cssom-tree-%E8%A7%A3%E6%9E%90"><span class="toc-text">cssom tree 解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E6%B8%B2%E6%9F%93%E6%A0%91-render-tree"><span class="toc-text">生成渲染树(render tree)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%B8%83%E5%B1%80-layout"><span class="toc-text">布局(layout)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%BB%98%E5%88%B6-paint"><span class="toc-text">绘制(paint)</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90"><span class="toc-text">一个例子</span></a></li></ol>
     </div>
   </article>
   
@@ -364,7 +556,7 @@
   
   <article class="card card-content toc-card">
     <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
-<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#dom-tree-%E8%A7%A3%E6%9E%90"><span class="toc-text">dom tree 解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#cssom-tree-%E8%A7%A3%E6%9E%90"><span class="toc-text">cssom tree 解析</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%94%9F%E6%88%90%E6%B8%B2%E6%9F%93%E6%A0%91-render-tree"><span class="toc-text">生成渲染树(render tree)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%B8%83%E5%B1%80-layout"><span class="toc-text">布局(layout)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%BB%98%E5%88%B6-paint"><span class="toc-text">绘制(paint)</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90"><span class="toc-text">一个例子</span></a></li></ol>
   </article>
   
   

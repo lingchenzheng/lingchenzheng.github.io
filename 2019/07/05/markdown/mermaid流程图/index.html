@@ -128,29 +128,204 @@
     <div class="section-wrap">
       <div class="container">
         <div class="columns">
-          <main class="main-column"><div class="card card-content category-page-card">
-  <div class="categories-page-title">分类&nbsp-&nbsp工具</div>
-</div>
-<div class="archive-timeline">
+          <main class="main-column">
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      markdown制作mermaid流程图
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <time datetime="2019-07-05T00:00:00.000Z" style="display: flex; align-items: center;">
+      <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
+      <span>2019-07-05</span>
+    </time>
+    
+    <span class="dot"></span>
+    
+    <a href="/categories/markdown/" class="post-meta-link">markdown</a>
+    
+    
+    
+    <span class="dot"></span>
+    <span>597 字</span>
+    
+  </div>
   
-  
-  
-  <div class="archive-timeline-tag"><span>2018</span></div>
-  
-  
-  <div class="archive-timeline-item">
-    <div class="archive-timeline-post">
-      <div class="card card-content">
-        <div class="archive-timeline-post-date">2018-12-20</div>
-        <div class="archive-timeline-post-content">
-          <a href="/2018/12/20/other/prettier格式化svg文件/" class="archive-timeline-post-item">prettier格式化svg文件</a>
-        </div>
-      </div>
+  <div class="post-meta post-show-meta" style="margin-top: -10px;">
+    <div style="display: flex; align-items: center;">
+      <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
+      
+      
+        <a href="/tags/工具/" class="post-meta-link">工具</a>
+      
     </div>
   </div>
   
+  </header>
+  <div id="section" class="post-content">
+    <h5 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h5><p>上一篇文章讲了 markdown 中的流程图，由于那个主要是黑色，可能不美观，这一篇文章介绍 markdown 中使用 mermaid 流程图。</p>
+<p><strong>使用</strong><br>代码</p>
+<p><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="/images/markdown/mermaid%E6%B5%81%E7%A8%8B%E5%9B%BE/2.png" class="lozad post-image"src="/images/markdown/mermaid%E6%B5%81%E7%A8%8B%E5%9B%BE/2.png"><br>效果</p>
+<pre class="mermaid">   graph TB
+
+   start-->stop</pre>
+
+<p>graph 表示使用流程图 TB 表示流程图方向(可选值如下)</p>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>TD</td>
+<td>上到下</td>
+</tr>
+<tr>
+<td>TB</td>
+<td>上到下</td>
+</tr>
+<tr>
+<td>BT</td>
+<td>下到上</td>
+</tr>
+<tr>
+<td>LR</td>
+<td>左到右</td>
+</tr>
+<tr>
+<td>RL</td>
+<td>右到左</td>
+</tr>
+</tbody></table>
+<p><strong>定义元素</strong></p>
+<p>由于 markdown 不是支持所有的 mermaid 元素，所以这里只介绍部分，具体的可以参考<a target="_blank" rel="noopener" href="https://mermaid-js.github.io/mermaid/#/flowchart?id=flowcharts">mermaid 文档</a></p>
+<p>代码<br><img src="/images/markdown/mermaid%E6%B5%81%E7%A8%8B%E5%9B%BE/1.png" alt="元素代码" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="/images/markdown/mermaid%E6%B5%81%E7%A8%8B%E5%9B%BE/1.png" class="lozad post-image"><br>展示<br><img src="/images/markdown/mermaid%E6%B5%81%E7%A8%8B%E5%9B%BE/3.png" alt="元素展示" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="/images/markdown/mermaid%E6%B5%81%E7%A8%8B%E5%9B%BE/3.png" class="lozad post-image"></p>
+<p><em>注意：与之前不同，mermaid 元素定义了就会展示，同时，id 不能使用’end’关键字，大小写都不行</em></p>
+<p><strong>连线</strong></p>
+<ul>
+<li>实线</li>
+</ul>
+<pre class="highlight"><code class="hljs plain">graph LR<br>A --&gt; B<br>C --&gt; |带文本|D<br></code></pre>
+
+<pre class="mermaid">graph LR
+A --> B
+C --> |带文本|D</pre>
+
+<ul>
+<li>虚线</li>
+</ul>
+<pre class="highlight"><code class="hljs plain">graph LR<br>A --&gt; B<br>C --&gt; |带文本|D<br></code></pre>
+
+<pre class="mermaid">graph LR
+A -.-> B
+C --> |带文本|D</pre>
+
+<ul>
+<li>实线不带箭头</li>
+</ul>
+<pre class="highlight"><code class="hljs plain">graph LR<br>A --- B<br>C --- |text| D<br></code></pre>
+
+<pre class="mermaid">   graph LR
+   A --- B
+   C --- |text| D</pre>
+
+<ul>
+<li>虚线不带箭头</li>
+</ul>
+<pre class="highlight"><code class="hljs plain">graph LR<br>A -.- B<br>C -.- |text| D<br></code></pre>
+
+<pre class="mermaid">   graph LR
+   A -.- B
+   C -.- |text| D</pre>
+
+<ul>
+<li>粗线</li>
+</ul>
+<pre class="highlight"><code class="hljs plain">graph LR<br>A &#x3D;&#x3D;&#x3D; B<br>C &#x3D;&#x3D;&#x3D; |text| D<br>E &#x3D;&#x3D;&gt; F<br>H &#x3D;&#x3D;&gt; |text| I<br></code></pre>
+
+<pre class="mermaid">   graph LR
+   A === B
+   C === |text| D
+   E ==> F
+   H ==> |text| I</pre>
+
+<ul>
+<li>子模块</li>
+</ul>
+<p>子模块使用 subgraph 关键字来定义</p>
+<pre class="highlight"><code class="hljs plain">graph TB<br>subgraph one<br>a --&gt; b<br>end<br>subgraph two<br>b --&gt; c<br>c --&gt; d<br><br></code></pre>
+
+<pre class="mermaid">   graph TB
+   subgraph  one
+   a --> b
+   end
+   subgraph  two
+   c --> d
+   end</pre>
+
+<ul>
+<li>定义元素点击事件</li>
+</ul>
+<pre class="highlight"><code class="hljs plain">graph LR<br>A--&gt;B<br>B--&gt;C<br>click A &quot;http:&#x2F;&#x2F;www.github.com&quot;<br>click B &quot;http:&#x2F;&#x2F;www.baidu.com&quot;<br>click C callback &quot;Tooltip&quot;<br></code></pre>
+
+<pre class="mermaid">   graph LR
+   A --> B
+   B --> C
+   click A "http://www.github.com"
+   click B "http://www.baidu.com"
+   click C callback "Tooltip"</pre>
+
+<p><em>注意：不同解析引擎不一定能解析所有语言，比如 hexo 的 mermaid 插件与 tyora 的引擎解析的语法不一样，具体根据实际情况来使用，这些引擎都不能完全解析 mermaid 的全部语法。</em><br><em>callback 是一个回调函数，如果在浏览器渲染，比如 hexo，需要自己在全局注册这个回调函数。</em></p>
+<ul>
+<li>自定义样式</li>
+</ul>
+<pre class="highlight"><code class="hljs plain">graph LR<br>A(Start) --&gt; B(Stop)<br>style A fill:#f9f,stroke:#333,stroke-width:4px<br>style B fill:#bbf,stroke:#f66,stroke-width:2px,color:#fff,stroke-dasharray: 5 5<br></code></pre>
+
+<pre class="mermaid">    graph LR
+    A(Start) --> B(Stop)
+    style A fill:#f9f,stroke:#333,stroke-width:4px
+    style B fill:#bbf,stroke:#f66,stroke-width:2px,color:#fff,stroke-dasharray: 5 5</pre>
+
+<h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h5><p>相比较 markdown 的原始流程图，mermaid 的样式更加好看，不可具体使用得根据自己不同环境而确定，不同的引擎实现解析语法不同。</p>
+
+  </div>
+</article>
+<div class="nav">
+  
+  <div class="nav-item-prev">
+    <a href="/2019/07/14/markdown/mermaind时序图/" class="nav-link">
+      <i class="iconfont icon-left nav-prev-icon"></i>
+      <div>
+        <div class="nav-label">上一篇</div>
+        
+        <div class="nav-title">markdown绘制时序图 </div>
+        
+      </div>
+    </a>
+  </div>
+  
+  
+  <div class="nav-item-next">
+    <a href="/2019/07/02/markdown/markdown流程图/" class="nav-link">
+      <div>
+        <div class="nav-label">下一篇</div>
+        
+        <div class="nav-title">使用markdown绘制流程图 </div>
+        
+      </div>
+      <i class="iconfont icon-right nav-next-icon"></i>
+    </a>
+  </div>
+  
 </div>
-</main>
+
+<div class="card card-content toc-card" id="mobiletoc">
+  <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+</div></main>
           <aside class="left-column">
             
             <div class="card card-author">
@@ -161,11 +336,11 @@
 <p class="author-description">Front End Developer</p>
 <div class="author-message">
   <a class="author-posts-count" href="/archives">
-    <span>25</span>
+    <span>27</span>
     <span>文章</span>
   </a>
   <a class="author-categories-count" href="/categories">
-    <span>9</span>
+    <span>8</span>
     <span>分类</span>
   </a>
   <a class="author-tags-count" href="/tags">
@@ -178,6 +353,13 @@
             
             <div class="sticky-tablet">
   
+  
+  <article class="display-when-two-columns spacer">
+    <div class="card card-content toc-card">
+      <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </article>
   
   
   <article class="card card-content">
@@ -209,21 +391,14 @@
       <a href="/categories/markdown">
         <div class="categories-list-item">
           markdown
-          <span class="categories-list-item-badge">2</span>
+          <span class="categories-list-item-badge">4</span>
         </div>
       </a>
     
       <a href="/categories/其他">
         <div class="categories-list-item">
           其他
-          <span class="categories-list-item-badge">4</span>
-        </div>
-      </a>
-    
-      <a href="/categories/工具">
-        <div class="categories-list-item">
-          工具
-          <span class="categories-list-item-badge">1</span>
+          <span class="categories-list-item-badge">5</span>
         </div>
       </a>
     
@@ -257,157 +432,29 @@
   <div class="tags-header"><i class="iconfont icon-biaoqian" style="padding-right: 2px;"></i>热门标签</div>
   <div class="tags-list">
     
-    <a href="\tags\工具" title="工具"><div class="tags-list-item">工具</div></a>
-    
     <a href="\tags\js基础" title="js基础"><div class="tags-list-item">js基础</div></a>
-    
-    <a href="\tags\解决方案" title="解决方案"><div class="tags-list-item">解决方案</div></a>
     
     <a href="\tags\网络" title="网络"><div class="tags-list-item">网络</div></a>
     
-  </div>
-</div>
-  </article>
-  
-  
-  <article class="card card-content widescreen-archive">
-    <div class="archive-card">
-  <div class="archive-card-header"><i class="iconfont icon-wodebaobiao" style="padding-right: 2px;"></i>归档</div>
-  <div class="archive-card-list">
+    <a href="\tags\工具" title="工具"><div class="tags-list-item">工具</div></a>
     
-    
-    
-      
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-          <a href="/archives/2020" class="archive-card-list-item">
-              2020
-              <span class="archive-card-list-item-badge">4</span>
-          </a>
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-          <a href="/archives/2019" class="archive-card-list-item">
-              2019
-              <span class="archive-card-list-item-badge">15</span>
-          </a>
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-    
-      <a href="/archives/2018" class="archive-card-list-item">
-          2018
-          <span class="archive-card-list-item-badge">6</span>
-      </a>
+    <a href="\tags\解决方案" title="解决方案"><div class="tags-list-item">解决方案</div></a>
     
   </div>
 </div>
   </article>
+  
   
 </div>
           </aside>
           <aside class="right-column">
             <div class="sticky-widescreen">
   
+  
+  <article class="card card-content toc-card">
+    <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+  </article>
   
   
   <article class="card card-content">
@@ -439,139 +486,6 @@
 </div>
   </article>
   
-  
-  <article class="card card-content">
-    <div class="archive-card">
-  <div class="archive-card-header"><i class="iconfont icon-wodebaobiao" style="padding-right: 2px;"></i>归档</div>
-  <div class="archive-card-list">
-    
-    
-    
-      
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-          <a href="/archives/2020" class="archive-card-list-item">
-              2020
-              <span class="archive-card-list-item-badge">4</span>
-          </a>
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-          <a href="/archives/2019" class="archive-card-list-item">
-              2019
-              <span class="archive-card-list-item-badge">15</span>
-          </a>
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-    
-      <a href="/archives/2018" class="archive-card-list-item">
-          2018
-          <span class="archive-card-list-item-badge">6</span>
-      </a>
-    
-  </div>
-</div>
-  </article>
   
 </div>
           </aside>
