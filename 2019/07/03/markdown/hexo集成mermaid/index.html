@@ -128,53 +128,87 @@
     <div class="section-wrap">
       <div class="container">
         <div class="columns">
-          <main class="main-column"><div class="card card-content category-page-card">
-  <div class="categories-page-title">分类&nbsp-&nbsphttp</div>
+          <main class="main-column">
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      hexo 集成 mermaid
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <time datetime="2019-07-03T00:00:00.000Z" style="display: flex; align-items: center;">
+      <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
+      <span>2019-07-03</span>
+    </time>
+    
+    <span class="dot"></span>
+    
+    <a href="/categories/markdown/" class="post-meta-link">markdown</a>
+    
+    
+    
+    <span class="dot"></span>
+    <span>146 字</span>
+    
+  </div>
+  
+  <div class="post-meta post-show-meta" style="margin-top: -10px;">
+    <div style="display: flex; align-items: center;">
+      <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
+      
+      
+        <a href="/tags/工具/" class="post-meta-link">工具</a>
+      
+    </div>
+  </div>
+  
+  </header>
+  <div id="section" class="post-content">
+    <p><strong>安装插件</strong></p>
+<pre class="highlight"><code class="hljs plain">npm install hexo-filter-mermaid-diagram -S<br></code></pre>
+
+<p><strong>修改配置文件</strong><br>修改_config.yml 文件</p>
+<pre class="highlight"><code class="hljs yml"><span class="hljs-comment">## mermaid diagram</span><br><span class="hljs-attr">mermaid:</span> <span class="hljs-comment">## mermaid url https://github.com/knsv/mermaid</span><br>    <span class="hljs-attr">enable:</span> <span class="hljs-literal">true</span><br>    <span class="hljs-attr">version:</span> <span class="hljs-string">&#x27;7.1.2&#x27;</span><br>    <span class="hljs-attr">options:</span><br>        <span class="hljs-attr">startOnload:</span> <span class="hljs-literal">true</span><br></code></pre>
+
+<p><strong>引入插件</strong><br>找到主题的模板文件，不同模板不一样（目的是在全局引入这个库，并初始化）</p>
+<p>我这边使用的是 ejs</p>
+<pre class="highlight"><code class="hljs ejs"> &lt;% if (config.mermaid.enable) &#123; %&gt;<br>  &lt;script src&#x3D;&#39;https:&#x2F;&#x2F;unpkg.com&#x2F;mermaid@&lt;%&#x3D; config.mermaid.version %&gt;&#x2F;dist&#x2F;mermaid.min.js&#39;&gt;&lt;&#x2F;script&gt;<br>  &lt;script&gt;<br>    if (window.mermaid) &#123;<br>      mermaid.initialize(&#123;theme: &#39;forest&#39;&#125;);<br>    &#125;<br>  &lt;&#x2F;script&gt;<br>&lt;% &#125; %&gt;<br></code></pre>
+
+  </div>
+</article>
+<div class="nav">
+  
+  <div class="nav-item-prev">
+    <a href="/2019/07/05/markdown/mermaid流程图/" class="nav-link">
+      <i class="iconfont icon-left nav-prev-icon"></i>
+      <div>
+        <div class="nav-label">上一篇</div>
+        
+        <div class="nav-title">markdown制作mermaid流程图 </div>
+        
+      </div>
+    </a>
+  </div>
+  
+  
+  <div class="nav-item-next">
+    <a href="/2019/07/02/markdown/markdown流程图/" class="nav-link">
+      <div>
+        <div class="nav-label">下一篇</div>
+        
+        <div class="nav-title">使用markdown绘制流程图 </div>
+        
+      </div>
+      <i class="iconfont icon-right nav-next-icon"></i>
+    </a>
+  </div>
+  
 </div>
-<div class="archive-timeline">
-  
-  
-  
-  <div class="archive-timeline-tag"><span>2019</span></div>
-  
-  
-  <div class="archive-timeline-item">
-    <div class="archive-timeline-post">
-      <div class="card card-content">
-        <div class="archive-timeline-post-date">2019-05-14</div>
-        <div class="archive-timeline-post-content">
-          <a href="/2019/05/14/http/http请求头部-Accept/" class="archive-timeline-post-item">Accept相关请求头部</a>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  
-  <div class="archive-timeline-item">
-    <div class="archive-timeline-post">
-      <div class="card card-content">
-        <div class="archive-timeline-post-date">2019-04-06</div>
-        <div class="archive-timeline-post-content">
-          <a href="/2019/04/06/http/get与post的区别/" class="archive-timeline-post-item">get与post的区别</a>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  
-  <div class="archive-timeline-item">
-    <div class="archive-timeline-post">
-      <div class="card card-content">
-        <div class="archive-timeline-post-date">2019-04-03</div>
-        <div class="archive-timeline-post-content">
-          <a href="/2019/04/03/http/http基础/" class="archive-timeline-post-item">http基础</a>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-</div>
-</main>
+
+<div class="card card-content toc-card" id="mobiletoc">
+  <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+
+</div></main>
           <aside class="left-column">
             
             <div class="card card-author">
@@ -202,6 +236,13 @@
             
             <div class="sticky-tablet">
   
+  
+  <article class="display-when-two-columns spacer">
+    <div class="card card-content toc-card">
+      <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+
+    </div>
+  </article>
   
   
   <article class="card card-content">
@@ -274,169 +315,29 @@
   <div class="tags-header"><i class="iconfont icon-biaoqian" style="padding-right: 2px;"></i>热门标签</div>
   <div class="tags-list">
     
-    <a href="\tags\工具" title="工具"><div class="tags-list-item">工具</div></a>
-    
     <a href="\tags\js基础" title="js基础"><div class="tags-list-item">js基础</div></a>
-    
-    <a href="\tags\解决方案" title="解决方案"><div class="tags-list-item">解决方案</div></a>
     
     <a href="\tags\网络" title="网络"><div class="tags-list-item">网络</div></a>
     
-  </div>
-</div>
-  </article>
-  
-  
-  <article class="card card-content widescreen-archive">
-    <div class="archive-card">
-  <div class="archive-card-header"><i class="iconfont icon-wodebaobiao" style="padding-right: 2px;"></i>归档</div>
-  <div class="archive-card-list">
+    <a href="\tags\工具" title="工具"><div class="tags-list-item">工具</div></a>
     
-    
-    
-      
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-          <a href="/archives/2020" class="archive-card-list-item">
-              2020
-              <span class="archive-card-list-item-badge">4</span>
-          </a>
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-          <a href="/archives/2019" class="archive-card-list-item">
-              2019
-              <span class="archive-card-list-item-badge">18</span>
-          </a>
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-    
-      <a href="/archives/2018" class="archive-card-list-item">
-          2018
-          <span class="archive-card-list-item-badge">6</span>
-      </a>
+    <a href="\tags\解决方案" title="解决方案"><div class="tags-list-item">解决方案</div></a>
     
   </div>
 </div>
   </article>
+  
   
 </div>
           </aside>
           <aside class="right-column">
             <div class="sticky-widescreen">
   
+  
+  <article class="card card-content toc-card">
+    <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+
+  </article>
   
   
   <article class="card card-content">
@@ -468,151 +369,6 @@
 </div>
   </article>
   
-  
-  <article class="card card-content">
-    <div class="archive-card">
-  <div class="archive-card-header"><i class="iconfont icon-wodebaobiao" style="padding-right: 2px;"></i>归档</div>
-  <div class="archive-card-list">
-    
-    
-    
-      
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-          <a href="/archives/2020" class="archive-card-list-item">
-              2020
-              <span class="archive-card-list-item-badge">4</span>
-          </a>
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-          <a href="/archives/2019" class="archive-card-list-item">
-              2019
-              <span class="archive-card-list-item-badge">18</span>
-          </a>
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-    
-      <a href="/archives/2018" class="archive-card-list-item">
-          2018
-          <span class="archive-card-list-item-badge">6</span>
-      </a>
-    
-  </div>
-</div>
-  </article>
   
 </div>
           </aside>
