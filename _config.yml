@@ -111,3 +111,6 @@ mermaid: ## mermaid url https://github.com/knsv/mermaid
     version: '7.1.2'
     options:
         startOnload: true
+
+flowchart:
+    options:
