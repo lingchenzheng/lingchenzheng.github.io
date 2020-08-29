@@ -59,3 +59,49 @@ npx babel src --out-dir lib --plugins=@babel/plugin-transform-arrow-functions
 上面，我们将插件放在命令行后面，很麻烦。于是 babel 提供了以配置文件的方式让我们来配置 babel 的参数。
 
 babel 提供了几种配置方式：
+
+-   在项目根目录创建`.babelrc`或者`.babelrc.json`文件
+
+```json
+{
+    "presets": [],
+    "plugins": []
+}
+```
+
+-   在项目根目录创建`babel.config.js`文件
+
+```javascript
+module.exports = function (api) {
+    api.cache(true)
+
+    const presets = []
+    const plugins = []
+
+    return {
+        presets,
+        plugins
+    }
+}
+```
+
+-   在`package.json`文件中配置
+
+```json
+{
+    "name": "my-package",
+    "version": "1.0.0",
+    "babel": {
+        "presets": [],
+        "plugins": []
+    }
+}
+```
+
+-   api 使用
+
+```javascript
+require('@babel/core').transform('code', {
+    plugins: ['@babel/plugin-transform-arrow-functions']
+})
+```
