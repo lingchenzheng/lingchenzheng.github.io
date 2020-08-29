@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html>
+<meta  lang="zh-CN" >
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="theme-color" content="#fff" id="theme-color">
+  <link rel="icon" href="/images/me.jpg">
+  <title>我的博客</title>
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+    var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+      }
+    };
+    setDarkmode();
+  </script>
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  </script>
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_vpj3dq9ceqa.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  
+  <link rel="preload" href="//cdn.jsdelivr.net/npm/fslightbox@3.1.0/index.min.js" as="script">
+  
+  
+  <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="/css/main.css">
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_vpj3dq9ceqa.css">
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+
+  
+  
+  
+<meta name="generator" content="Hexo 5.0.2"></head>
+
+
+<body>
+  <div class="wrapper">
+    
+    <nav class="navbar">
+  <div class="navbar-logo">
+    <span class="navbar-logo-main">
+      
+      <img class="navbar-logo-img" src="/images/me.jpg">
+      
+      <span class="navbar-logo-dsc">我的博客</span>
+    </span>
+  </div>
+  <div class="navbar-menu">
+    
+    <a href="/" class="navbar-menu-item">首页 </a>
+    
+    <a href="/archives" class="navbar-menu-item">归档 </a>
+    
+    <a href="/tags" class="navbar-menu-item">标签 </a>
+    
+    <a href="/categories" class="navbar-menu-item">分类 </a>
+    
+    <a href="/about" class="navbar-menu-item">关于 </a>
+    
+    <a href="/links" class="navbar-menu-item">友链 </a>
+    
+    <a class="navbar-menu-item" id="dark"><i class="iconfont icon-weather"></i></a>
+  </div>
+</nav>
+    
+    <div class="section-wrap">
+      <div class="container">
+        <div class="columns">
+          <main class="main-column">
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      babel插件(plugin)与预设(preset)
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <time datetime="2019-12-03T00:00:00.000Z" style="display: flex; align-items: center;">
+      <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
+      <span>2019-12-03</span>
+    </time>
+    
+    <span class="dot"></span>
+    
+    <a href="/categories/babel/" class="post-meta-link">babel</a>
+    
+    
+    
+    <span class="dot"></span>
+    <span>1.9k 字</span>
+    
+  </div>
+  
+  <div class="post-meta post-show-meta" style="margin-top: -10px;">
+    <div style="display: flex; align-items: center;">
+      <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
+      
+      
+        <a href="/tags/工具/" class="post-meta-link">工具</a>
+      
+    </div>
+  </div>
+  
+  </header>
+  <div id="section" class="post-content">
+    <h5 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h5><p>上一篇文章讲了 babel 基础，我们知道 babel 本身不会对源码做任何操作，它对源码的转换都依赖与插件。这篇文章主要介绍一下对插件的理解。</p>
+<p>我们可以将 babel 看成是工厂上的一条流水线，源码可以看成是要被加工的产品，插件就是流水线上的一道道工序，每道工序都对产品进行不同加工。如果没有工序，产品就相当于在流水先上走一趟，不做任何改变。所以插件才是对源码尽心转换的根本。</p>
+<h5 id="plugins-插件"><a href="#plugins-插件" class="headerlink" title="plugins 插件"></a>plugins 插件</h5><p><strong>配置插件</strong></p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>        plugins: [<span class="hljs-string">&#x27;pluginA&#x27;</span>, <span class="hljs-string">&#x27;pluginB&#x27;</span>]<br>    &#125;<br>&#125;<br></code></pre>
+
+<p><strong>插件名称</strong></p>
+<p>babel7 以后，babel 的包都以@babel 开头，这是 npm 包命名空间形式，表示这个包是 babel 的，当然只是建议这么命名。</p>
+<ol>
+<li><code>@babel/plugin-transform-arrow-functions</code> 箭头函数转换插件</li>
+<li><code>@babel/plugin-transform-block-scoping</code> 块级作用域转换插件</li>
+<li><code>etc</code> 其他</li>
+</ol>
+<p><strong>插件分类</strong></p>
+<p>babel 插件大致分为三类</p>
+<ol>
+<li><p>syntax 语法类</p>
+<p> 例如：<code>@babel/plugin-syntax-dynamic-import</code></p>
+</li>
+<li><p>transform 转换类</p>
+<p> 例如：<code>@babel/plugin-transform-async-to-generator</code></p>
+</li>
+<li><p>proposal 转换类(指那些还没有进入标准中的新特性)</p>
+<p> 例如：<code>@babel/plugin-proposal-dynamic-import</code></p>
+</li>
+</ol>
+<ul>
+<li><p>syntax 类插件<br>syntax 插件本身不会对代码做转换，它是用来识别语法的，如果某个转换类插件(transform 或 proposal)需要做某个语法转换，则会自动启动响应的 syntax 插件。这里以<code>@babel/plugin-syntax-dynamic-import</code>插件为例，它用来使用 ES6 动态导入<code>import</code>语法的，在 babel7 中其实它不需要安装和配置了，因为<code>@babel/preset-env</code>里包含了<code>@babel/plugin-proposal-dynamic-import</code>插件，而<code>@babel/plugin-proposal-dynamic-import</code>依赖<code>@babel/plugin-syntax-dynamic-import</code>，它会自动启用<br><code>@babel/plugin-syntax-dynamic-import</code>。所以我们是不需要自己安装和配置<code>@babel/plugin-syntax-dynamic-import</code>的。</p>
+</li>
+<li><p>transform 和 proposal 类插件<br>这两个都是转换类插件，不同点是，transform 表示的是这个已经称为了特性 ES 规范的一部分，而 proposal 表示的是还在建议或者草案阶段的特性，随时有可能会被去掉。</p>
+</li>
+</ul>
+<h5 id="presets-预设"><a href="#presets-预设" class="headerlink" title="presets 预设"></a>presets 预设</h5><p>我们在使用 babel 的时候，会去安装很多插件，比如转换箭头函数的，拓展运算符，对象展运算符等等一大堆插件，而且还要再配置文件里配置，很麻烦，而且由于一些相互配合的插件有调用顺序，每次手动配置容易出错。于是 babel 提供了 preset，preset 就是一个插件的集合。比如 babel 中最重要的一个 preset 插件，<code>@babel/preset-env</code>，包含了很多插件。</p>
+<p><code>@babel/preset-env</code>的相关依赖</p>
+<pre class="highlight"><code class="hljs json">&#123;<br>    <span class="hljs-attr">&quot;name&quot;</span>: <span class="hljs-string">&quot;@babel/preset-env&quot;</span>,<br>    <span class="hljs-attr">&quot;version&quot;</span>: <span class="hljs-string">&quot;7.5.5&quot;</span>,<br>    <span class="hljs-attr">&quot;dependencies&quot;</span>: &#123;<br>        <span class="hljs-attr">&quot;@babel/compat-data&quot;</span>: <span class="hljs-string">&quot;^7.11.0&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/helper-compilation-targets&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/helper-module-imports&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/helper-plugin-utils&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-proposal-async-generator-functions&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-proposal-class-properties&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-proposal-dynamic-import&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-proposal-export-namespace-from&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-proposal-json-strings&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-proposal-logical-assignment-operators&quot;</span>: <span class="hljs-string">&quot;^7.11.0&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-proposal-nullish-coalescing-operator&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-proposal-numeric-separator&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-proposal-object-rest-spread&quot;</span>: <span class="hljs-string">&quot;^7.11.0&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-proposal-optional-catch-binding&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-proposal-optional-chaining&quot;</span>: <span class="hljs-string">&quot;^7.11.0&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-proposal-private-methods&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-proposal-unicode-property-regex&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-syntax-async-generators&quot;</span>: <span class="hljs-string">&quot;^7.8.0&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-syntax-class-properties&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-syntax-dynamic-import&quot;</span>: <span class="hljs-string">&quot;^7.8.0&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-syntax-export-namespace-from&quot;</span>: <span class="hljs-string">&quot;^7.8.3&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-syntax-json-strings&quot;</span>: <span class="hljs-string">&quot;^7.8.0&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-syntax-logical-assignment-operators&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-syntax-nullish-coalescing-operator&quot;</span>: <span class="hljs-string">&quot;^7.8.0&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-syntax-numeric-separator&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-syntax-object-rest-spread&quot;</span>: <span class="hljs-string">&quot;^7.8.0&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-syntax-optional-catch-binding&quot;</span>: <span class="hljs-string">&quot;^7.8.0&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-syntax-optional-chaining&quot;</span>: <span class="hljs-string">&quot;^7.8.0&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-syntax-top-level-await&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-arrow-functions&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-async-to-generator&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-block-scoped-functions&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-block-scoping&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-classes&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-computed-properties&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-destructuring&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-dotall-regex&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-duplicate-keys&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-exponentiation-operator&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-for-of&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-function-name&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-literals&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-member-expression-literals&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-modules-amd&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-modules-commonjs&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-modules-systemjs&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-modules-umd&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-named-capturing-groups-regex&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-new-target&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-object-super&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-parameters&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-property-literals&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-regenerator&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-reserved-words&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-shorthand-properties&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-spread&quot;</span>: <span class="hljs-string">&quot;^7.11.0&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-sticky-regex&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-template-literals&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-typeof-symbol&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-unicode-escapes&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/plugin-transform-unicode-regex&quot;</span>: <span class="hljs-string">&quot;^7.10.4&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/preset-modules&quot;</span>: <span class="hljs-string">&quot;^0.1.3&quot;</span>,<br>        <span class="hljs-attr">&quot;@babel/types&quot;</span>: <span class="hljs-string">&quot;^7.11.0&quot;</span>,<br>        <span class="hljs-attr">&quot;browserslist&quot;</span>: <span class="hljs-string">&quot;^4.12.0&quot;</span>,<br>        <span class="hljs-attr">&quot;core-js-compat&quot;</span>: <span class="hljs-string">&quot;^3.6.2&quot;</span>,<br>        <span class="hljs-attr">&quot;invariant&quot;</span>: <span class="hljs-string">&quot;^2.2.2&quot;</span>,<br>        <span class="hljs-attr">&quot;levenary&quot;</span>: <span class="hljs-string">&quot;^1.1.1&quot;</span>,<br>        <span class="hljs-attr">&quot;semver&quot;</span>: <span class="hljs-string">&quot;^5.5.0&quot;</span><br>    &#125;<br>&#125;<br></code></pre>
+
+<p>我们可以看到，<code>@babel/preset-env</code>这个插件里包含了很多其他插件，比如<code>@babel/plugin-transform-arrow-functions</code>，用来转换箭头函数的插件。</p>
+<p>注意，并不是上面所有的插件都会用到，具体使用哪些插件会根据项目中配置的目标环境进行转换，preset 会根据<a target="_blank" rel="noopener" href="https://github.com/browserslist/browserslist#query-composition">browserslist</a>来确认目标环境，比如是否兼容 IE10 等等。</p>
+<p><strong>如何自己定义一个 preset</strong></p>
+<p>我们只需导出一份配置即可，可以是一个返回一个对象的函数</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>        plugins: [<span class="hljs-string">&#x27;pluginA&#x27;</span>, <span class="hljs-string">&#x27;pluginB&#x27;</span>, <span class="hljs-string">&#x27;pluginC&#x27;</span>]<br>    &#125;<br>&#125;<br></code></pre>
+
+<p><strong>preset 中可以包含其他 preset</strong></p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-built_in">module</span>.exports = <span class="hljs-function">() =&gt;</span> (&#123;<br>    presets: [<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;@babel/preset-env&#x27;</span>)],<br>    plugins: [<br>        [<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;@babel/plugin-proposal-class-properties&#x27;</span>), &#123; <span class="hljs-attr">loose</span>: <span class="hljs-literal">true</span> &#125;],<br>        <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;@babel/plugin-proposal-object-rest-spread&#x27;</span>)<br>    ]<br>&#125;)<br></code></pre>
+
+<p><strong>preset 路径</strong></p>
+<p>如果是<code>npm</code>上的包，可以直接输入名字</p>
+<pre class="highlight"><code class="hljs json">&#123;<br>    <span class="hljs-attr">&quot;presets&quot;</span>: [<span class="hljs-string">&quot;babel-preset-myPreset&quot;</span>]<br>&#125;<br></code></pre>
+
+<p>如果是自定义的，可以使用相对路径或绝对路径</p>
+<pre class="highlight"><code class="hljs json">&#123;<br>    <span class="hljs-attr">&quot;presets&quot;</span>: [<span class="hljs-string">&quot;./myProject/myPreset&quot;</span>]<br>&#125;<br></code></pre>
+
+<p><strong>执行顺序</strong></p>
+<ul>
+<li>插件在 preset 前运行。</li>
+<li>插件是按顺序执行。</li>
+<li>preset 是倒序执行。</li>
+</ul>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>        presets: [<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;b&#x27;</span>, <span class="hljs-string">&#x27;c&#x27;</span>]<br>    &#125;<br>&#125;<br></code></pre>
+
+<p>上面的配置，c 先执行然后是 b，最后执行 a</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;<br>    <span class="hljs-keyword">return</span> &#123;<br>        plugins: [<span class="hljs-string">&#x27;pluginA&#x27;</span>, <span class="hljs-string">&#x27;pluginB&#x27;</span>, <span class="hljs-string">&#x27;pluginC&#x27;</span>]<br>    &#125;<br>&#125;<br></code></pre>
+
+<p>先执行 pluginA，在执行 pluginB，最后执行 pluginC</p>
+
+  </div>
+</article>
+<div class="nav">
+  
+  <div class="nav-item-prev">
+    <a href="/2019/12/13/web/从输入url到页面展示的流程/" class="nav-link">
+      <i class="iconfont icon-left nav-prev-icon"></i>
+      <div>
+        <div class="nav-label">上一篇</div>
+        
+        <div class="nav-title">浏览器从输入url到页面展示的过程 </div>
+        
+      </div>
+    </a>
+  </div>
+  
+  
+  <div class="nav-item-next">
+    <a href="/2019/12/01/utils/babel/babel基础/" class="nav-link">
+      <div>
+        <div class="nav-label">下一篇</div>
+        
+        <div class="nav-title">babel基础 </div>
+        
+      </div>
+      <i class="iconfont icon-right nav-next-icon"></i>
+    </a>
+  </div>
+  
+</div>
+
+<div class="card card-content toc-card" id="mobiletoc">
+  <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#plugins-%E6%8F%92%E4%BB%B6"><span class="toc-text">plugins 插件</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#presets-%E9%A2%84%E8%AE%BE"><span class="toc-text">presets 预设</span></a></li></ol>
+</div></main>
+          <aside class="left-column">
+            
+            <div class="card card-author">
+              
+<img src="/images/avatar.jpg" class="author-img">
+
+<p class="author-name">Chenzheng Ling</p>
+<p class="author-description">Front End Developer</p>
+<div class="author-message">
+  <a class="author-posts-count" href="/archives">
+    <span>30</span>
+    <span>文章</span>
+  </a>
+  <a class="author-categories-count" href="/categories">
+    <span>8</span>
+    <span>分类</span>
+  </a>
+  <a class="author-tags-count" href="/tags">
+    <span>4</span>
+    <span>标签</span>
+  </a>
+</div>
+
+            </div>
+            
+            <div class="sticky-tablet">
+  
+  
+  <article class="display-when-two-columns spacer">
+    <div class="card card-content toc-card">
+      <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#plugins-%E6%8F%92%E4%BB%B6"><span class="toc-text">plugins 插件</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#presets-%E9%A2%84%E8%AE%BE"><span class="toc-text">presets 预设</span></a></li></ol>
+    </div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <div class="categories-card">
+  <div class="categories-header"><i class="iconfont icon-fenlei" style="padding-right: 2px;"></i>分类</div>
+  <div class="categories-list">
+    
+      <a href="/categories/CSS">
+        <div class="categories-list-item">
+          CSS
+          <span class="categories-list-item-badge">3</span>
+        </div>
+      </a>
+    
+      <a href="/categories/es">
+        <div class="categories-list-item">
+          es
+          <span class="categories-list-item-badge">4</span>
+        </div>
+      </a>
+    
+      <a href="/categories/http">
+        <div class="categories-list-item">
+          http
+          <span class="categories-list-item-badge">3</span>
+        </div>
+      </a>
+    
+      <a href="/categories/markdown">
+        <div class="categories-list-item">
+          markdown
+          <span class="categories-list-item-badge">5</span>
+        </div>
+      </a>
+    
+      <a href="/categories/其他">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">5</span>
+        </div>
+      </a>
+    
+      <a href="/categories/web">
+        <div class="categories-list-item">
+          web
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/babel">
+        <div class="categories-list-item">
+          babel
+          <span class="categories-list-item-badge">2</span>
+        </div>
+      </a>
+    
+      <a href="/categories/webpack">
+        <div class="categories-list-item">
+          webpack
+          <span class="categories-list-item-badge">2</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content">
+    <div class="tags-card">
+  <div class="tags-header"><i class="iconfont icon-biaoqian" style="padding-right: 2px;"></i>热门标签</div>
+  <div class="tags-list">
+    
+    <a href="\tags\工具" title="工具"><div class="tags-list-item">工具</div></a>
+    
+    <a href="\tags\js基础" title="js基础"><div class="tags-list-item">js基础</div></a>
+    
+    <a href="\tags\解决方案" title="解决方案"><div class="tags-list-item">解决方案</div></a>
+    
+    <a href="\tags\网络" title="网络"><div class="tags-list-item">网络</div></a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+          </aside>
+          <aside class="right-column">
+            <div class="sticky-widescreen">
+  
+  
+  <article class="card card-content toc-card">
+    <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#plugins-%E6%8F%92%E4%BB%B6"><span class="toc-text">plugins 插件</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#presets-%E9%A2%84%E8%AE%BE"><span class="toc-text">presets 预设</span></a></li></ol>
+  </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header"><i class="iconfont icon-wenzhang_huaban" style="padding-right: 2px;"></i>最近文章</div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2020-08-29</div>
+        <a href="/2020/08/29/other/前端js获取wma文件时长/"><div class="recent-posts-item-content">前端获取wma文件时长</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2020-08-25</div>
+        <a href="/2020/08/25/web/IndexedDB存储/"><div class="recent-posts-item-content">IndexedDB基础知识</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2020-04-24</div>
+        <a href="/2020/04/24/utils/webpack/webpack模块化导入svg标签/"><div class="recent-posts-item-content">webpack导入svg图标</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2020-03-17</div>
+        <a href="/2020/03/17/other/base64/"><div class="recent-posts-item-content">base64编码</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <footer class="footer">
+  <div class="footer-container">
+    <div class="copyright">
+      <div>
+        <span id="copyYear">Copyright ©
+          
+          2020 -
+          
+          2020
+        </span>
+        <a href="/" class="footer-link">我的博客 </a>
+      </div>
+    </div>
+
+    
+    <div class="footer-dsc">
+      
+      
+      Powered by
+      <a href="https://hexo.io/" class="footer-link" target="_blank" rel="nofollow noopener noreferrer">&nbsp;Hexo </a>
+      
+      
+      <span>&nbsp;|&nbsp;</span>
+      
+      
+      
+      Theme -
+      <a href="https://github.com/theme-kaze" class="footer-link" target="_blank"
+        rel="nofollow noopener noreferrer">&nbsp;Kaze</a>
+      
+    </div>
+    
+    
+    
+    
+</footer>
+  <a role="button" id="scrollbutton" class="basebutton" >
+  <i class="iconfont icon-arrowleft button-icon"></i>
+</a>
+<a role="button" id="menubutton" class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a role="button" id="popbutton" class="basebutton">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+
+  
+  
+  
+  <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img');
+    var i;
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a');
+      wrapper.setAttribute('data-fslightbox', 'gallery');
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'));
+      wrapper.setAttribute('style', 'width: 100%; display: flex; justify-content: center;');
+      img[i].parentElement.insertBefore(wrapper, img[i]);
+      wrapper.appendChild(img[i]);
+    }
+    refreshFsLightbox();
+  }
+</script>
+<script>loadScript("//cdn.jsdelivr.net/npm/fslightbox@3.1.0/index.min.js", addImgLayout)</script>
+  
+  
+  
+<script src="/js/main.js"></script>
+
+  
+  
+  <script>
+    var addLazyload = function () {
+      var observer = lozad('.lozad', {
+        load: function (el) {
+          el.srcset = el.getAttribute('data-src');
+        },
+        loaded: function (el) {
+          el.classList.add('loaded');
+        }
+      });
+      observer.observe();
+    }
+  </script>
+  <script>loadScript("/js/lib/lozad.min.js", addLazyload)</script>
+  
+  
+
+  
+  <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'forest'});
+    }
+  </script>
+  
+</body>
+
+</html>
