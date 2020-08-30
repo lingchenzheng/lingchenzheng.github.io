@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html>
+<meta  lang="zh-CN" >
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="theme-color" content="#fff" id="theme-color">
+  <link rel="icon" href="/images/me.jpg">
+  <title>我的博客</title>
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+    var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+      }
+    };
+    setDarkmode();
+  </script>
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  </script>
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_vpj3dq9ceqa.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  
+  <link rel="preload" href="//cdn.jsdelivr.net/npm/fslightbox@3.1.0/index.min.js" as="script">
+  
+  
+  <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="/css/main.css">
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_vpj3dq9ceqa.css">
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+
+  
+  
+  
+<meta name="generator" content="Hexo 5.0.2"></head>
+
+
+<body>
+  <div class="wrapper">
+    
+    <nav class="navbar">
+  <div class="navbar-logo">
+    <span class="navbar-logo-main">
+      
+      <img class="navbar-logo-img" src="/images/me.jpg">
+      
+      <span class="navbar-logo-dsc">我的博客</span>
+    </span>
+  </div>
+  <div class="navbar-menu">
+    
+    <a href="/" class="navbar-menu-item">首页 </a>
+    
+    <a href="/archives" class="navbar-menu-item">归档 </a>
+    
+    <a href="/tags" class="navbar-menu-item">标签 </a>
+    
+    <a href="/categories" class="navbar-menu-item">分类 </a>
+    
+    <a href="/about" class="navbar-menu-item">关于 </a>
+    
+    <a href="/links" class="navbar-menu-item">友链 </a>
+    
+    <a class="navbar-menu-item" id="dark"><i class="iconfont icon-weather"></i></a>
+  </div>
+</nav>
+    
+    <div class="section-wrap">
+      <div class="container">
+        <div class="columns">
+          <main class="main-column">
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      core-js
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <time datetime="2019-12-08T00:00:00.000Z" style="display: flex; align-items: center;">
+      <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
+      <span>2019-12-08</span>
+    </time>
+    
+    <span class="dot"></span>
+    
+    <a href="/categories/babel/" class="post-meta-link">babel</a>
+    
+    
+    
+    <span class="dot"></span>
+    <span>2.6k 字</span>
+    
+  </div>
+  
+  <div class="post-meta post-show-meta" style="margin-top: -10px;">
+    <div style="display: flex; align-items: center;">
+      <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
+      
+      
+        <a href="/tags/工具/" class="post-meta-link">工具</a>
+      
+    </div>
+  </div>
+  
+  </header>
+  <div id="section" class="post-content">
+    <p><strong>core-js 是什么?</strong></p>
+<ul>
+<li><p>它是 javascript 标准库的 polyfill，它支持</p>
+<ul>
+<li>最新的 ECMAScript 标准</li>
+<li>ECMAScript 标准库提案</li>
+<li>一些 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/WHATWG">WHATWG</a> / W3C 标准（跨平台或者 ECMAScript 相关）</li>
+</ul>
+</li>
+<li><p>它最大限度的模块化：你能仅仅加载你想要使用的功能</p>
+</li>
+<li><p>它能够不污染全局命名空间</p>
+</li>
+<li><p>它和 babel 紧密集成：这能够优化 core-js 的导入</p>
+</li>
+</ul>
+<p><strong>core-js2 与 core-js3</strong></p>
+<p>作者写这篇文章的时候，已经到<code>core-js@3.6.5</code>了，相比较与<code>core-js@2.x</code>，有如下改变：</p>
+<ul>
+<li><p>引进了一些新功能：</p>
+<ul>
+<li>增加支持 ECMAScript 2015 引入的两个知名标志 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/isConcatSpreadable"><code>@@isConcatSpreadable</code></a> 和 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/species"><code>@@species</code></a>，给所有使用他们的方法。</li>
+<li>增加来自 ECMAScript 2018 的 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat"><code>Array.prototype.flat</code></a> 和 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap"><code>Array.prototype.flatMap</code></a>（ <code>core-js@2</code> 针对 <code>Array.prototype.flatten</code> 这个老版本的提案提供了补丁）。</li>
+<li>增加来自 ECMAScript 2019 的 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/fromEntries"><code>Object.fromEntries</code></a> 方法</li>
+<li>增加来自 ECMAScript 2019 的 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/description"><code>Symbol.prototype.description</code></a> 访问器</li>
+</ul>
+</li>
+<li><p>一些在 ES2016-ES2019 中作为提案被接受且已经使用很长时间的功能，现在被标记为稳定：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/includes"><code>Array.prototype.includes</code></a> 和 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray/includes"><code>TypedArray.prototype.includes</code></a> 方法（ ESMAScript 2016 ）</li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/values"><code>Object.values</code></a> 和 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/entries"><code>Object.entries</code></a> 方法( ECMAScript 2017 )</li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyDescriptors"><code>Object.getOwnPropertyDescriptors</code></a> 方法 ( ECMAScript 2017 )</li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padStart"><code>String.prototype.padStart</code></a> 和 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padEnd"><code>String.prototype.padEnd</code></a> 方法（ ECMAScript 2017 ）</li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/finally"><code>Promise.prototype.finally</code></a> 方法（ ECMAScript 2018 ）</li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol/asyncIterator"><code>Symbol.asyncIterator</code></a> 知名标志（ ECMAScript 2018 ）</li>
+<li><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/__defineGetter__"><code>Object.prototype.__define(Getter|Setter)__</code></a> 和 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/__lookupGetter__"><code>Object.prototype.__lookup(Getter|Setter)__</code></a> 方法（ ECMAScript 2018 ）</li>
+</ul>
+</li>
+<li><p>修复了针对浏览器的许多问题，例如，Safari 12.0 Array.prototype.reverse bug 已经被修复了。</p>
+</li>
+</ul>
+<p>除了上文提到的支持内容，<code>core-js@3</code> 现在还支持下面的 ECMAScript 提案：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/tc39/proposal-global"><code>globalThis</code></a> stage 3（ 现在是 stage 4 ）的提案 - 之前，已经有了 <code>global</code> 和 <code>System.global</code></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/tc39/proposal-promise-allSettled"><code>Promise.allSettled</code></a> stage 2（ 现在是 stage 4 ）提案</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/tc39/proposal-set-methods">新 <code>Set</code> 方法</a> stage 2 提案：<ul>
+<li>Set.prototype.difference</li>
+<li>Set.prototype.intersection</li>
+<li>Set.prototype.isDisjoinFrom</li>
+<li>Set.prototype.isSubsetOf</li>
+<li>Set.prototype.isSupersetOf</li>
+<li>Set.prototype.symmetricDifference</li>
+<li>Set.prototype.union</li>
+</ul>
+</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/tc39/proposal-collection-methods">新 collections 方法</a> stage 1 提案，包函许多新的有用的方法：<ul>
+<li>Map.groupBy</li>
+<li>Map.keyBy</li>
+<li>Map.prototype.deleteAll</li>
+<li>Map.prototype.every</li>
+<li>Map.prototype.filter</li>
+<li>Map.prototype.find</li>
+<li>Map.prototype.findKey</li>
+<li>Map.prototype.includes</li>
+<li>Map.prototype.keyOf</li>
+<li>Map.prototype.mapKeys</li>
+<li>Map.prototype.mapValues</li>
+<li>Map.prototype.merge</li>
+<li>Map.prototype.reduce</li>
+<li>Map.prototype.some</li>
+<li>Map.prototype.update</li>
+<li>Set.prototype.addAll</li>
+<li>Set.prototype.deleteAll</li>
+<li>Set.prototype.every</li>
+<li>Set.prototype.filter</li>
+<li>Set.prototype.find</li>
+<li>Set.prototype.join</li>
+<li>Set.prototype.map</li>
+<li>Set.prototype.reduce</li>
+<li>Set.prototype.some</li>
+<li>WeakMap.prototype.deleteAll</li>
+<li>WeakSet.prototype.addAll</li>
+<li>WeakSet.prototype.deleteAll</li>
+</ul>
+</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/tc39/proposal-string-replace-all"><code>String.prototype.replaceAll</code></a> stage 1（ 现在是 stage 3 ） 提案</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/tc39/proposal-string-prototype-codepoints"><code>String.prototype.codePoints</code></a> stage 1 提案</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/tc39-transfer/proposal-array-last"><code>Array.prototype.last(Item|Index)</code></a> stage 1 提案</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/bmeck/proposal-richer-keys/tree/master/compositeKey"><code>compositeKey</code> 和 <code>compositeSymbol</code> 方法</a> stage 1 提案</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/tc39/proposal-number-fromstring"><code>Number.fromString</code></a> stage 1 提案</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/tc39/proposal-seeded-random"><code>Math.seededPRNG</code></a> stage 1 提案</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/tc39/proposal-promise-any"><code>Promise.any</code> (合并的错误)</a> stage 0（ 现在是 stage 3 ）提案</li>
+</ul>
+<p>一些提案的变化很大，<code>core-js</code> 也将相应的更新：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/tc39/proposal-string-matchall"><code>String.prototype.matchAll</code></a> stage 3 提案</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/tc39/proposal-observable">Observable</a> stage 1 提案</li>
+</ul>
+<p>web 标准</p>
+<p>最重要的一个是 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/URL"><code>URL</code></a> 和 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams"><code>URLSearchParams</code></a>。他是<a target="_blank" rel="noopener" href="https://github.com/zloirock/core-js/issues/117">最受欢迎的功能请求之一</a>。增加 <code>URL</code> 和 <code>URLSearchParams</code>，并保证他们最大限度的符合规范，保持源代码足够紧凑来支撑任何环境是 <code>core-js@3</code> 开发中<a target="_blank" rel="noopener" href="https://github.com/zloirock/core-js/pull/454/files">最困难的任务之一</a>。</p>
+<p><code>core-js@3</code> 包函在 JavaScript 中创建微任务（ microtask ）的标准方法：<a target="_blank" rel="noopener" href="https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#microtask-queuing"><code>queueMicrotask</code></a> 。<code>core-js@2</code> 提供了 <code>asap</code> 函数，提供了同样功能的老的提案。<code>queueMicrotask</code> 被定义在 HTML 标准中，它已经能够在现代浏览器比如 Chromium 或者 NodeJS 中使用。</p>
+<p>另一个受欢迎的功能请求是支持 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/API/NodeList/forEach">DOM 集合的 <code>.forEach</code> 方法</a>。由于 <code>core-js</code> 已经针对 DOM 集合迭代器做了 polyfill，为什么不给 <code>节点列表</code> 和 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/DOMTokenList"><code>DOMTokenList</code></a> 也增加 <code>.forEach</code> 呢？</p>
+<p>移除过时的功能</p>
+<ul>
+<li><code>Reflect.enumrate</code> 因为他已经从标准中移除了</li>
+<li><code>System.global</code> 和 <code>global</code> 现在他们已经被 <code>globalThis</code> 代替</li>
+<li><code>Array.prototype.flatten</code> 现在被 <code>Array.prototype.flat</code> 代替</li>
+<li><code>asap</code> 被 <code>queueMicrotask</code> 代替</li>
+<li><code>Error.isError</code> 被撤销很长时间了</li>
+<li><code>RegExp.escape</code> 很久之前被拒绝了</li>
+<li><code>Map.prototype.toJSON</code> 和 <code>Set.prototype.toJSON</code> 也是很久前被拒绝了</li>
+<li>不必要并且被错误添加的迭代器方法：<code>CSSRuleList</code>，<code>MediaList</code>，<code>StyleSheetList</code>。</li>
+</ul>
+<p><strong>包类型</strong><br>core-js 提供了三种类型的包：</p>
+<pre class="highlight"><code class="hljs shell">// 定义了全局polyfill(~500KB，压缩并且 gzipped 处理后 40KB)<br>npm install --save core-js@3.x<br>// 提供了不污染全局变量的 polyfills。它和 core-js@2 中的 core-js/library 相当。（~440KB）<br>npm install --save core-js-pure@3.x<br>// 定义了全局填充的打包版本，可以使用script标签引入<br>npm install --save core-js-bundle@3.x<br></code></pre>
+
+<p>第一个是全局包，会全局引入所有的 polyfill 属性，第二个<code>pure</code>表示纯的，不会有副作用的意思，是局部 polyfill，不会造成全局环境污染。第三个相当于将第一个打包好，可以使用 script 标签加载。</p>
+<p>第一个版本使用</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js&#x27;</span> <span class="hljs-comment">// &lt;- at the top of your entry point</span><br><br><span class="hljs-built_in">Array</span>.from(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Set</span>([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>])) <span class="hljs-comment">// =&gt; [1, 2, 3]</span><br>;[<span class="hljs-number">1</span>, [<span class="hljs-number">2</span>, <span class="hljs-number">3</span>], [<span class="hljs-number">4</span>, [<span class="hljs-number">5</span>]]].flat(<span class="hljs-number">2</span>) <span class="hljs-comment">// =&gt; [1, 2, 3, 4, 5]</span><br><span class="hljs-built_in">Promise</span>.resolve(<span class="hljs-number">32</span>).then(<span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(x)) <span class="hljs-comment">// =&gt; 32</span><br></code></pre>
+
+<p>当然第一个也可以按需导入</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/features/array/from&#x27;</span> <span class="hljs-comment">// &lt;- at the top of your entry point</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/features/array/flat&#x27;</span> <span class="hljs-comment">// &lt;- at the top of your entry point</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/features/set&#x27;</span> <span class="hljs-comment">// &lt;- at the top of your entry point</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/features/promise&#x27;</span> <span class="hljs-comment">// &lt;- at the top of your entry point</span><br><br><span class="hljs-built_in">Array</span>.from(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Set</span>([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>])) <span class="hljs-comment">// =&gt; [1, 2, 3]</span><br>;[<span class="hljs-number">1</span>, [<span class="hljs-number">2</span>, <span class="hljs-number">3</span>], [<span class="hljs-number">4</span>, [<span class="hljs-number">5</span>]]].flat(<span class="hljs-number">2</span>) <span class="hljs-comment">// =&gt; [1, 2, 3, 4, 5]</span><br><span class="hljs-built_in">Promise</span>.resolve(<span class="hljs-number">32</span>).then(<span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(x)) <span class="hljs-comment">// =&gt; 32</span><br></code></pre>
+
+<p>第二个版本使用</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> <span class="hljs-keyword">from</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;core-js-pure/features/array/from&#x27;</span><br><span class="hljs-keyword">import</span> flat <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;core-js-pure/features/array/flat&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-built_in">Set</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;core-js-pure/features/set&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-built_in">Promise</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;core-js-pure/features/promise&#x27;</span><br><br><span class="hljs-keyword">from</span>(<span class="hljs-keyword">new</span> <span class="hljs-built_in">Set</span>([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span>])) <span class="hljs-comment">// =&gt; [1, 2, 3]</span><br>flat([<span class="hljs-number">1</span>, [<span class="hljs-number">2</span>, <span class="hljs-number">3</span>], [<span class="hljs-number">4</span>, [<span class="hljs-number">5</span>]]], <span class="hljs-number">2</span>) <span class="hljs-comment">// =&gt; [1, 2, 3, 4, 5]</span><br><span class="hljs-built_in">Promise</span>.resolve(<span class="hljs-number">32</span>).then(<span class="hljs-function"><span class="hljs-params">x</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(x)) <span class="hljs-comment">// =&gt; 32</span><br></code></pre>
+
+<p><strong>core-js 入口使用案例</strong></p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">// 使用 `core-js` 全部功能打补丁：</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js&#x27;</span><br><span class="hljs-comment">// 仅仅使用稳定的 `core-js` 功能 - ES 和 web 标准：</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/stable&#x27;</span><br><span class="hljs-comment">// 仅仅使用稳定的 ES 功能</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/es&#x27;</span><br><br><span class="hljs-comment">// 如果你想用 `Set` 的补丁</span><br><span class="hljs-comment">// 所有 `Set`- ES 提案中，相关的功能：</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/features/set&#x27;</span><br><span class="hljs-comment">// 稳定的 `Set` ES 功能和来自web标准的功能</span><br><span class="hljs-comment">// （DOM 集合迭代器）</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/stable/set&#x27;</span><br><span class="hljs-comment">// 只有 `Set` 所需的稳定的 ES 功能</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/es/set&#x27;</span><br><span class="hljs-comment">// 与上面一致，但不会污染全局命名空间</span><br><span class="hljs-keyword">import</span> <span class="hljs-built_in">Set</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;core-js-pure/features/set&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-built_in">Set</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;core-js-pure/stable/set&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-built_in">Set</span> <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;core-js-pure/es/set&#x27;</span><br><br><span class="hljs-comment">// 仅仅为需要的方法打补丁</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/feature/set/intersection&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/stable/queque-microtask&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/es/array/from&#x27;</span><br><br><span class="hljs-comment">// 为 reflect metadata 提案打补丁</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/proposals/reflect-metadata&#x27;</span><br><span class="hljs-comment">// 为所有 stage 2+ 的提案打补丁</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/stage/2&#x27;</span><br></code></pre>
+
+<h5 id="与-babel-集成"><a href="#与-babel-集成" class="headerlink" title="与 babel 集成"></a>与 babel 集成</h5><ul>
+<li><strong>@babel/polyfill</strong></li>
+</ul>
+<p>一个包裹的包，里面仅仅包含 core-js 稳定版的引入（在 Babel 6 中也包含提案）和 <code>regenerator-runtime/runtime</code>，用来转译 generators 和 async 函数。这个包没有提供从 core-js@2 到 core-js@3 平滑升级路径：因为这个原因，决定弃用 @babel/polyfill 代之以分别引入需要的 core-js 和 regenerator-runtime 。</p>
+<p>使用</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;@babel/polyfill&#x27;</span><br></code></pre>
+
+<p>现在直接安装<code>npm i --save core-js@3.6.5 regenerator-runtime</code></p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/stable&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;regenerator-runtime/runtime&#x27;</span><br></code></pre>
+
+<ul>
+<li><strong>@babel/preset-env</strong></li>
+</ul>
+<p><code>@babel/preset-env</code> 有两种不同的模式，通过 useBuiltIns 选项：entry 和 usage 优化 core-js 的导入。</p>
+<p>由于现在 <code>@babel/preset-env</code> 支持 <code>core-js@2</code> 和 <code>core-js@3</code>，因此 useBuiltIns 需要新的选项 – corejs，这个选项用来定义使用 core-js 的版本（corejs: 2 或者 corejs: 3）。如果没有设置，corejs: 2 是默认值并且会有警告提示。</p>
+<p>为了使 babel 支持将来的次要版本中引入的 core-js 的新功能，你可以在项目中定义明确的次要版本号。例如，你想使用 <code>core-js@3.1</code> 使用这个版本的新特性，你可以设置 corejs 选项为 3.1：corejs: ‘3.1’ 或者 corejs: {version: ‘3.1’}。</p>
+<p><code>@babel/preset-env</code>的一个好处是可以根据目标环境来决定是否要引入相关特性的 polyfill，<code>@babel/preset-env</code>的数据来源于 compat-table，但是仍然有一些限制</p>
+<ul>
+<li><p>它包含的数据仅仅关于 ECMAScript 特性和提案，和 web 平台特性例如 setImmediate 或者 DOM 集合迭代器没有关系。所以直到现在，<code>@babel/preset-env</code> 仍然通过 core-js 添加全部的 web 平台特性即使他们已经支持了。</p>
+</li>
+<li><p>它他不包含任何浏览器（甚至是严重的）bug 信息：例如，上文提到的在 Safari 12 中 Array#reverse，但是 compat-table 并没有将它标记为不支持。另一方面，core-js 已经修复了这个错误实现，但是因为 compat-table 关系，并不能使用它。</p>
+</li>
+<li><p>它仅包函一些基础的、幼稚的测试，没有检查功能在真实环境下是否可以正常工作。例如，老版本 Safari 的破坏的迭代器没有 .next 方法，但是 compat-table 表明 Safari 支持，因为它用 typeof 方法检测迭代器方法返回了 “function”。一些像 typed arrays 的功能几乎没有覆盖。</p>
+</li>
+<li><p>compat-table 不是为了向工具提供数据而设计的(因此 core-js 作者创建了 core-js-compat：它提供了对于不同浏览器 core-js 模块的必要性数据。当使用 core-js@3 时，@babel/preset-env 将使用新的包取代 compat-table)。</p>
+</li>
+<li><p><strong>@babel/runtime</strong></p>
+<p><code>@babel/preset-env</code>会进行全局引入，这样会污染全局环境。 <code>@babel/transform-runtime</code> 现在通过 core-js-pure（core-js 的一个版本，不会污染全局变量） 注入 polyfills。</p>
+<p>通过将<code>@babel/transform-runtime</code>设置 corejs: 3 选项和创建 <code>@babel/runtime-corejs3</code> 包，已经将 <code>core-js@3</code>和<code>@babel/runtime</code>集成在一起。</p>
+</li>
+</ul>
+<h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h5><ul>
+<li><p>core-js 可以提供那些 polyfill 以及它们于 features 的关系，可以在<a target="_blank" rel="noopener" href="https://github.com/zloirock/core-js#features">core-js#features</a>查询</p>
+</li>
+<li><p>corej-js3 相比较与 core-js2，修复了许多问题，应该尽量使用 core-js3。同时 babel 应当升级到 7.4 及以后。</p>
+</li>
+<li><p>如果在每个细节中都无法按照规范实现某个功能，则 core-js 会向 polyfill 添加.sham 属性。 例如，在 IE11 中，Symbol.sham 为 true。</p>
+</li>
+<li><p>core-js-compat 是 core-js 提供的一个类似 compat-table 一样的库，基于它，能知道 core-js 的每个 polyfill 在不同的环境里面的兼容情况。 core-js-builder 就是依赖于 core-js-compat 实现的。 另外在@babel/preset-env 里面，如果使用了 core-js@3，也会使用 core-js-compat，而不是 compact-table。</p>
+</li>
+<li><p>compat-table 的初衷不是为了给其它库提供数据支持。core-js 的作者也是 compat-table 项目的参与者之一，他知道其它一些 compat-table 项目的参与者是反对给其它库提供数据支持的，与是 core-js 专门写了 core-js-compat，目的就是为给@babel/preset-env 提供数据</p>
+</li>
+</ul>
+<p><em>参考：<a target="_blank" rel="noopener" href="https://github.com/zloirock/core-js/blob/master/docs/zh_CN/2019-03-19-core-js-3-babel-and-a-look-into-the-future.md">core-js</a></em></p>
+
+  </div>
+</article>
+<div class="nav">
+  
+  <div class="nav-item-prev">
+    <a href="/2019/12/12/utils/babel/babel常用插件比较/" class="nav-link">
+      <i class="iconfont icon-left nav-prev-icon"></i>
+      <div>
+        <div class="nav-label">上一篇</div>
+        
+        <div class="nav-title">关于@babel/polyfill，@babel/runtime，@babel/runtime-corejs3以及@bable/plugin-transform-runtime </div>
+        
+      </div>
+    </a>
+  </div>
+  
+  
+  <div class="nav-item-next">
+    <a href="/2019/12/03/utils/babel/babel插件与预设/" class="nav-link">
+      <div>
+        <div class="nav-label">下一篇</div>
+        
+        <div class="nav-title">babel插件(plugin)与预设(preset) </div>
+        
+      </div>
+      <i class="iconfont icon-right nav-next-icon"></i>
+    </a>
+  </div>
+  
+</div>
+
+<div class="card card-content toc-card" id="mobiletoc">
+  <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%8E-babel-%E9%9B%86%E6%88%90"><span class="toc-text">与 babel 集成</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+</div></main>
+          <aside class="left-column">
+            
+            <div class="card card-author">
+              
+<img src="/images/avatar.jpg" class="author-img">
+
+<p class="author-name">Chenzheng Ling</p>
+<p class="author-description">Front End Developer</p>
+<div class="author-message">
+  <a class="author-posts-count" href="/archives">
+    <span>32</span>
+    <span>文章</span>
+  </a>
+  <a class="author-categories-count" href="/categories">
+    <span>8</span>
+    <span>分类</span>
+  </a>
+  <a class="author-tags-count" href="/tags">
+    <span>4</span>
+    <span>标签</span>
+  </a>
+</div>
+
+            </div>
+            
+            <div class="sticky-tablet">
+  
+  
+  <article class="display-when-two-columns spacer">
+    <div class="card card-content toc-card">
+      <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%8E-babel-%E9%9B%86%E6%88%90"><span class="toc-text">与 babel 集成</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <div class="categories-card">
+  <div class="categories-header"><i class="iconfont icon-fenlei" style="padding-right: 2px;"></i>分类</div>
+  <div class="categories-list">
+    
+      <a href="/categories/CSS">
+        <div class="categories-list-item">
+          CSS
+          <span class="categories-list-item-badge">3</span>
+        </div>
+      </a>
+    
+      <a href="/categories/es">
+        <div class="categories-list-item">
+          es
+          <span class="categories-list-item-badge">4</span>
+        </div>
+      </a>
+    
+      <a href="/categories/http">
+        <div class="categories-list-item">
+          http
+          <span class="categories-list-item-badge">3</span>
+        </div>
+      </a>
+    
+      <a href="/categories/markdown">
+        <div class="categories-list-item">
+          markdown
+          <span class="categories-list-item-badge">5</span>
+        </div>
+      </a>
+    
+      <a href="/categories/其他">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">5</span>
+        </div>
+      </a>
+    
+      <a href="/categories/web">
+        <div class="categories-list-item">
+          web
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/babel">
+        <div class="categories-list-item">
+          babel
+          <span class="categories-list-item-badge">4</span>
+        </div>
+      </a>
+    
+      <a href="/categories/webpack">
+        <div class="categories-list-item">
+          webpack
+          <span class="categories-list-item-badge">2</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content">
+    <div class="tags-card">
+  <div class="tags-header"><i class="iconfont icon-biaoqian" style="padding-right: 2px;"></i>热门标签</div>
+  <div class="tags-list">
+    
+    <a href="\tags\工具" title="工具"><div class="tags-list-item">工具</div></a>
+    
+    <a href="\tags\js基础" title="js基础"><div class="tags-list-item">js基础</div></a>
+    
+    <a href="\tags\解决方案" title="解决方案"><div class="tags-list-item">解决方案</div></a>
+    
+    <a href="\tags\网络" title="网络"><div class="tags-list-item">网络</div></a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+          </aside>
+          <aside class="right-column">
+            <div class="sticky-widescreen">
+  
+  
+  <article class="card card-content toc-card">
+    <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%8E-babel-%E9%9B%86%E6%88%90"><span class="toc-text">与 babel 集成</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+  </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header"><i class="iconfont icon-wenzhang_huaban" style="padding-right: 2px;"></i>最近文章</div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2020-08-30</div>
+        <a href="/2020/08/30/other/前端js获取wma文件时长/"><div class="recent-posts-item-content">前端获取wma文件时长</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2020-08-25</div>
+        <a href="/2020/08/25/web/IndexedDB存储/"><div class="recent-posts-item-content">IndexedDB基础知识</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2020-04-24</div>
+        <a href="/2020/04/24/utils/webpack/webpack模块化导入svg标签/"><div class="recent-posts-item-content">webpack导入svg图标</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2020-03-17</div>
+        <a href="/2020/03/17/other/base64/"><div class="recent-posts-item-content">base64编码</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <footer class="footer">
+  <div class="footer-container">
+    <div class="copyright">
+      <div>
+        <span id="copyYear">Copyright ©
+          
+          2020 -
+          
+          2020
+        </span>
+        <a href="/" class="footer-link">我的博客 </a>
+      </div>
+    </div>
+
+    
+    <div class="footer-dsc">
+      
+      
+      Powered by
+      <a href="https://hexo.io/" class="footer-link" target="_blank" rel="nofollow noopener noreferrer">&nbsp;Hexo </a>
+      
+      
+      <span>&nbsp;|&nbsp;</span>
+      
+      
+      
+      Theme -
+      <a href="https://github.com/theme-kaze" class="footer-link" target="_blank"
+        rel="nofollow noopener noreferrer">&nbsp;Kaze</a>
+      
+    </div>
+    
+    
+    
+    
+</footer>
+  <a role="button" id="scrollbutton" class="basebutton" >
+  <i class="iconfont icon-arrowleft button-icon"></i>
+</a>
+<a role="button" id="menubutton" class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a role="button" id="popbutton" class="basebutton">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+
+  
+  
+  
+  <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img');
+    var i;
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a');
+      wrapper.setAttribute('data-fslightbox', 'gallery');
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'));
+      wrapper.setAttribute('style', 'width: 100%; display: flex; justify-content: center;');
+      img[i].parentElement.insertBefore(wrapper, img[i]);
+      wrapper.appendChild(img[i]);
+    }
+    refreshFsLightbox();
+  }
+</script>
+<script>loadScript("//cdn.jsdelivr.net/npm/fslightbox@3.1.0/index.min.js", addImgLayout)</script>
+  
+  
+  
+<script src="/js/main.js"></script>
+
+  
+  
+  <script>
+    var addLazyload = function () {
+      var observer = lozad('.lozad', {
+        load: function (el) {
+          el.srcset = el.getAttribute('data-src');
+        },
+        loaded: function (el) {
+          el.classList.add('loaded');
+        }
+      });
+      observer.observe();
+    }
+  </script>
+  <script>loadScript("/js/lib/lozad.min.js", addLazyload)</script>
+  
+  
+
+  
+  <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'forest'});
+    }
+  </script>
+  
+</body>
+
+</html>

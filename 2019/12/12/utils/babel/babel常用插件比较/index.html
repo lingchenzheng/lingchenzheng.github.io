@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html>
+<meta  lang="zh-CN" >
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="theme-color" content="#fff" id="theme-color">
+  <link rel="icon" href="/images/me.jpg">
+  <title>我的博客</title>
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+    var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+      }
+    };
+    setDarkmode();
+  </script>
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  </script>
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_vpj3dq9ceqa.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  
+  <link rel="preload" href="//cdn.jsdelivr.net/npm/fslightbox@3.1.0/index.min.js" as="script">
+  
+  
+  <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="/css/main.css">
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_vpj3dq9ceqa.css">
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+
+  
+  
+  
+<meta name="generator" content="Hexo 5.0.2"></head>
+
+
+<body>
+  <div class="wrapper">
+    
+    <nav class="navbar">
+  <div class="navbar-logo">
+    <span class="navbar-logo-main">
+      
+      <img class="navbar-logo-img" src="/images/me.jpg">
+      
+      <span class="navbar-logo-dsc">我的博客</span>
+    </span>
+  </div>
+  <div class="navbar-menu">
+    
+    <a href="/" class="navbar-menu-item">首页 </a>
+    
+    <a href="/archives" class="navbar-menu-item">归档 </a>
+    
+    <a href="/tags" class="navbar-menu-item">标签 </a>
+    
+    <a href="/categories" class="navbar-menu-item">分类 </a>
+    
+    <a href="/about" class="navbar-menu-item">关于 </a>
+    
+    <a href="/links" class="navbar-menu-item">友链 </a>
+    
+    <a class="navbar-menu-item" id="dark"><i class="iconfont icon-weather"></i></a>
+  </div>
+</nav>
+    
+    <div class="section-wrap">
+      <div class="container">
+        <div class="columns">
+          <main class="main-column">
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      关于@babel/polyfill，@babel/runtime，@babel/runtime-corejs3以及@bable/plugin-transform-runtime
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <time datetime="2019-12-12T00:00:00.000Z" style="display: flex; align-items: center;">
+      <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
+      <span>2019-12-12</span>
+    </time>
+    
+    <span class="dot"></span>
+    
+    <a href="/categories/babel/" class="post-meta-link">babel</a>
+    
+    
+    
+    <span class="dot"></span>
+    <span>2.3k 字</span>
+    
+  </div>
+  
+  <div class="post-meta post-show-meta" style="margin-top: -10px;">
+    <div style="display: flex; align-items: center;">
+      <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
+      
+      
+        <a href="/tags/工具/" class="post-meta-link">工具</a>
+      
+    </div>
+  </div>
+  
+  </header>
+  <div id="section" class="post-content">
+    <h5 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h5><p>对于标题中列举的几个 bable 插件，平时使用者，很多人都会感到迷惑，不知道怎么配置跟组合使用，这边文章主要是作者自己的理解，对这几个插件的介绍，以及后面会介绍不同的配置方案。</p>
+<h5 id="babel-polyfill"><a href="#babel-polyfill" class="headerlink" title="@babel/polyfill"></a>@babel/polyfill</h5><p>我们知道，babel 是一个 js 编译器，将 javascript 新特新转换成浏览器能认识的代码，通过插件，我们能实现类似于箭头函数，拓展运算符之类的语法转换，但是一些新的 api 是无法转换的，比如 Map 对象，Object.assign 方法等等，这个时候我们就需要给环境中提供 polyfill，也就是打补丁的意思，注入这些 api，比如，浏览器不存在 Object.assign 方法，我们就在 Object 添加一个 assign 方法。这就是@babel/polyfill 所做的事。</p>
+<p>使用方法，在项目入口文件引入</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;@babel/polyfill&#x27;</span><br></code></pre>
+
+<p><code>@babel/polyfill</code>相当于三个包的集合，它由<code>helpers</code>，<code>regenerator-runtime</code>和<code>core-js</code>三个包组成，不过 babel7.4 以后<code>@babel/polyfill</code>已经被废弃了，具体情况后面再说。</p>
+<ul>
+<li>helpers</li>
+</ul>
+<p>helpers 里面是一些辅助函数，在代码转换时需要用到，这些函数会带入生产环境。</p>
+<p>例如：我们对<code>class</code>进行转换</p>
+<p>源码</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span> </span>&#123;&#125;<br></code></pre>
+
+<p>转换后</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">_classCallCheck</span>(<span class="hljs-params">instance, Constructor</span>) </span>&#123;<br>    <span class="hljs-keyword">if</span> (!(instance <span class="hljs-keyword">instanceof</span> Constructor)) &#123;<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">TypeError</span>(<span class="hljs-string">&#x27;Cannot call a class as a function&#x27;</span>)<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">var</span> Person = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Person</span>(<span class="hljs-params"></span>) </span>&#123;<br>    _classCallCheck(<span class="hljs-built_in">this</span>, Person)<br>&#125;<br></code></pre>
+
+<p><code>_classCallCheck</code>就是一个辅助函数。</p>
+<ul>
+<li><p>regenerator-runtime</p>
+<p>这个包是用来转换 async 和 generator 函数的</p>
+</li>
+</ul>
+<p>源码</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span>* <span class="hljs-title">test</span>(<span class="hljs-params"></span>) </span>&#123;&#125;<br></code></pre>
+
+<p>转换后</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;regenerator-runtime/runtime&#x27;</span>)<br><br><span class="hljs-keyword">var</span> _marked = <span class="hljs-comment">/*#__PURE__*/</span> regeneratorRuntime.mark(test)<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span>(<span class="hljs-params"></span>) </span>&#123;<br>    <span class="hljs-keyword">return</span> regeneratorRuntime.wrap(<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test$</span>(<span class="hljs-params">_context</span>) </span>&#123;<br>        <span class="hljs-keyword">while</span> (<span class="hljs-number">1</span>) &#123;<br>            <span class="hljs-keyword">switch</span> ((_context.prev = _context.next)) &#123;<br>                <span class="hljs-keyword">case</span> <span class="hljs-number">0</span>:<br>                <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;end&#x27;</span>:<br>                    <span class="hljs-keyword">return</span> _context.stop()<br>            &#125;<br>        &#125;<br>    &#125;, _marked)<br>&#125;<br></code></pre>
+
+<ul>
+<li><p>core-js</p>
+<p>上一篇<a href="/2019/12/08/utils/babel/core-js/">文章</a>有介绍</p>
+</li>
+</ul>
+<h5 id="babel-runtime"><a href="#babel-runtime" class="headerlink" title="@babel/runtime"></a>@babel/runtime</h5><p><code>@babel/runtime</code> 包含了 helpers 函数，并且依赖于<code>regenerator-runtime</code>包，<code>@babel/runtime</code>的出现就是为了解决<code>@babel/polyfill</code>污染全局环境的问题。<br>使用<code>@babel/runtime</code>需要借助<code>@bable/plugin-transform-runtime</code>插件。</p>
+<h5 id="bable-plugin-transform-runtime"><a href="#bable-plugin-transform-runtime" class="headerlink" title="@bable/plugin-transform-runtime"></a>@bable/plugin-transform-runtime</h5><p>@bable/plugin-transform-runtime 会做两件事</p>
+<ol>
+<li>在转码的过程中，babel 会加入辅助函数，也就是上文的 helpers，这些函数在每个用到辅助函数的文件都会重新存在一份，这些就造成了代码冗余，在上面的 helpers 介绍例子中可以看到，在文件中声明了一个_classCallCheck 函数，<code>@bable/plugin-transform-runtime</code>的一个作用就是复用这些函数。</li>
+</ol>
+<p>我们在 babel 配置文件加上如下配置</p>
+<pre class="highlight"><code class="hljs json">&#123;<br>    <span class="hljs-attr">&quot;plugins&quot;</span>: [<br>        [<br>            <span class="hljs-string">&quot;@bable/plugin-transform-runtime&quot;</span>,<br>            &#123;<br>                <span class="hljs-attr">&quot;helpers&quot;</span>: <span class="hljs-literal">true</span><br>            &#125;<br>        ]<br>    ]<br>&#125;<br></code></pre>
+
+<p>转换后</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> _interopRequireDefault = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;@babel/runtime/helpers/interopRequireDefault&#x27;</span>)<br><br><span class="hljs-keyword">var</span> _classCallCheck2 = _interopRequireDefault(<br>    <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;@babel/runtime/helpers/classCallCheck&#x27;</span>)<br>)<br><br><span class="hljs-keyword">var</span> Person = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Person</span>(<span class="hljs-params"></span>) </span>&#123;<br>    ;(<span class="hljs-number">0</span>, _classCallCheck2[<span class="hljs-string">&#x27;default&#x27;</span>])(<span class="hljs-built_in">this</span>, Person)<br>&#125;<br></code></pre>
+
+<p>我们可以看到_classCallCheck2 函数是引入的了，并不是直接加在文件里了。</p>
+<ol start="2">
+<li><p>进行局部 polyfill，可以避免全局变量环境污染，这在写一个三方包时很有用。</p>
+<p> 开启这个功能时需要安装<code>@babel/runtime-corejs3</code>包</p>
+</li>
+</ol>
+<h5 id="babel-runtime-corejs3"><a href="#babel-runtime-corejs3" class="headerlink" title="@babel/runtime-corejs3"></a>@babel/runtime-corejs3</h5><p><code>@babel/runtime-corejs3</code>其实就是<code>@babel/runtime</code>于<code>core-js-pure</code>(core-js 文章中有介绍)的合成包。</p>
+<p>下面以一个例子来说明</p>
+<p>源码</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> map = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Map</span>()<br><span class="hljs-keyword">let</span> set = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Set</span>()<br></code></pre>
+
+<p>当我们通过<code>@babel/preset-env</code>引入<code>core-js</code>的 polyfill 时，转换后的结果如下</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.iterator&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.map&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.object.to-string&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.set&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.string.iterator&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/web.dom-collections.iterator&#x27;</span>)<br><span class="hljs-keyword">var</span> map = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Map</span>()<br><span class="hljs-keyword">var</span> set = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Set</span>()<br></code></pre>
+
+<p>我们可以看到，这些都是全局注入的</p>
+<p>接下来换成<code>@bable/plugin-transform-runtime</code>来局部注入</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">var</span> _interopRequireDefault = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;@babel/runtime-corejs3/helpers/interopRequireDefault&#x27;</span>)<br><br><span class="hljs-keyword">var</span> _set = _interopRequireDefault(<br>    <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;@babel/runtime-corejs3/core-js-stable/set&#x27;</span>)<br>)<br><br><span class="hljs-keyword">var</span> _map = _interopRequireDefault(<br>    <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;@babel/runtime-corejs3/core-js-stable/map&#x27;</span>)<br>)<br><br><span class="hljs-keyword">var</span> map = <span class="hljs-keyword">new</span> _map[<span class="hljs-string">&#x27;default&#x27;</span>]()<br><span class="hljs-keyword">var</span> set = <span class="hljs-keyword">new</span> _set[<span class="hljs-string">&#x27;default&#x27;</span>]()<br></code></pre>
+
+<p>可以看到 Map 和 Set 都是局部引入。</p>
+<h5 id="babel-preset-env"><a href="#babel-preset-env" class="headerlink" title="@babel/preset-env"></a>@babel/preset-env</h5><p><code>@babel/preset-env</code>不仅对语法进行转换，还有一个强大的功能是它能够根据目标环境进行按需 polyfill，需要开启它的配置向<code>useBuiltIns</code>不为<code>false</code>。上面说到<code>@babel/polyfill</code>被废弃，就是因为它，它可以按需引入，代码量更小。<br><code>@babel/preset-env</code>进行 polyfill 注入是注入全局的，需要手动安装<code>core-js</code>包。</p>
+<pre class="highlight"><code class="hljs shell">npm install core-js@3.x<br></code></pre>
+
+<ul>
+<li>useBuiltIns 可以为三个值<code>entry|usage|false</code></li>
+</ul>
+<blockquote>
+<ol>
+<li>entry 根据入口文件的引入转换成根据环境按需引入</li>
+</ol>
+</blockquote>
+<p>输入</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/es/array&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/proposals/math-extensions&#x27;</span><br></code></pre>
+
+<p>输出</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/modules/es.array.unscopables.flat&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/modules/es.array.unscopables.flat-map&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/modules/esnext.math.clamp&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/modules/esnext.math.deg-per-rad&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/modules/esnext.math.degrees&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/modules/esnext.math.fscale&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/modules/esnext.math.rad-per-deg&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/modules/esnext.math.radians&#x27;</span><br><span class="hljs-keyword">import</span> <span class="hljs-string">&#x27;core-js/modules/esnext.math.scale&#x27;</span><br></code></pre>
+
+<p>如果将 target 加上最小 ie10</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-meta">&#x27;use strict&#x27;</span><br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.concat&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.copy-within&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.every&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.fill&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.filter&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.find&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.find-index&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.flat&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.flat-map&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.for-each&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.from&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.includes&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.index-of&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.iterator&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.join&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.last-index-of&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.map&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.of&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.reduce&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.reduce-right&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.slice&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.some&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.species&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.splice&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.unscopables.flat&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.unscopables.flat-map&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.string.iterator&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/esnext.math.clamp&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/esnext.math.deg-per-rad&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/esnext.math.degrees&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/esnext.math.fscale&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/esnext.math.rad-per-deg&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/esnext.math.radians&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/esnext.math.scale&#x27;</span>)<br></code></pre>
+
+<blockquote>
+<ol start="2">
+<li>usage 根据环境自动按需导入 7.4 之前这个功能不稳定，慎用</li>
+</ol>
+</blockquote>
+<p>以 Set 为例</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> set = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Set</span>()<br></code></pre>
+
+<p>配置如下</p>
+<pre class="highlight"><code class="hljs json">&#123;<br>    <span class="hljs-attr">&quot;useBuiltIns&quot;</span>: <span class="hljs-string">&quot;usage&quot;</span>,<br>    <span class="hljs-attr">&quot;corejs&quot;</span>: &#123;<br>        <span class="hljs-attr">&quot;version&quot;</span>: <span class="hljs-number">3</span><br>    &#125;,<br>    <span class="hljs-attr">&quot;targets&quot;</span>: &#123;<br>        <span class="hljs-attr">&quot;chrome&quot;</span>: <span class="hljs-string">&quot;70&quot;</span><br>    &#125;<br>&#125;<br></code></pre>
+
+<p>转写结果没有变化，因为 chrome 支持 Set</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> set = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Set</span>()<br></code></pre>
+
+<p>更改配置如下</p>
+<pre class="highlight"><code class="hljs json">&#123;<br>    <span class="hljs-attr">&quot;useBuiltIns&quot;</span>: <span class="hljs-string">&quot;usage&quot;</span>,<br>    <span class="hljs-attr">&quot;corejs&quot;</span>: &#123;<br>        <span class="hljs-attr">&quot;version&quot;</span>: <span class="hljs-number">3</span><br>    &#125;,<br>    <span class="hljs-attr">&quot;targets&quot;</span>: &#123;<br>        <span class="hljs-attr">&quot;chrome&quot;</span>: <span class="hljs-string">&quot;70&quot;</span>,<br>        <span class="hljs-attr">&quot;ie&quot;</span>: <span class="hljs-string">&quot;10&quot;</span><br>    &#125;<br>&#125;<br></code></pre>
+
+<p>转写结果如下</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.array.iterator&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.object.to-string&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.set&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/es.string.iterator&#x27;</span>)<br><br><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/web.dom-collections.iterator&#x27;</span>)<br><br><span class="hljs-keyword">var</span> set = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Set</span>()<br></code></pre>
+
+<blockquote>
+<ol start="3">
+<li><code>false</code>关闭 polyfill</li>
+</ol>
+</blockquote>
+<ul>
+<li>corejs 指定 corejs 的版本，必须要</li>
+</ul>
+<pre class="highlight"><code class="hljs json">&#123;<br>    <span class="hljs-attr">&quot;corejs&quot;</span>: <span class="hljs-number">3</span><br>&#125;<br></code></pre>
+
+<p>或者</p>
+<pre class="highlight"><code class="hljs json">&#123;<br>    <span class="hljs-attr">&quot;corejs&quot;</span>: &#123;<br>        <span class="hljs-attr">&quot;version&quot;</span>: <span class="hljs-number">3</span><br>    &#125;<br>&#125;<br></code></pre>
+
+<p>corejs 里有一个 proposals 属性，是否开启对草案阶段的属性 polyfill</p>
+<pre class="highlight"><code class="hljs json">&#123;<br>    <span class="hljs-attr">&quot;corejs&quot;</span>: &#123;<br>        <span class="hljs-attr">&quot;version&quot;</span>: <span class="hljs-number">3</span>,<br>        <span class="hljs-attr">&quot;proposals&quot;</span>: <span class="hljs-literal">true</span><br>    &#125;<br>&#125;<br></code></pre>
+
+<p>例如：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> str = <span class="hljs-string">&#x27;asad&#x27;</span><br><br>str.matchAll(<span class="hljs-regexp">/\d/g</span>)<br></code></pre>
+
+<p>这个默认是不处理的，如需处理，proposals 需要设置为 true</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;core-js/modules/esnext.string.match-all&#x27;</span>)<br><span class="hljs-keyword">let</span> str = <span class="hljs-string">&#x27;asad&#x27;</span><br>str.matchAll(<span class="hljs-regexp">/\d/g</span>)<br></code></pre>
+
+<ul>
+<li>其他参数可以参考 bable 官网，这里就不多介绍。</li>
+</ul>
+<h5 id="项目中如何配置"><a href="#项目中如何配置" class="headerlink" title="项目中如何配置"></a>项目中如何配置</h5><ol>
+<li>如果我们是开发一个应用，我们应该使用@babel/preset-env 来进行 polyfill，因为它是按需进行注入的，可以减少代码尺寸，建议参数<code>useBuiltIns</code>设置为<code>usage</code>。因为是应用，所以不必担心全局环境污染。</li>
+</ol>
+<p>这时我们需要安装如下插件</p>
+<pre class="highlight"><code class="hljs shell">npm i @babel/preset-env @babel/plugin-transform-runtime -D<br>npm i core-js@3.6.5<br></code></pre>
+
+<p><code>@babel/plugin-transform-runtime</code>需要，是因为我们需要复用辅助函数</p>
+<p>配置如下</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">api</span>) </span>&#123;<br>    api.cache(<span class="hljs-literal">true</span>)<br>    <span class="hljs-keyword">return</span> &#123;<br>        presets: [<br>            [<br>                <span class="hljs-string">&#x27;@babel/preset-env&#x27;</span>,<br>                &#123;<br>                    useBuiltIns: <span class="hljs-string">&#x27;usage&#x27;</span>,<br>                    corejs: &#123;<br>                        version: <span class="hljs-number">3</span>,<br>                        proposals: <span class="hljs-literal">true</span><br>                    &#125;,<br>                    targets: &#123;<br>                        chrome: <span class="hljs-string">&#x27;70&#x27;</span><br>                    &#125;<br>                &#125;<br>            ]<br>        ],<br>        plugins: [<br>            [<br>                <span class="hljs-string">&#x27;@babel/plugin-transform-runtime&#x27;</span>,<br>                &#123;<br>                    helpers: <span class="hljs-literal">true</span>,<br>                    corejs: <span class="hljs-literal">false</span>,<br>                    regenerator: <span class="hljs-literal">false</span><br>                &#125;<br>            ]<br>        ]<br>    &#125;<br>&#125;<br></code></pre>
+
+<ol start="2">
+<li>如果我们是在开发一个三方库，应当使用<code>@babel/plugin-transform-runtime</code>进行局部注入，避免别人使用我们的包造成全局污染。</li>
+</ol>
+<p>这时我们需要安装如下插件</p>
+<pre class="highlight"><code class="hljs shell">npm i @babel/preset-env @babel/plugin-transform-runtime -D<br>npm i @babel/runtime-corejs3 -S<br></code></pre>
+
+<p>配置如下</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">api</span>) </span>&#123;<br>    api.cache(<span class="hljs-literal">true</span>)<br>    <span class="hljs-keyword">return</span> &#123;<br>        presets: [<span class="hljs-string">&#x27;@babel/preset-env&#x27;</span>],<br>        plugins: [<br>            [<br>                <span class="hljs-string">&#x27;@babel/plugin-transform-runtime&#x27;</span>,<br>                &#123;<br>                    helpers: <span class="hljs-literal">true</span>,<br>                    corejs: <span class="hljs-number">3</span>,<br>                    regenerator: <span class="hljs-literal">true</span><br>                &#125;<br>            ]<br>        ]<br>    &#125;<br>&#125;<br></code></pre>
+
+<h5 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h5><ul>
+<li><p>全局于局部 polyfill 不能同时引入，只能开启一个，否则会报错。</p>
+</li>
+<li><p>为什么开发应用推荐使用<code>@babel/preset-env</code>的方式注入，因为它能根据环境按需引入，<code>@babel/plugin-transform-runtime</code>不能进行环境判断，即使浏览器支持也会引入。</p>
+</li>
+<li><p>插件的特性一直在变，应该关注并跟进，保证项目中好升级。</p>
+</li>
+</ul>
+
+  </div>
+</article>
+<div class="nav">
+  
+  <div class="nav-item-prev">
+    <a href="/2019/12/13/web/从输入url到页面展示的流程/" class="nav-link">
+      <i class="iconfont icon-left nav-prev-icon"></i>
+      <div>
+        <div class="nav-label">上一篇</div>
+        
+        <div class="nav-title">浏览器从输入url到页面展示的过程 </div>
+        
+      </div>
+    </a>
+  </div>
+  
+  
+  <div class="nav-item-next">
+    <a href="/2019/12/08/utils/babel/core-js/" class="nav-link">
+      <div>
+        <div class="nav-label">下一篇</div>
+        
+        <div class="nav-title">core-js </div>
+        
+      </div>
+      <i class="iconfont icon-right nav-next-icon"></i>
+    </a>
+  </div>
+  
+</div>
+
+<div class="card card-content toc-card" id="mobiletoc">
+  <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#babel-polyfill"><span class="toc-text">@babel&#x2F;polyfill</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#babel-runtime"><span class="toc-text">@babel&#x2F;runtime</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#bable-plugin-transform-runtime"><span class="toc-text">@bable&#x2F;plugin-transform-runtime</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#babel-runtime-corejs3"><span class="toc-text">@babel&#x2F;runtime-corejs3</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#babel-preset-env"><span class="toc-text">@babel&#x2F;preset-env</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E4%B8%AD%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AE"><span class="toc-text">项目中如何配置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+</div></main>
+          <aside class="left-column">
+            
+            <div class="card card-author">
+              
+<img src="/images/avatar.jpg" class="author-img">
+
+<p class="author-name">Chenzheng Ling</p>
+<p class="author-description">Front End Developer</p>
+<div class="author-message">
+  <a class="author-posts-count" href="/archives">
+    <span>32</span>
+    <span>文章</span>
+  </a>
+  <a class="author-categories-count" href="/categories">
+    <span>8</span>
+    <span>分类</span>
+  </a>
+  <a class="author-tags-count" href="/tags">
+    <span>4</span>
+    <span>标签</span>
+  </a>
+</div>
+
+            </div>
+            
+            <div class="sticky-tablet">
+  
+  
+  <article class="display-when-two-columns spacer">
+    <div class="card card-content toc-card">
+      <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#babel-polyfill"><span class="toc-text">@babel&#x2F;polyfill</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#babel-runtime"><span class="toc-text">@babel&#x2F;runtime</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#bable-plugin-transform-runtime"><span class="toc-text">@bable&#x2F;plugin-transform-runtime</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#babel-runtime-corejs3"><span class="toc-text">@babel&#x2F;runtime-corejs3</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#babel-preset-env"><span class="toc-text">@babel&#x2F;preset-env</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E4%B8%AD%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AE"><span class="toc-text">项目中如何配置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+    </div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <div class="categories-card">
+  <div class="categories-header"><i class="iconfont icon-fenlei" style="padding-right: 2px;"></i>分类</div>
+  <div class="categories-list">
+    
+      <a href="/categories/CSS">
+        <div class="categories-list-item">
+          CSS
+          <span class="categories-list-item-badge">3</span>
+        </div>
+      </a>
+    
+      <a href="/categories/es">
+        <div class="categories-list-item">
+          es
+          <span class="categories-list-item-badge">4</span>
+        </div>
+      </a>
+    
+      <a href="/categories/http">
+        <div class="categories-list-item">
+          http
+          <span class="categories-list-item-badge">3</span>
+        </div>
+      </a>
+    
+      <a href="/categories/markdown">
+        <div class="categories-list-item">
+          markdown
+          <span class="categories-list-item-badge">5</span>
+        </div>
+      </a>
+    
+      <a href="/categories/其他">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">5</span>
+        </div>
+      </a>
+    
+      <a href="/categories/web">
+        <div class="categories-list-item">
+          web
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/babel">
+        <div class="categories-list-item">
+          babel
+          <span class="categories-list-item-badge">4</span>
+        </div>
+      </a>
+    
+      <a href="/categories/webpack">
+        <div class="categories-list-item">
+          webpack
+          <span class="categories-list-item-badge">2</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content">
+    <div class="tags-card">
+  <div class="tags-header"><i class="iconfont icon-biaoqian" style="padding-right: 2px;"></i>热门标签</div>
+  <div class="tags-list">
+    
+    <a href="\tags\工具" title="工具"><div class="tags-list-item">工具</div></a>
+    
+    <a href="\tags\js基础" title="js基础"><div class="tags-list-item">js基础</div></a>
+    
+    <a href="\tags\解决方案" title="解决方案"><div class="tags-list-item">解决方案</div></a>
+    
+    <a href="\tags\网络" title="网络"><div class="tags-list-item">网络</div></a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+          </aside>
+          <aside class="right-column">
+            <div class="sticky-widescreen">
+  
+  
+  <article class="card card-content toc-card">
+    <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#babel-polyfill"><span class="toc-text">@babel&#x2F;polyfill</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#babel-runtime"><span class="toc-text">@babel&#x2F;runtime</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#bable-plugin-transform-runtime"><span class="toc-text">@bable&#x2F;plugin-transform-runtime</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#babel-runtime-corejs3"><span class="toc-text">@babel&#x2F;runtime-corejs3</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#babel-preset-env"><span class="toc-text">@babel&#x2F;preset-env</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E4%B8%AD%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AE"><span class="toc-text">项目中如何配置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li></ol>
+  </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header"><i class="iconfont icon-wenzhang_huaban" style="padding-right: 2px;"></i>最近文章</div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2020-08-30</div>
+        <a href="/2020/08/30/other/前端js获取wma文件时长/"><div class="recent-posts-item-content">前端获取wma文件时长</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2020-08-25</div>
+        <a href="/2020/08/25/web/IndexedDB存储/"><div class="recent-posts-item-content">IndexedDB基础知识</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2020-04-24</div>
+        <a href="/2020/04/24/utils/webpack/webpack模块化导入svg标签/"><div class="recent-posts-item-content">webpack导入svg图标</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2020-03-17</div>
+        <a href="/2020/03/17/other/base64/"><div class="recent-posts-item-content">base64编码</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <footer class="footer">
+  <div class="footer-container">
+    <div class="copyright">
+      <div>
+        <span id="copyYear">Copyright ©
+          
+          2020 -
+          
+          2020
+        </span>
+        <a href="/" class="footer-link">我的博客 </a>
+      </div>
+    </div>
+
+    
+    <div class="footer-dsc">
+      
+      
+      Powered by
+      <a href="https://hexo.io/" class="footer-link" target="_blank" rel="nofollow noopener noreferrer">&nbsp;Hexo </a>
+      
+      
+      <span>&nbsp;|&nbsp;</span>
+      
+      
+      
+      Theme -
+      <a href="https://github.com/theme-kaze" class="footer-link" target="_blank"
+        rel="nofollow noopener noreferrer">&nbsp;Kaze</a>
+      
+    </div>
+    
+    
+    
+    
+</footer>
+  <a role="button" id="scrollbutton" class="basebutton" >
+  <i class="iconfont icon-arrowleft button-icon"></i>
+</a>
+<a role="button" id="menubutton" class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a role="button" id="popbutton" class="basebutton">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+
+  
+  
+  
+  <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img');
+    var i;
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a');
+      wrapper.setAttribute('data-fslightbox', 'gallery');
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'));
+      wrapper.setAttribute('style', 'width: 100%; display: flex; justify-content: center;');
+      img[i].parentElement.insertBefore(wrapper, img[i]);
+      wrapper.appendChild(img[i]);
+    }
+    refreshFsLightbox();
+  }
+</script>
+<script>loadScript("//cdn.jsdelivr.net/npm/fslightbox@3.1.0/index.min.js", addImgLayout)</script>
+  
+  
+  
+<script src="/js/main.js"></script>
+
+  
+  
+  <script>
+    var addLazyload = function () {
+      var observer = lozad('.lozad', {
+        load: function (el) {
+          el.srcset = el.getAttribute('data-src');
+        },
+        loaded: function (el) {
+          el.classList.add('loaded');
+        }
+      });
+      observer.observe();
+    }
+  </script>
+  <script>loadScript("/js/lib/lozad.min.js", addLazyload)</script>
+  
+  
+
+  
+  <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'forest'});
+    }
+  </script>
+  
+</body>
+
+</html>
