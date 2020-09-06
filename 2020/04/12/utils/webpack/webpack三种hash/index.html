@@ -132,53 +132,57 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      prettier格式化svg文件
+      hash,chunkhash,contenthash
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <time datetime="2018-12-20T00:00:00.000Z" style="display: flex; align-items: center;">
+    <time datetime="2020-04-12T00:00:00.000Z" style="display: flex; align-items: center;">
       <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
-      <span>2018-12-20</span>
+      <span>2020-04-12</span>
     </time>
     
     <span class="dot"></span>
     
-    <a href="/categories/其他/" class="post-meta-link">其他</a>
+    <a href="/categories/webpack/" class="post-meta-link">webpack</a>
     
     
     
     <span class="dot"></span>
-    <span>65 字</span>
+    <span>159 字</span>
     
-  </div>
-  
-  <div class="post-meta post-show-meta" style="margin-top: -10px;">
-    <div style="display: flex; align-items: center;">
-      <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
-      
-      
-        <a href="/tags/工具/" class="post-meta-link">工具</a>
-      
-    </div>
   </div>
   
   </header>
   <div id="section" class="post-content">
-    <p>prettier 本身没有格式化 svg 文件的功能，但是因为 svg 也是一种标签，可以看成是 HTML，因此可以如下设置。</p>
-<p><code>文件 =&gt; 首选项 =&gt; 设置 =&gt; setting.json</code></p>
-<pre class="highlight"><code class="hljs javascript">&#123;<br>    <span class="hljs-string">&quot;files.associations&quot;</span>: &#123;<br>        <span class="hljs-string">&quot;*.svg&quot;</span>: <span class="hljs-string">&quot;html&quot;</span><br>    &#125;<br>&#125;<br></code></pre>
+    <ul>
+<li>hash</li>
+</ul>
+<p>基于构建的，所有的 chunk 都使用相同的 hash，只要构建发生改变，hash 就发生改变，所有 chunk 的 hash 都会发生改变。</p>
+<ul>
+<li>chunkhash</li>
+</ul>
+<p>基于 webpack 的 entry point 的，每个入口点都有它自己的 hash。只有当特定的入口点发生变化时，相应的哈希值才会发生变化。</p>
+<ul>
+<li>contenthash</li>
+</ul>
+<p>Contenthash 是在 ExtractTextPlugin 中创建的特定类型的哈希，它是根据提取的内容而不是完全块内容来计算的。</p>
+<p>使用：</p>
+<ul>
+<li>在开发环境使用 hash</li>
+<li>在生产环境，对 js 使用 chunkhash，对 css 应用 mini-css-extract-plugin 插件并使用 contenthash。</li>
+</ul>
 
   </div>
 </article>
 <div class="nav">
   
   <div class="nav-item-prev">
-    <a href="/2019/04/03/http/http基础/" class="nav-link">
+    <a href="/2020/04/24/utils/webpack/webpack模块化导入svg标签/" class="nav-link">
       <i class="iconfont icon-left nav-prev-icon"></i>
       <div>
         <div class="nav-label">上一篇</div>
         
-        <div class="nav-title">http基础 </div>
+        <div class="nav-title">webpack导入svg图标 </div>
         
       </div>
     </a>
@@ -186,11 +190,11 @@
   
   
   <div class="nav-item-next">
-    <a href="/2018/09/16/es/apply与call实现/" class="nav-link">
+    <a href="/2020/03/26/utils/webpack/webpack代码分割/" class="nav-link">
       <div>
         <div class="nav-label">下一篇</div>
         
-        <div class="nav-title">apply与call函数实现 </div>
+        <div class="nav-title">webpack代码分割 </div>
         
       </div>
       <i class="iconfont icon-right nav-next-icon"></i>
