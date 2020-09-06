@@ -1,6 +1,6 @@
 ---
-title: CSS盒模型
-category: CSS
+title: css盒模型
+category: css
 date: 2018/5/24
 ---
 

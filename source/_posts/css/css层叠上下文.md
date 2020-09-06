@@ -1,6 +1,6 @@
 ---
 title: CSS 层叠上下文(Stacking Context)
-category: CSS
+category: css
 date: 2018/6/24
 ---
 

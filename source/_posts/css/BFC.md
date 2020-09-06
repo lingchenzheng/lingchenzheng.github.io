@@ -1,6 +1,6 @@
 ---
 title: css BFC
-category: CSS
+category: css
 date: 2018/7/15
 ---
 
