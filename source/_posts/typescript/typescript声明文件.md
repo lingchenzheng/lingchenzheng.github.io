@@ -1,6 +1,6 @@
 ---
 title: typescript声明文件
-catetory: typescript
+category: typescript
 tag: 编程语言
 ---
 
