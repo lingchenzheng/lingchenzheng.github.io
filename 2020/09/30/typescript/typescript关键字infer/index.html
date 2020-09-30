@@ -132,23 +132,23 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      node-gyp安装
+      typescript关键字infer
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <time datetime="2020-09-29T05:36:09.197Z" style="display: flex; align-items: center;">
+    <time datetime="2020-09-30T09:32:12.996Z" style="display: flex; align-items: center;">
       <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
-      <span>2020-09-29</span>
+      <span>2020-09-30</span>
     </time>
     
     <span class="dot"></span>
     
-    <a href="/categories/其他/" class="post-meta-link">其他</a>
+    <a href="/categories/typescript/" class="post-meta-link">typescript</a>
     
     
     
     <span class="dot"></span>
-    <span>242 字</span>
+    <span>333 字</span>
     
   </div>
   
@@ -157,40 +157,57 @@
       <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
       
       
-        <a href="/tags/工具/" class="post-meta-link">工具</a>
+        <a href="/tags/编程语言/" class="post-meta-link">编程语言</a>
       
     </div>
   </div>
   
   </header>
   <div id="section" class="post-content">
-    <h5 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h5><p>node-gyp，是由于node程序中需要调用一些其他语言编写的 工具 甚至是dll，需要先编译一下，否则就会有跨平台的问题，例如在windows上运行的软件copy到mac上就不能用了，但是如果源码支持，编译一下，在mac上还是可以用的。node-gyp在较新的Node版本中都是自带的（平台相关），用来编译原生C++模块。</p>
-<h5 id="node-gyp的依赖"><a href="#node-gyp的依赖" class="headerlink" title="node-gyp的依赖"></a>node-gyp的依赖</h5><p>以windows为例</p>
-<p>通过命令行一键安装</p>
-<pre class="highlight"><code class="hljs shell">npm install --global --production windows-build-tools<br></code></pre>
-<p><code>windows-build-tools</code>会安装如下包</p>
-<ul>
-<li>python2.7(不支持3.x)</li>
-<li>visual C++ Build Tools(vistual studio2015及以上)</li>
-<li>.net framework 4.5.1</li>
-</ul>
-<p>注意：需要以管理的方式运行上面的命令。</p>
-<h5 id="安装node-gyp"><a href="#安装node-gyp" class="headerlink" title="安装node-gyp"></a>安装node-gyp</h5><pre class="highlight"><code class="hljs shell">npm i -g node-gyp<br></code></pre>
+    <h5 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h5><p><code>infer</code>表示在<code>extends</code>条件语句中等待推断的类型</p>
+<p>例如：获取函数参数类型</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">type</span> ParamType&lt;T <span class="hljs-keyword">extends</span> () =&gt; <span class="hljs-built_in">any</span>&gt; = T <span class="hljs-keyword">extends</span> (param: infer P) =&gt; <span class="hljs-built_in">any</span><br>    ? P<br>    : <span class="hljs-built_in">any</span><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span>(<span class="hljs-params">name: <span class="hljs-built_in">string</span></span>): <span class="hljs-title">any</span> </span>&#123;&#125;<br><br><span class="hljs-keyword">type</span> Result = ParamType&lt;test&gt; <span class="hljs-comment">// string</span><br></code></pre>
 
-<p>注意：安装<code>node-gyp</code>之前，确认<code>node</code>是32位的，如果你的电脑安装的是64位的，可以通过nvm来安装管理node版本。</p>
-<h5 id="验证是否安装完成"><a href="#验证是否安装完成" class="headerlink" title="验证是否安装完成"></a>验证是否安装完成</h5><pre class="highlight"><code class="hljs shell">node-gyp list<br></code></pre>
+<p>解释：</p>
+<blockquote>
+<p>在这里，第一个<code>extends</code>表示类型约束，表示传入的 T 必须是函数类型，第二个<code>extends</code>用于条件判断，<br><code>T extends (param: infer P) =&gt; any</code>表示如果<code>T</code>能够赋值给<code>(param: infer P) =&gt; any</code>类型，则结果是传的函数参数类型<code>P</code>，则返回其参数类型，否则为<code>any</code>类型</p>
+</blockquote>
+<h5 id="几个使用-infer-的内置类型"><a href="#几个使用-infer-的内置类型" class="headerlink" title="几个使用 infer 的内置类型"></a>几个使用 infer 的内置类型</h5><ol>
+<li>获取函数返回值类型</li>
+</ol>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">type</span> ReturnType&lt;T <span class="hljs-keyword">extends</span> (...args: <span class="hljs-built_in">any</span>[]) =&gt; <span class="hljs-built_in">any</span>&gt; = T <span class="hljs-keyword">extends</span> (<br>    ...args: <span class="hljs-built_in">any</span>[]<br>) =&gt; infer P<br>    ? P<br>    : <span class="hljs-built_in">never</span><br></code></pre>
+
+<ol start="2">
+<li>获取实例类型</li>
+</ol>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">type</span> InstanceType&lt;T <span class="hljs-keyword">extends</span> <span class="hljs-keyword">new</span> (...args: <span class="hljs-built_in">any</span>[]) =&gt; <span class="hljs-built_in">any</span>&gt; = T <span class="hljs-keyword">extends</span> <span class="hljs-keyword">new</span> (<br>    ...args: <span class="hljs-built_in">any</span>[]<br>) =&gt; infer U<br>    ? U<br>    : <span class="hljs-built_in">never</span><br></code></pre>
+
+<ol start="3">
+<li>获取构造函数参数类型</li>
+</ol>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">type</span> ConstructorType&lt;T <span class="hljs-keyword">extends</span> <span class="hljs-keyword">new</span> (...args: <span class="hljs-built_in">any</span>[]) =&gt; <span class="hljs-built_in">any</span>&gt; = T <span class="hljs-keyword">extends</span> <span class="hljs-keyword">new</span> (<br>    ...args: infer P<br>) =&gt; <span class="hljs-built_in">any</span><br>    ? P<br>    : <span class="hljs-built_in">never</span><br></code></pre>
+
+<h5 id="练习"><a href="#练习" class="headerlink" title="练习"></a>练习</h5><ol>
+<li>类型过滤</li>
+</ol>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">//挑选如下结构的函数类型</span><br><br><span class="hljs-keyword">interface</span> Module &#123;<br>    count: <span class="hljs-built_in">number</span><br>    name: <span class="hljs-built_in">string</span><br>    say(word: <span class="hljs-built_in">string</span>): <span class="hljs-built_in">any</span><br>&#125;<br><br><span class="hljs-keyword">type</span> FilterFunc&lt;T&gt; = Pick&lt;<br>    T,<br>    &#123; [P <span class="hljs-keyword">in</span> keyof T]: T[P] <span class="hljs-keyword">extends</span> <span class="hljs-built_in">Function</span> ? P : <span class="hljs-built_in">never</span> &#125;[keyof T]<br>&gt;<br><br><span class="hljs-keyword">type</span> Module2 = FilterFunc&lt;Module&gt; <span class="hljs-comment">// &#123;say(word: string): any&#125;</span><br></code></pre>
+
+<ol start="2">
+<li><code>tuple</code>转<code>union</code>类型</li>
+</ol>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">type</span> Tuples = [<span class="hljs-built_in">string</span>, <span class="hljs-built_in">number</span>]<br><span class="hljs-keyword">type</span> ElementOf&lt;T&gt; = T <span class="hljs-keyword">extends</span> <span class="hljs-built_in">Array</span>&lt;infer E&gt; ? E : <span class="hljs-built_in">never</span><br><span class="hljs-keyword">type</span> ToUnion = ElementOf&lt;Tuples&gt;<br></code></pre>
 
   </div>
 </article>
 <div class="nav">
   
   <div class="nav-item-prev">
-    <a href="/2020/09/29/other/前端js获取wma文件时长/" class="nav-link">
+    <a href="/2020/09/30/typescript/typescript基础/" class="nav-link">
       <i class="iconfont icon-left nav-prev-icon"></i>
       <div>
         <div class="nav-label">上一篇</div>
         
-        <div class="nav-title">前端获取wma文件时长 </div>
+        <div class="nav-title">typescript基础 </div>
         
       </div>
     </a>
@@ -198,11 +215,11 @@
   
   
   <div class="nav-item-next">
-    <a href="/2020/08/25/web/IndexedDB存储/" class="nav-link">
+    <a href="/2020/09/30/other/前端js获取wma文件时长/" class="nav-link">
       <div>
         <div class="nav-label">下一篇</div>
         
-        <div class="nav-title">IndexedDB基础知识 </div>
+        <div class="nav-title">前端获取wma文件时长 </div>
         
       </div>
       <i class="iconfont icon-right nav-next-icon"></i>
@@ -213,7 +230,7 @@
 
 <div class="card card-content toc-card" id="mobiletoc">
   <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
-<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#node-gyp%E7%9A%84%E4%BE%9D%E8%B5%96"><span class="toc-text">node-gyp的依赖</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%89%E8%A3%85node-gyp"><span class="toc-text">安装node-gyp</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%E6%98%AF%E5%90%A6%E5%AE%89%E8%A3%85%E5%AE%8C%E6%88%90"><span class="toc-text">验证是否安装完成</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%87%A0%E4%B8%AA%E4%BD%BF%E7%94%A8-infer-%E7%9A%84%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">几个使用 infer 的内置类型</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0"><span class="toc-text">练习</span></a></li></ol>
 </div></main>
           <aside class="left-column">
             
@@ -225,7 +242,7 @@
 <p class="author-description">Front End Developer</p>
 <div class="author-message">
   <a class="author-posts-count" href="/archives">
-    <span>47</span>
+    <span>48</span>
     <span>文章</span>
   </a>
   <a class="author-categories-count" href="/categories">
@@ -246,7 +263,7 @@
   <article class="display-when-two-columns spacer">
     <div class="card card-content toc-card">
       <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
-<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#node-gyp%E7%9A%84%E4%BE%9D%E8%B5%96"><span class="toc-text">node-gyp的依赖</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%89%E8%A3%85node-gyp"><span class="toc-text">安装node-gyp</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%E6%98%AF%E5%90%A6%E5%AE%89%E8%A3%85%E5%AE%8C%E6%88%90"><span class="toc-text">验证是否安装完成</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%87%A0%E4%B8%AA%E4%BD%BF%E7%94%A8-infer-%E7%9A%84%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">几个使用 infer 的内置类型</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0"><span class="toc-text">练习</span></a></li></ol>
     </div>
   </article>
   
@@ -322,7 +339,7 @@
       <a href="/categories/webpack">
         <div class="categories-list-item">
           webpack
-          <span class="categories-list-item-badge">4</span>
+          <span class="categories-list-item-badge">5</span>
         </div>
       </a>
     
@@ -360,7 +377,7 @@
   
   <article class="card card-content toc-card">
     <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
-<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#node-gyp%E7%9A%84%E4%BE%9D%E8%B5%96"><span class="toc-text">node-gyp的依赖</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%89%E8%A3%85node-gyp"><span class="toc-text">安装node-gyp</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%E6%98%AF%E5%90%A6%E5%AE%89%E8%A3%85%E5%AE%8C%E6%88%90"><span class="toc-text">验证是否安装完成</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%87%A0%E4%B8%AA%E4%BD%BF%E7%94%A8-infer-%E7%9A%84%E5%86%85%E7%BD%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">几个使用 infer 的内置类型</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%BB%83%E4%B9%A0"><span class="toc-text">练习</span></a></li></ol>
   </article>
   
   
@@ -370,23 +387,23 @@
   <div class="recent-posts-list">
     
       <div class="recent-posts-item">
-        <div class="recent-posts-item-title">2020-09-29</div>
-        <a href="/2020/09/29/typescript/typescript模块与命名空间/"><div class="recent-posts-item-content">typescript模块与命名空间</div></a>
+        <div class="recent-posts-item-title">2020-09-30</div>
+        <a href="/2020/09/30/typescript/typescript模块与命名空间/"><div class="recent-posts-item-content">typescript模块与命名空间</div></a>
       </div>
     
       <div class="recent-posts-item">
-        <div class="recent-posts-item-title">2020-09-29</div>
-        <a href="/2020/09/29/typescript/typescript基础/"><div class="recent-posts-item-content">typescript基础</div></a>
+        <div class="recent-posts-item-title">2020-09-30</div>
+        <a href="/2020/09/30/typescript/typescript声明文件/"><div class="recent-posts-item-content">typescript声明文件</div></a>
       </div>
     
       <div class="recent-posts-item">
-        <div class="recent-posts-item-title">2020-09-29</div>
-        <a href="/2020/09/29/typescript/typescript类型推论/"><div class="recent-posts-item-content">typescript类型推论</div></a>
+        <div class="recent-posts-item-title">2020-09-30</div>
+        <a href="/2020/09/30/typescript/typescript高级类型/"><div class="recent-posts-item-content">typescript高级类型</div></a>
       </div>
     
       <div class="recent-posts-item">
-        <div class="recent-posts-item-title">2020-09-29</div>
-        <a href="/2020/09/29/typescript/typescript类/"><div class="recent-posts-item-content">typescript类</div></a>
+        <div class="recent-posts-item-title">2020-09-30</div>
+        <a href="/2020/09/30/typescript/typescript类型推论/"><div class="recent-posts-item-content">typescript类型推论</div></a>
       </div>
     
   </div>

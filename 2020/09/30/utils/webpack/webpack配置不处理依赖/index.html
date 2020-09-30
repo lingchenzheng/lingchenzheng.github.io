@@ -132,23 +132,23 @@
 <article class="card card-content">
   <header>
     <h1 class="post-title">
-      typescript声明文件
+      webpack打包配置不处理依赖
     </h1>
   </header>
   <div class="post-meta post-show-meta">
-    <time datetime="2020-09-29T05:36:09.197Z" style="display: flex; align-items: center;">
+    <time datetime="2020-09-30T09:32:12.996Z" style="display: flex; align-items: center;">
       <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
-      <span>2020-09-29</span>
+      <span>2020-09-30</span>
     </time>
     
     <span class="dot"></span>
     
-    <a href="/categories/typescript/" class="post-meta-link">typescript</a>
+    <a href="/categories/webpack/" class="post-meta-link">webpack</a>
     
     
     
     <span class="dot"></span>
-    <span>14 字</span>
+    <span>401 字</span>
     
   </div>
   
@@ -157,26 +157,39 @@
       <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
       
       
-        <a href="/tags/编程语言/" class="post-meta-link">编程语言</a>
+        <a href="/tags/工具/" class="post-meta-link">工具</a>
       
     </div>
   </div>
   
   </header>
   <div id="section" class="post-content">
-    <h5 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h5><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/banketan1026/article/details/102391190">声明文件</a><br><a target="_blank" rel="noopener" href="https://www.zhihu.com/search?type=content&q=typescript%E5%A3%B0%E6%98%8E%E6%96%87%E4%BB%B6">声明文件</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/133344957">声明文件</a></p>
+    <h5 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h5><p>有时候我们打包非 web 环境包时，比如<code>node</code>或者<code>electron</code>的包，如果我们需要动态加载一些外部库，这里的动态加载不是指懒加载的意思，是指项目打包后，程序运行的时候再去加载的包。当然，对于<code>fs</code>这样的内部模块，webpack 自己已经做了处理，使用<code>externals</code>选项，所以不会将这些内置模块打包进 bundle 里。</p>
+<p>那么，如果是我们自己定义的模块呢？我们如何做到不让 webpack 去解析这个依赖？而是运行时再去<code>require</code>。</p>
+<p>这里我们也要用到<code>externals</code>选项，通过<code>externals</code>将<code>require</code>方法赋值给一个新的名。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">const</span> webpack = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;webpack&#x27;</span>)<br><span class="hljs-built_in">module</span>.exports = &#123;<br>    externals: &#123;<br>        _require: <span class="hljs-string">&#x27;require&#x27;</span><br>    &#125;,<br>    plugins: [<br>        <span class="hljs-keyword">new</span> webpack.ProvidePlugin(&#123;<br>            _require: <span class="hljs-string">&#x27;_require&#x27;</span><br>        &#125;)<br>    ]<br>&#125;<br></code></pre>
+
+<p>我们来解释一下上面的配置，首先<code>ProvidePlugin</code>是为了在每个文件注入代码<code>const _require = require(&#39;_require&#39;)</code>，这样我们就不用每处导入了。</p>
+<p>而<code>externals</code>里<code>_require: &#39;require&#39;</code>的作用是规定了如何处理引入<code>_require</code>模块，在这里表示将文件的内置<code>require</code>方法赋值给变量<code>_require</code>。</p>
+<p>再来看个例子：</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">//input.js</span><br><span class="hljs-keyword">let</span> A = _require(<span class="hljs-string">&#x27;./a&#x27;</span>)<br></code></pre>
+
+<p>打包后</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-comment">//output.js部分</span><br>&#123;<br>    <span class="hljs-string">&#x27;./src/index.js&#x27;</span>: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">module, exports, __webpack_require__</span>) </span>&#123;<br>        <span class="hljs-built_in">eval</span>(<br>            <span class="hljs-string">&#x27;(function(_require) &#123;let A = _require(\&#x27;./a\&#x27;)&#125;.call(this, __webpack_require__(/*! _require */ &quot;_require&quot;)))\n\n//# sourceURL=webpack:///./src/index.js?&#x27;</span><br>        )<br>    &#125;,<br>    _require: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">module, exports</span>) </span>&#123;<br>        <span class="hljs-built_in">eval</span>(<br>            <span class="hljs-string">&#x27;module.exports = require;\n\n//# sourceURL=webpack:///external_%22require%22?&#x27;</span><br>        )<br>    &#125;<br>&#125;<br></code></pre>
+
+<p>可以看到，当我们使用<code>_require</code>去加载<code>./a</code>时并没有去处理依赖，而是运行时再去<code>require</code>。</p>
 
   </div>
 </article>
 <div class="nav">
   
   <div class="nav-item-prev">
-    <a href="/2020/09/29/typescript/typescript接口/" class="nav-link">
+    <a href="/2020/09/30/typescript/typescript泛型/" class="nav-link">
       <i class="iconfont icon-left nav-prev-icon"></i>
       <div>
         <div class="nav-label">上一篇</div>
         
-        <div class="nav-title">typescript接口 </div>
+        <div class="nav-title">typescript泛型 </div>
         
       </div>
     </a>
@@ -184,11 +197,11 @@
   
   
   <div class="nav-item-next">
-    <a href="/2020/09/29/typescript/typescript关键字infer/" class="nav-link">
+    <a href="/2020/09/30/typescript/typescript接口/" class="nav-link">
       <div>
         <div class="nav-label">下一篇</div>
         
-        <div class="nav-title">typescript关键字infer </div>
+        <div class="nav-title">typescript接口 </div>
         
       </div>
       <i class="iconfont icon-right nav-next-icon"></i>
@@ -199,7 +212,7 @@
 
 <div class="card card-content toc-card" id="mobiletoc">
   <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
-<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li></ol>
 </div></main>
           <aside class="left-column">
             
@@ -211,7 +224,7 @@
 <p class="author-description">Front End Developer</p>
 <div class="author-message">
   <a class="author-posts-count" href="/archives">
-    <span>47</span>
+    <span>48</span>
     <span>文章</span>
   </a>
   <a class="author-categories-count" href="/categories">
@@ -232,7 +245,7 @@
   <article class="display-when-two-columns spacer">
     <div class="card card-content toc-card">
       <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
-<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li></ol>
     </div>
   </article>
   
@@ -308,7 +321,7 @@
       <a href="/categories/webpack">
         <div class="categories-list-item">
           webpack
-          <span class="categories-list-item-badge">4</span>
+          <span class="categories-list-item-badge">5</span>
         </div>
       </a>
     
@@ -346,7 +359,7 @@
   
   <article class="card card-content toc-card">
     <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
-<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li></ol>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li></ol>
   </article>
   
   
@@ -356,23 +369,23 @@
   <div class="recent-posts-list">
     
       <div class="recent-posts-item">
-        <div class="recent-posts-item-title">2020-09-29</div>
-        <a href="/2020/09/29/typescript/typescript模块与命名空间/"><div class="recent-posts-item-content">typescript模块与命名空间</div></a>
+        <div class="recent-posts-item-title">2020-09-30</div>
+        <a href="/2020/09/30/typescript/typescript模块与命名空间/"><div class="recent-posts-item-content">typescript模块与命名空间</div></a>
       </div>
     
       <div class="recent-posts-item">
-        <div class="recent-posts-item-title">2020-09-29</div>
-        <a href="/2020/09/29/typescript/typescript基础/"><div class="recent-posts-item-content">typescript基础</div></a>
+        <div class="recent-posts-item-title">2020-09-30</div>
+        <a href="/2020/09/30/typescript/typescript声明文件/"><div class="recent-posts-item-content">typescript声明文件</div></a>
       </div>
     
       <div class="recent-posts-item">
-        <div class="recent-posts-item-title">2020-09-29</div>
-        <a href="/2020/09/29/typescript/typescript类型推论/"><div class="recent-posts-item-content">typescript类型推论</div></a>
+        <div class="recent-posts-item-title">2020-09-30</div>
+        <a href="/2020/09/30/typescript/typescript高级类型/"><div class="recent-posts-item-content">typescript高级类型</div></a>
       </div>
     
       <div class="recent-posts-item">
-        <div class="recent-posts-item-title">2020-09-29</div>
-        <a href="/2020/09/29/typescript/typescript类/"><div class="recent-posts-item-content">typescript类</div></a>
+        <div class="recent-posts-item-title">2020-09-30</div>
+        <a href="/2020/09/30/typescript/typescript类型推论/"><div class="recent-posts-item-content">typescript类型推论</div></a>
       </div>
     
   </div>
