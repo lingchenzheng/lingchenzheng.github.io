@@ -128,134 +128,61 @@
     <div class="section-wrap">
       <div class="container">
         <div class="columns">
-          <main class="main-column"><div class="card card-content">
-  <h1 class="widget-title">归档</h1>
-</div>
-<div class="archive-timeline">
+          <main class="main-column">
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      webpack打包之noParse优化
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <time datetime="2021-01-09T10:13:29.357Z" style="display: flex; align-items: center;">
+      <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
+      <span>2021-01-09</span>
+    </time>
+    
+    <span class="dot"></span>
+    
+    <a href="/categories/webpack/" class="post-meta-link">webpack</a>
+    
+    
+    
+    <span class="dot"></span>
+    <span>161 字</span>
+    
+  </div>
   
-  
-  
-  <div class="archive-timeline-tag"><span>2019</span></div>
-  
-  
-  <div class="archive-timeline-item">
-    <div class="archive-timeline-post">
-      <div class="card card-content">
-        <div class="archive-timeline-post-date">2019-07-03</div>
-        <div class="archive-timeline-post-content"><a href="/2019/07/03/markdown/hexo集成mermaid/"
-            class="archive-timeline-post-item">hexo 集成 mermaid</a></div>
-      </div>
+  <div class="post-meta post-show-meta" style="margin-top: -10px;">
+    <div style="display: flex; align-items: center;">
+      <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
+      
+      
+        <a href="/tags/工具/" class="post-meta-link">工具</a>
+      
     </div>
   </div>
   
-  
-  <div class="archive-timeline-item">
-    <div class="archive-timeline-post">
-      <div class="card card-content">
-        <div class="archive-timeline-post-date">2019-07-02</div>
-        <div class="archive-timeline-post-content"><a href="/2019/07/02/markdown/markdown流程图/"
-            class="archive-timeline-post-item">使用markdown绘制流程图</a></div>
-      </div>
-    </div>
-  </div>
-  
-  
-  <div class="archive-timeline-item">
-    <div class="archive-timeline-post">
-      <div class="card card-content">
-        <div class="archive-timeline-post-date">2019-07-01</div>
-        <div class="archive-timeline-post-content"><a href="/2019/07/01/markdown/markdown基础入门/"
-            class="archive-timeline-post-item">markdown基础入门</a></div>
-      </div>
-    </div>
-  </div>
-  
-  
-  <div class="archive-timeline-item">
-    <div class="archive-timeline-post">
-      <div class="card card-content">
-        <div class="archive-timeline-post-date">2019-06-28</div>
-        <div class="archive-timeline-post-content"><a href="/2019/06/28/web/json跨域/"
-            class="archive-timeline-post-item">jsonp跨域</a></div>
-      </div>
-    </div>
-  </div>
-  
-  
-  <div class="archive-timeline-item">
-    <div class="archive-timeline-post">
-      <div class="card card-content">
-        <div class="archive-timeline-post-date">2019-06-27</div>
-        <div class="archive-timeline-post-content"><a href="/2019/06/27/es/深拷贝/"
-            class="archive-timeline-post-item">js深拷贝</a></div>
-      </div>
-    </div>
-  </div>
-  
-  
-  <div class="archive-timeline-item">
-    <div class="archive-timeline-post">
-      <div class="card card-content">
-        <div class="archive-timeline-post-date">2019-06-26</div>
-        <div class="archive-timeline-post-content"><a href="/2019/06/26/es/symbol/"
-            class="archive-timeline-post-item">Symbol对象</a></div>
-      </div>
-    </div>
-  </div>
-  
-  
-  <div class="archive-timeline-item">
-    <div class="archive-timeline-post">
-      <div class="card card-content">
-        <div class="archive-timeline-post-date">2019-06-03</div>
-        <div class="archive-timeline-post-content"><a href="/2019/06/03/vue/$attrs与$listeners/"
-            class="archive-timeline-post-item">$attrs与$listeners</a></div>
-      </div>
-    </div>
-  </div>
-  
-  
-  <div class="archive-timeline-item">
-    <div class="archive-timeline-post">
-      <div class="card card-content">
-        <div class="archive-timeline-post-date">2019-05-22</div>
-        <div class="archive-timeline-post-content"><a href="/2019/05/22/web/requestAnimationFrame/"
-            class="archive-timeline-post-item">requestAnimationFrame</a></div>
-      </div>
-    </div>
-  </div>
-  
-  
-  <div class="archive-timeline-item">
-    <div class="archive-timeline-post">
-      <div class="card card-content">
-        <div class="archive-timeline-post-date">2019-05-14</div>
-        <div class="archive-timeline-post-content"><a href="/2019/05/14/http/http请求头部-Accept/"
-            class="archive-timeline-post-item">Accept相关请求头部</a></div>
-      </div>
-    </div>
-  </div>
-  
-  
-  <div class="archive-timeline-item">
-    <div class="archive-timeline-post">
-      <div class="card card-content">
-        <div class="archive-timeline-post-date">2019-04-27</div>
-        <div class="archive-timeline-post-content"><a href="/2019/04/27/es/防抖与节流/"
-            class="archive-timeline-post-item">防抖与节流</a></div>
-      </div>
-    </div>
-  </div>
-  
-</div>
+  </header>
+  <div id="section" class="post-content">
+    <h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><p>noParse 是用来阻止 webpack 对三方库依赖的解析，这里并不是不解析这个三方库，而是不去处理这个三方库是否依赖了其他库，这样可以提高解析速度。比如我们使用 jquery 或者 loadsh，已经确定它们不会依赖其他库，这个时候可以配置 noParse 不去处理它们是否有依赖。</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-built_in">module</span>.exports = &#123;<br>  <span class="hljs-built_in">module</span>: &#123;<br>    noParse: <span class="hljs-regexp">/jquery|lodash/</span><br>&#125;<br></code></pre>
 
+<p>或者</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-built_in">module</span>.exports = &#123;<br>    <span class="hljs-built_in">module</span>: &#123;<br>        noParse: <span class="hljs-function">(<span class="hljs-params">content</span>) =&gt;</span> <span class="hljs-regexp">/jquery|lodash/</span>.test(content)<br>    &#125;<br>&#125;<br></code></pre>
+
+<p>这个时候当我们引入 jquery 的时候，webpack 会直接引入，不会去检查它时候有依赖其他库·</p>
+
+  </div>
+</article>
 <div class="nav">
   
   <div class="nav-item-prev">
-    <a href="/archives/2019/" class="nav-link">
+    <a href="/2021/01/09/typescript/typescript声明文件/" class="nav-link">
       <i class="iconfont icon-left nav-prev-icon"></i>
       <div>
-        <div class="nav-label">上一页</div>
+        <div class="nav-label">上一篇</div>
+        
+        <div class="nav-title">typescript声明文件 </div>
         
       </div>
     </a>
@@ -263,9 +190,11 @@
   
   
   <div class="nav-item-next">
-    <a href="/archives/2019/page/3/" class="nav-link">
+    <a href="/2021/01/09/typescript/typescript高级类型/" class="nav-link">
       <div>
-        <div class="nav-label">下一页</div>
+        <div class="nav-label">下一篇</div>
+        
+        <div class="nav-title">typescript高级类型 </div>
         
       </div>
       <i class="iconfont icon-right nav-next-icon"></i>
@@ -273,7 +202,11 @@
   </div>
   
 </div>
-</main>
+
+<div class="card card-content toc-card" id="mobiletoc">
+  <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li></ol>
+</div></main>
           <aside class="left-column">
             
             <div class="card card-author">
@@ -301,6 +234,13 @@
             
             <div class="sticky-tablet">
   
+  
+  <article class="display-when-two-columns spacer">
+    <div class="card card-content toc-card">
+      <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li></ol>
+    </div>
+  </article>
   
   
   <article class="card card-content">
@@ -404,247 +344,16 @@
   </article>
   
   
-  <article class="card card-content widescreen-archive">
-    <div class="archive-card">
-  <div class="archive-card-header"><i class="iconfont icon-wodebaobiao" style="padding-right: 2px;"></i>归档</div>
-  <div class="archive-card-list">
-    
-    
-    
-      
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-          <a href="/archives/2021" class="archive-card-list-item">
-              2021
-              <span class="archive-card-list-item-badge">14</span>
-          </a>
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-          <a href="/archives/2020" class="archive-card-list-item">
-              2020
-              <span class="archive-card-list-item-badge">6</span>
-          </a>
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-          <a href="/archives/2019" class="archive-card-list-item">
-              2019
-              <span class="archive-card-list-item-badge">22</span>
-          </a>
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-    
-      <a href="/archives/2018" class="archive-card-list-item">
-          2018
-          <span class="archive-card-list-item-badge">7</span>
-      </a>
-    
-  </div>
-</div>
-  </article>
-  
 </div>
           </aside>
           <aside class="right-column">
             <div class="sticky-widescreen">
   
+  
+  <article class="card card-content toc-card">
+    <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li></ol>
+  </article>
   
   
   <article class="card card-content">
@@ -676,242 +385,6 @@
 </div>
   </article>
   
-  
-  <article class="card card-content">
-    <div class="archive-card">
-  <div class="archive-card-header"><i class="iconfont icon-wodebaobiao" style="padding-right: 2px;"></i>归档</div>
-  <div class="archive-card-list">
-    
-    
-    
-      
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-          <a href="/archives/2021" class="archive-card-list-item">
-              2021
-              <span class="archive-card-list-item-badge">14</span>
-          </a>
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-          <a href="/archives/2020" class="archive-card-list-item">
-              2020
-              <span class="archive-card-list-item-badge">6</span>
-          </a>
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-          <a href="/archives/2019" class="archive-card-list-item">
-              2019
-              <span class="archive-card-list-item-badge">22</span>
-          </a>
-        
-        
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-      
-        
-      
-    
-    
-      <a href="/archives/2018" class="archive-card-list-item">
-          2018
-          <span class="archive-card-list-item-badge">7</span>
-      </a>
-    
-  </div>
-</div>
-  </article>
   
 </div>
           </aside>
