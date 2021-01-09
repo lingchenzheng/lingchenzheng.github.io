@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html>
+<meta  lang="zh-CN" >
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="theme-color" content="#fff" id="theme-color">
+  <link rel="icon" href="/images/me.jpg">
+  <title>我的博客</title>
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+    var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+      }
+    };
+    setDarkmode();
+  </script>
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  </script>
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_vpj3dq9ceqa.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  
+  <link rel="preload" href="//cdn.jsdelivr.net/npm/fslightbox@3.1.0/index.min.js" as="script">
+  
+  
+  <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="/css/main.css">
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_vpj3dq9ceqa.css">
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+
+  
+  
+  
+<meta name="generator" content="Hexo 5.0.2"></head>
+
+
+<body>
+  <div class="wrapper">
+    
+    <nav class="navbar">
+  <div class="navbar-logo">
+    <span class="navbar-logo-main">
+      
+      <img class="navbar-logo-img" src="/images/me.jpg">
+      
+      <span class="navbar-logo-dsc">我的博客</span>
+    </span>
+  </div>
+  <div class="navbar-menu">
+    
+    <a href="/" class="navbar-menu-item">首页 </a>
+    
+    <a href="/archives" class="navbar-menu-item">归档 </a>
+    
+    <a href="/tags" class="navbar-menu-item">标签 </a>
+    
+    <a href="/categories" class="navbar-menu-item">分类 </a>
+    
+    <a href="/about" class="navbar-menu-item">关于 </a>
+    
+    <a href="/links" class="navbar-menu-item">友链 </a>
+    
+    <a class="navbar-menu-item" id="dark"><i class="iconfont icon-weather"></i></a>
+  </div>
+</nav>
+    
+    <div class="section-wrap">
+      <div class="container">
+        <div class="columns">
+          <main class="main-column">
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      typescript泛型
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <time datetime="2021-01-09T02:51:41.341Z" style="display: flex; align-items: center;">
+      <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
+      <span>2021-01-09</span>
+    </time>
+    
+    <span class="dot"></span>
+    
+    <a href="/categories/typescript/" class="post-meta-link">typescript</a>
+    
+    
+    
+    <span class="dot"></span>
+    <span>1.2k 字</span>
+    
+  </div>
+  
+  <div class="post-meta post-show-meta" style="margin-top: -10px;">
+    <div style="display: flex; align-items: center;">
+      <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
+      
+      
+        <a href="/tags/编程语言/" class="post-meta-link">编程语言</a>
+      
+    </div>
+  </div>
+  
+  </header>
+  <div id="section" class="post-content">
+    <p><strong>介绍</strong></p>
+<p>关于对 typescript 泛型的介绍，官网文档如下：</p>
+<blockquote>
+<p>软件工程中，我们不仅要创建一致的定义良好的 API，同时也要考虑可重用性。 组件不仅能够支持当前的数据类型，同时也能支持未来的数据类型，这在创建大型系统时为你提供了十分灵活的功能。</p>
+</blockquote>
+<p>文档中描述的比较简单，我们对泛型的概念还是很迷惑，下面我将从自己的理解来具体解释以下泛型。</p>
+<p>首先我们知道 typescript 是基于类型系统的，基于类型系统好处，我们可以写出更高质量的代码，可以更好的设计程序，代码的可读性更强，大型项目中多人合作更方便等等。类型检查带来了好处，但是它也带了一定副作用。下面以一个例子说明：</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">class</span> Dog &#123;&#125;<br><span class="hljs-keyword">class</span> Person &#123;<br>    <span class="hljs-keyword">constructor</span>(<span class="hljs-params">pets: Dog</span>) &#123;<br>        <span class="hljs-built_in">this</span>.pets = pets<br>    &#125;<br>    pets: Dog<br>    name: <span class="hljs-built_in">string</span><br>&#125;<br><br><span class="hljs-keyword">let</span> person: Person = <span class="hljs-keyword">new</span> Person(<span class="hljs-keyword">new</span> Dog())<br></code></pre>
+
+<p>上面的代码，声明了一个<code>Person</code>类，类里面有属性<code>pets</code>为<code>Dog</code>类型，如果我们需要拓展一个<code>Cat</code>类型怎办？重新声明一个类？如下：</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">class</span> Dog &#123;&#125;<br><span class="hljs-keyword">class</span> Cat &#123;&#125;<br><span class="hljs-keyword">class</span> Person &#123;<br>    <span class="hljs-keyword">constructor</span>(<span class="hljs-params">pets: Dog</span>) &#123;<br>        <span class="hljs-built_in">this</span>.pets = pets<br>    &#125;<br>    pets: Dog<br>    name: <span class="hljs-built_in">string</span><br>&#125;<br><br><span class="hljs-keyword">class</span> Person2 &#123;<br>    <span class="hljs-keyword">constructor</span>(<span class="hljs-params">pets: Cat</span>) &#123;<br>        <span class="hljs-built_in">this</span>.pets = pets<br>    &#125;<br>    pets: Cat<br>    name: <span class="hljs-built_in">string</span><br>&#125;<br><br><span class="hljs-keyword">let</span> person: Person = <span class="hljs-keyword">new</span> Person(<span class="hljs-keyword">new</span> Dog())<br><span class="hljs-keyword">let</span> person2: Person2 = <span class="hljs-keyword">new</span> Person2(<span class="hljs-keyword">new</span> Cat())<br></code></pre>
+
+<p>很明显<code>Person</code>和<code>Person2</code>只有<code>pets</code>属性的类型不同，其他都一样，如果重复声明两个类这样代码的可重用性太低了。</p>
+<p>对于上面的问题，在<code>javascript</code>这种弱类型语言来说就不存在</p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Dog</span> </span>&#123;&#125;<br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Cat</span> </span>&#123;&#125;<br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span> </span>&#123;<br>    <span class="hljs-keyword">constructor</span>(pets) &#123;<br>        <span class="hljs-built_in">this</span>.pets = pets<br>    &#125;<br>&#125;<br><span class="hljs-keyword">let</span> person = <span class="hljs-keyword">new</span> Person(<span class="hljs-keyword">new</span> Dog())<br><span class="hljs-keyword">let</span> person2 = <span class="hljs-keyword">new</span> Person2(<span class="hljs-keyword">new</span> Cat())<br></code></pre>
+
+<p>当然 typescript 也是兼容上面的写法，但是这样就跟写 js 没什么区别，就无法利用 typescript 的类型系统来对代码进行检测了。</p>
+<p>所以这时候泛型就上场了。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">class</span> Dog &#123;&#125;<br><span class="hljs-keyword">class</span> Cat &#123;&#125;<br><span class="hljs-keyword">class</span> Person&lt;T&gt; &#123;<br>    <span class="hljs-keyword">constructor</span>(<span class="hljs-params">pets: T</span>) &#123;<br>        <span class="hljs-built_in">this</span>.pets = pets<br>    &#125;<br>    pets: T<br>    name: <span class="hljs-built_in">string</span><br>&#125;<br><span class="hljs-keyword">let</span> person: Person&lt;Dog&gt; = <span class="hljs-keyword">new</span> Person(<span class="hljs-keyword">new</span> Dog())<br><span class="hljs-keyword">let</span> person2: Person&lt;Cat&gt; = <span class="hljs-keyword">new</span> Person(<span class="hljs-keyword">new</span> Cat())<br></code></pre>
+
+<p>所以我觉得泛型的作用就是让我们既能类型系统带来的好处，又能像弱类型语言那样使 API 更加灵活，代码的可重用性更好。</p>
+<p><strong>使用泛型变量</strong></p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">identity</span>&lt;<span class="hljs-title">T</span>&gt;(<span class="hljs-params">arg: T</span>): <span class="hljs-title">T</span> </span>&#123;<br>    <span class="hljs-keyword">return</span> arg<br>&#125;<br></code></pre>
+
+<p><strong>泛型函数的类型</strong></p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">//变量fn是一个泛型函数</span><br><span class="hljs-keyword">let</span> fn: &lt;T&gt;<span class="hljs-function">(<span class="hljs-params">x: T</span>) =&gt;</span> T<br><span class="hljs-comment">//所以它的值只能使泛型函数</span><br>fn = <span class="hljs-function"><span class="hljs-keyword">function</span> &lt;<span class="hljs-title">T</span>&gt;(<span class="hljs-params">x: T</span>): <span class="hljs-title">T</span> </span>&#123;<br>    <span class="hljs-keyword">return</span> x<br>&#125;<br>fn = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;&#125; <span class="hljs-comment">//error:不能将类型“&lt;T&gt;() =&gt; void”分配给类型“&lt;T&gt;(x: T) =&gt; T”</span><br><br><span class="hljs-comment">//使用其他变量也行，T与U相当于一个占位符</span><br>fn = <span class="hljs-function"><span class="hljs-keyword">function</span> &lt;<span class="hljs-title">U</span>&gt;(<span class="hljs-params">x: U</span>): <span class="hljs-title">U</span> </span>&#123;<br>    <span class="hljs-keyword">return</span> x<br>&#125;<br></code></pre>
+
+<p>使用对象签名字面量定义泛型函数</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">let</span> fn: &#123; &lt;T&gt;(x: T): T &#125;<br><br>fn = <span class="hljs-function"><span class="hljs-keyword">function</span> &lt;<span class="hljs-title">T</span>&gt;(<span class="hljs-params">x: T</span>): <span class="hljs-title">T</span> </span>&#123;<br>    <span class="hljs-keyword">return</span> x<br>&#125;<br></code></pre>
+
+<p>泛型接口</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">interface</span> FN &#123;<br>    &lt;T&gt;(x: T): T<br>&#125;<br><br><span class="hljs-keyword">let</span> fn: FN = <span class="hljs-function"><span class="hljs-keyword">function</span> &lt;<span class="hljs-title">T</span>&gt;(<span class="hljs-params">x: T</span>): <span class="hljs-title">T</span> </span>&#123;<br>    <span class="hljs-keyword">return</span><br>&#125;<br></code></pre>
+
+<p><strong>泛型约束</strong></p>
+<p>当我们使用泛型，编译器并不能证明每种类型都有某个属性。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span>&lt;<span class="hljs-title">T</span>&gt;(<span class="hljs-params">x: T</span>): <span class="hljs-title">void</span> </span>&#123;<br>    x.name <span class="hljs-comment">//error:类型“T”上不存在属性“name”</span><br>&#125;<br></code></pre>
+
+<p>这个时候我们可以定义一个接口来描述约束条件，并且通过<code>extends</code>关键字来实现约束。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">interface</span> A &#123;<br>    name: <span class="hljs-built_in">string</span><br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span>&lt;<span class="hljs-title">T</span> <span class="hljs-title">extends</span> <span class="hljs-title">A</span>&gt;(<span class="hljs-params">x: T</span>): <span class="hljs-title">void</span> </span>&#123;<br>    x.name<br>&#125;<br></code></pre>
+
+<p><strong>在泛型约束中使用类型参数</strong></p>
+<p>如果我们要某个对象的属性值，并且我们想要确保这个属性存在于对象 obj 上，因此我们需要在这两个类型之间使用约束。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getProperty</span>(<span class="hljs-params">obj: T, key: K</span>) </span>&#123;<br>    <span class="hljs-keyword">return</span> obj[key] <span class="hljs-comment">//error</span><br>&#125;<br></code></pre>
+
+<p>我们应该要约束<code>key</code>是<code>obj</code>的键中的一种</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getProperty</span>&lt;<span class="hljs-title">T</span>, <span class="hljs-title">K</span>&gt;(<span class="hljs-params">obj: T, key: K</span>) </span>&#123;<br>    <span class="hljs-keyword">return</span> obj[key] <span class="hljs-comment">//error:类型“K”无法用于索引类型“T”</span><br>&#125;<br><br><span class="hljs-keyword">let</span> x = &#123; a: <span class="hljs-number">1</span>, b: <span class="hljs-number">2</span>, c: <span class="hljs-number">3</span>, d: <span class="hljs-number">4</span> &#125;<br><br>getProperty(x, <span class="hljs-string">&#x27;a&#x27;</span>) <span class="hljs-comment">// okay</span><br>getProperty(x, <span class="hljs-string">&#x27;m&#x27;</span>)<br></code></pre>
+
+<p><strong>在泛型里使用类类型</strong></p>
+<p>在 TypeScript 使用泛型创建工厂函数时，需要引用构造函数的类类型。比如：</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">create</span>&lt;<span class="hljs-title">T</span>&gt;(<span class="hljs-params">c: &#123; <span class="hljs-keyword">new</span> (): T &#125;</span>): <span class="hljs-title">T</span> </span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> c()<br>&#125;<br></code></pre>
+
+<p>一个高级例子</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">class</span> BeeKeeper &#123;<br>    hasMask: <span class="hljs-built_in">boolean</span><br>&#125;<br><br><span class="hljs-keyword">class</span> ZooKeeper &#123;<br>    nametag: <span class="hljs-built_in">string</span><br>&#125;<br><br><span class="hljs-keyword">class</span> Animal &#123;<br>    numLegs: <span class="hljs-built_in">number</span><br>&#125;<br><br><span class="hljs-keyword">class</span> Bee <span class="hljs-keyword">extends</span> Animal &#123;<br>    keeper: BeeKeeper<br>&#125;<br><br><span class="hljs-keyword">class</span> Lion <span class="hljs-keyword">extends</span> Animal &#123;<br>    keeper: ZooKeeper<br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createInstance</span>&lt;<span class="hljs-title">A</span> <span class="hljs-title">extends</span> <span class="hljs-title">Animal</span>&gt;(<span class="hljs-params">c: <span class="hljs-keyword">new</span> () =&gt; A</span>): <span class="hljs-title">A</span> </span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> c()<br>&#125;<br><br>createInstance(Lion).keeper.nametag <span class="hljs-comment">// typechecks!</span><br>createInstance(Bee).keeper.hasMask <span class="hljs-comment">// typechecks!</span><br></code></pre>
+
+  </div>
+</article>
+<div class="nav">
+  
+  <div class="nav-item-prev">
+    <a href="/2021/01/09/typescript/typescript类/" class="nav-link">
+      <i class="iconfont icon-left nav-prev-icon"></i>
+      <div>
+        <div class="nav-label">上一篇</div>
+        
+        <div class="nav-title">typescript类 </div>
+        
+      </div>
+    </a>
+  </div>
+  
+  
+  <div class="nav-item-next">
+    <a href="/2021/01/09/typescript/typescript声明文件/" class="nav-link">
+      <div>
+        <div class="nav-label">下一篇</div>
+        
+        <div class="nav-title">typescript声明文件 </div>
+        
+      </div>
+      <i class="iconfont icon-right nav-next-icon"></i>
+    </a>
+  </div>
+  
+</div>
+
+<div class="card card-content toc-card" id="mobiletoc">
+  <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+
+</div></main>
+          <aside class="left-column">
+            
+            <div class="card card-author">
+              
+<img src="/images/avatar.jpg" class="author-img">
+
+<p class="author-name">Chenzheng Ling</p>
+<p class="author-description">Front End Developer</p>
+<div class="author-message">
+  <a class="author-posts-count" href="/archives">
+    <span>48</span>
+    <span>文章</span>
+  </a>
+  <a class="author-categories-count" href="/categories">
+    <span>10</span>
+    <span>分类</span>
+  </a>
+  <a class="author-tags-count" href="/tags">
+    <span>6</span>
+    <span>标签</span>
+  </a>
+</div>
+
+            </div>
+            
+            <div class="sticky-tablet">
+  
+  
+  <article class="display-when-two-columns spacer">
+    <div class="card card-content toc-card">
+      <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+
+    </div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <div class="categories-card">
+  <div class="categories-header"><i class="iconfont icon-fenlei" style="padding-right: 2px;"></i>分类</div>
+  <div class="categories-list">
+    
+      <a href="/categories/css">
+        <div class="categories-list-item">
+          css
+          <span class="categories-list-item-badge">4</span>
+        </div>
+      </a>
+    
+      <a href="/categories/es">
+        <div class="categories-list-item">
+          es
+          <span class="categories-list-item-badge">4</span>
+        </div>
+      </a>
+    
+      <a href="/categories/http">
+        <div class="categories-list-item">
+          http
+          <span class="categories-list-item-badge">3</span>
+        </div>
+      </a>
+    
+      <a href="/categories/markdown">
+        <div class="categories-list-item">
+          markdown
+          <span class="categories-list-item-badge">5</span>
+        </div>
+      </a>
+    
+      <a href="/categories/其他">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/typescript">
+        <div class="categories-list-item">
+          typescript
+          <span class="categories-list-item-badge">9</span>
+        </div>
+      </a>
+    
+      <a href="/categories/vue">
+        <div class="categories-list-item">
+          vue
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/web">
+        <div class="categories-list-item">
+          web
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/babel">
+        <div class="categories-list-item">
+          babel
+          <span class="categories-list-item-badge">4</span>
+        </div>
+      </a>
+    
+      <a href="/categories/webpack">
+        <div class="categories-list-item">
+          webpack
+          <span class="categories-list-item-badge">5</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content">
+    <div class="tags-card">
+  <div class="tags-header"><i class="iconfont icon-biaoqian" style="padding-right: 2px;"></i>热门标签</div>
+  <div class="tags-list">
+    
+    <a href="\tags\工具" title="工具"><div class="tags-list-item">工具</div></a>
+    
+    <a href="\tags\编程语言" title="编程语言"><div class="tags-list-item">编程语言</div></a>
+    
+    <a href="\tags\js基础" title="js基础"><div class="tags-list-item">js基础</div></a>
+    
+    <a href="\tags\解决方案" title="解决方案"><div class="tags-list-item">解决方案</div></a>
+    
+    <a href="\tags\网络" title="网络"><div class="tags-list-item">网络</div></a>
+    
+    <a href="\tags\框架" title="框架"><div class="tags-list-item">框架</div></a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+          </aside>
+          <aside class="right-column">
+            <div class="sticky-widescreen">
+  
+  
+  <article class="card card-content toc-card">
+    <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+
+  </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header"><i class="iconfont icon-wenzhang_huaban" style="padding-right: 2px;"></i>最近文章</div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-01-09</div>
+        <a href="/2021/01/09/utils/webpack/webpack配置不处理依赖/"><div class="recent-posts-item-content">webpack打包配置不处理依赖</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-01-09</div>
+        <a href="/2021/01/09/typescript/typescript模块与命名空间/"><div class="recent-posts-item-content">typescript模块与命名空间</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-01-09</div>
+        <a href="/2021/01/09/typescript/typescript高级类型/"><div class="recent-posts-item-content">typescript高级类型</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-01-09</div>
+        <a href="/2021/01/09/typescript/typescript类型推论/"><div class="recent-posts-item-content">typescript类型推论</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <footer class="footer">
+  <div class="footer-container">
+    <div class="copyright">
+      <div>
+        <span id="copyYear">Copyright ©
+          
+          2020 -
+          
+          2021
+        </span>
+        <a href="/" class="footer-link">我的博客 </a>
+      </div>
+    </div>
+
+    
+    <div class="footer-dsc">
+      
+      
+      Powered by
+      <a href="https://hexo.io/" class="footer-link" target="_blank" rel="nofollow noopener noreferrer">&nbsp;Hexo </a>
+      
+      
+      <span>&nbsp;|&nbsp;</span>
+      
+      
+      
+      Theme -
+      <a href="https://github.com/theme-kaze" class="footer-link" target="_blank"
+        rel="nofollow noopener noreferrer">&nbsp;Kaze</a>
+      
+    </div>
+    
+    
+    
+    
+</footer>
+  <a role="button" id="scrollbutton" class="basebutton" >
+  <i class="iconfont icon-arrowleft button-icon"></i>
+</a>
+<a role="button" id="menubutton" class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a role="button" id="popbutton" class="basebutton">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+
+  
+  
+  
+  <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img');
+    var i;
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a');
+      wrapper.setAttribute('data-fslightbox', 'gallery');
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'));
+      wrapper.setAttribute('style', 'width: 100%; display: flex; justify-content: center;');
+      img[i].parentElement.insertBefore(wrapper, img[i]);
+      wrapper.appendChild(img[i]);
+    }
+    refreshFsLightbox();
+  }
+</script>
+<script>loadScript("//cdn.jsdelivr.net/npm/fslightbox@3.1.0/index.min.js", addImgLayout)</script>
+  
+  
+  
+<script src="/js/main.js"></script>
+
+  
+  
+  <script>
+    var addLazyload = function () {
+      var observer = lozad('.lozad', {
+        load: function (el) {
+          el.srcset = el.getAttribute('data-src');
+        },
+        loaded: function (el) {
+          el.classList.add('loaded');
+        }
+      });
+      observer.observe();
+    }
+  </script>
+  <script>loadScript("/js/lib/lozad.min.js", addLazyload)</script>
+  
+  
+
+  
+  <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'forest'});
+    }
+  </script>
+  
+</body>
+
+</html>
