@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html>
+<meta  lang="zh-CN" >
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="theme-color" content="#fff" id="theme-color">
+  <link rel="icon" href="/images/me.jpg">
+  <title>我的博客</title>
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+    var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+      }
+    };
+    setDarkmode();
+  </script>
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  </script>
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_vpj3dq9ceqa.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  
+  <link rel="preload" href="//cdn.jsdelivr.net/npm/fslightbox@3.1.0/index.min.js" as="script">
+  
+  
+  <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="/css/main.css">
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_vpj3dq9ceqa.css">
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+
+  
+  
+  
+<meta name="generator" content="Hexo 5.0.2"></head>
+
+
+<body>
+  <div class="wrapper">
+    
+    <nav class="navbar">
+  <div class="navbar-logo">
+    <span class="navbar-logo-main">
+      
+      <img class="navbar-logo-img" src="/images/me.jpg">
+      
+      <span class="navbar-logo-dsc">我的博客</span>
+    </span>
+  </div>
+  <div class="navbar-menu">
+    
+    <a href="/" class="navbar-menu-item">首页 </a>
+    
+    <a href="/archives" class="navbar-menu-item">归档 </a>
+    
+    <a href="/tags" class="navbar-menu-item">标签 </a>
+    
+    <a href="/categories" class="navbar-menu-item">分类 </a>
+    
+    <a href="/about" class="navbar-menu-item">关于 </a>
+    
+    <a href="/links" class="navbar-menu-item">友链 </a>
+    
+    <a class="navbar-menu-item" id="dark"><i class="iconfont icon-weather"></i></a>
+  </div>
+</nav>
+    
+    <div class="section-wrap">
+      <div class="container">
+        <div class="columns">
+          <main class="main-column">
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      typescript接口
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <time datetime="2021-03-20T07:52:32.177Z" style="display: flex; align-items: center;">
+      <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
+      <span>2021-03-20</span>
+    </time>
+    
+    <span class="dot"></span>
+    
+    <a href="/categories/typescript/" class="post-meta-link">typescript</a>
+    
+    
+    
+    <span class="dot"></span>
+    <span>1.5k 字</span>
+    
+  </div>
+  
+  <div class="post-meta post-show-meta" style="margin-top: -10px;">
+    <div style="display: flex; align-items: center;">
+      <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
+      
+      
+        <a href="/tags/编程语言/" class="post-meta-link">编程语言</a>
+      
+    </div>
+  </div>
+  
+  </header>
+  <div id="section" class="post-content">
+    <h5 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h5><p>在面向对象语言中，接口是一个很重要的概念(java,dart…)，它表示对行为的抽象和约束，比如我们定义了一个接口，这个接口规定有一个方法<code>eat</code>，接口只提供方法名，不提供方法实现，具体实现由实现接口的对象来决定。</p>
+<blockquote>
+<p>TypeScript 的核心原则之一是对值所具有的结构进行类型检查。 它有时被称做“鸭式辨型法”或“结构性子类型化”。 在 TypeScript 里，接口的作用就是为这些类型命名和为你的代码或第三方代码定义契约。</p>
+</blockquote>
+<h5 id="使用接口"><a href="#使用接口" class="headerlink" title="使用接口"></a>使用接口</h5><pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">interface</span> LabelledValue &#123;<br>    label: <span class="hljs-built_in">string</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">printLabel</span>(<span class="hljs-params">labelledObj: LabelledValue</span>) </span>&#123;<br>    <span class="hljs-built_in">console</span>.log(labelledObj.label)<br>&#125;<br><br><span class="hljs-keyword">let</span> myObj = &#123; size: <span class="hljs-number">10</span>, label: <span class="hljs-string">&#x27;Size 10 Object&#x27;</span> &#125;<br>printLabel(myObj)<br></code></pre>
+
+<p><strong>可选属性</strong></p>
+<p>可以通过<code>?</code>指定可选属性，表示这个属性可有可无。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">interface</span> Person &#123;<br>    name: <span class="hljs-built_in">string</span><br>    age?: <span class="hljs-built_in">number</span><br>&#125;<br><span class="hljs-comment">//name是必须的，age是可选的</span><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span>(<span class="hljs-params">p: Person</span>) </span>&#123;<br>    <span class="hljs-built_in">console</span>.log(p.name)<br>&#125;<br><br>foo(&#123; name: <span class="hljs-string">&#x27;Tom&#x27;</span> &#125;)<br>foo(&#123; name: <span class="hljs-string">&#x27;Tom&#x27;</span>, age: <span class="hljs-number">25</span> &#125;)<br></code></pre>
+
+<p><strong>额外属性检擦</strong></p>
+<p>我们使用可选属性后，这个属性可填可不填，这样编译器是不会报错的，但是，当我们使用了额外属性时，会得到一个错误。</p>
+<p>一个例子</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">interface</span> Person &#123;<br>    name: ?<span class="hljs-built_in">string</span><br>    age?: <span class="hljs-built_in">number</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span>(<span class="hljs-params">person: Person</span>) </span>&#123;<br>    <span class="hljs-comment">//TODO</span><br>&#125;<br><br>test(&#123; name: <span class="hljs-string">&#x27;Tom&#x27;</span>, height: <span class="hljs-number">300</span> &#125;) <span class="hljs-comment">//会得到如下错误</span><br><span class="hljs-comment">//类型“&#123; name: string; height: number; &#125;”的参数不能赋给类型“Person”的参数。</span><br><span class="hljs-comment">// 对象文字可以只指定已知属性，并且“height”不在类型“Person”中。</span><br></code></pre>
+
+<p>可以通过如下方法绕过额外属性检查</p>
+<ul>
+<li>类型断言</li>
+</ul>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">interface</span> Person &#123;<br>    name?: <span class="hljs-built_in">string</span><br>    age?: <span class="hljs-built_in">number</span><br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span>(<span class="hljs-params">person: Person</span>) </span>&#123;&#125;<br>test(&#123; name: <span class="hljs-string">&#x27;李四&#x27;</span>, height: <span class="hljs-number">300</span> &#125; <span class="hljs-keyword">as</span> Person)<br></code></pre>
+
+<ul>
+<li>添加一个字符串索引签名</li>
+</ul>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">interface</span> Person &#123;<br>    name?: <span class="hljs-built_in">string</span><br>    age?: <span class="hljs-built_in">number</span><br>    [prop: <span class="hljs-built_in">string</span>]: <span class="hljs-built_in">any</span><br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span>(<span class="hljs-params">person: Person</span>) </span>&#123;&#125;<br><span class="hljs-comment">//下面都是正确的</span><br>test(&#123; name: <span class="hljs-string">&#x27;李四&#x27;</span>, height: <span class="hljs-number">300</span> &#125;)<br>test(&#123; name: <span class="hljs-string">&#x27;李四&#x27;</span>, height: <span class="hljs-number">300</span>, country: <span class="hljs-string">&#x27;China&#x27;</span> &#125;)<br></code></pre>
+
+<ul>
+<li>将对象赋值给另一个变量，因为这个变量不会经过额外属性检查，所以编译器不会报错。</li>
+</ul>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">interface</span> Person &#123;<br>    name?: <span class="hljs-built_in">string</span><br>    age?: <span class="hljs-built_in">number</span><br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span>(<span class="hljs-params">person: Person</span>) </span>&#123;&#125;<br><span class="hljs-keyword">let</span> p = &#123; name: <span class="hljs-string">&#x27;李四&#x27;</span>, height: <span class="hljs-number">300</span> &#125;<br>test(p)<br></code></pre>
+
+<p><em>虽然可以绕过额外属性检查，但是这些额外属性我们是不可以使用的，即在函数内部无法访问</em></p>
+<p><strong>只读属性</strong></p>
+<p>某些对象只能在创建时赋值，可以通过<code>readonly</code>来指定只读属性。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">interface</span> Point &#123;<br>    <span class="hljs-keyword">readonly</span> x: <span class="hljs-built_in">number</span><br>    <span class="hljs-keyword">readonly</span> y: <span class="hljs-built_in">number</span><br>&#125;<br><br><span class="hljs-keyword">let</span> p1: Point = &#123; x: <span class="hljs-number">10</span>, y: <span class="hljs-number">20</span> &#125;<br>p1.x = <span class="hljs-number">5</span> <span class="hljs-comment">// error!</span><br></code></pre>
+
+<p>ReadonlyArray&lt;T&gt;类型</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">let</span> a: <span class="hljs-built_in">number</span>[] = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>]<br><span class="hljs-keyword">let</span> ro: ReadonlyArray&lt;<span class="hljs-built_in">number</span>&gt; = a<br>ro[<span class="hljs-number">0</span>] = <span class="hljs-number">12</span> <span class="hljs-comment">// error!</span><br>ro.push(<span class="hljs-number">5</span>) <span class="hljs-comment">// error!</span><br>ro.length = <span class="hljs-number">100</span> <span class="hljs-comment">// error!</span><br>a = ro <span class="hljs-comment">// error!</span><br></code></pre>
+
+<p><strong>函数类型</strong></p>
+<p>为了使用接口表示函数类型，我们需要给接口定义一个调用签名。 它就像是一个只有参数列表和返回值类型的函数定义。参数列表里的每个参数都需要名字和类型。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">interface</span> PersonFn &#123;<br>    (name: <span class="hljs-built_in">string</span>, age: <span class="hljs-built_in">number</span>): <span class="hljs-built_in">boolean</span><br>&#125;<br><br><span class="hljs-keyword">let</span> pf = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">name: <span class="hljs-built_in">string</span>, age: <span class="hljs-built_in">number</span></span>): <span class="hljs-title">boolean</span> </span>&#123;<br>    <span class="hljs-keyword">return</span> age &gt; <span class="hljs-number">0</span><br>&#125;<br></code></pre>
+
+<p><strong>可索引类型</strong></p>
+<p>与使用接口描述函数类型差不多，我们也可以描述那些能够“通过索引得到”的类型，比如 <code>a[10]</code>或 <code>ageMap[&quot;daniel&quot;]</code>。 可索引类型具有一个 索引签名，它描述了对象索引的类型，还有相应的索引返回值类型。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">interface</span> StringArray &#123;<br>    [index: <span class="hljs-built_in">number</span>]: <span class="hljs-built_in">string</span><br>&#125;<br><br><span class="hljs-keyword">let</span> myArray: StringArray<br>myArray = [<span class="hljs-string">&#x27;Bob&#x27;</span>, <span class="hljs-string">&#x27;Fred&#x27;</span>]<br><br><span class="hljs-keyword">let</span> myStr: <span class="hljs-built_in">string</span> = myArray[<span class="hljs-number">0</span>]<br></code></pre>
+
+<p>typescript 支持两种数据签名：字符串和数字。</p>
+<p>索引不能重复，重复是指类型，不是指前面的标识符</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">interface</span> Test &#123;<br>    [x: <span class="hljs-built_in">number</span>]: <span class="hljs-built_in">string</span><br>    [y: <span class="hljs-built_in">number</span>]: <span class="hljs-built_in">string</span> <span class="hljs-comment">//error，已经有一个number类型的索引了</span><br>&#125;<br></code></pre>
+
+<p>可以同时使用两种类型的索引，但是数字索引的返回值必须是字符串索引返回值类型的子类型。因为使用 number 类型的索引时会将它转成字符串再去索引。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">interface</span> Cat &#123;<br>    name: <span class="hljs-built_in">string</span><br>&#125;<br><span class="hljs-keyword">interface</span> Dog &#123;<br>    age: <span class="hljs-built_in">number</span><br>&#125;<br><span class="hljs-keyword">type</span> Animal = Cat | Dog<br><span class="hljs-keyword">interface</span> Pets &#123;<br>    [x: <span class="hljs-built_in">number</span>]: Dog <span class="hljs-comment">//error Dog不是Cat的子类型</span><br>    [x: <span class="hljs-built_in">string</span>]: Cat<br>&#125;<br></code></pre>
+
+<p>下面这样是正确的</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">interface</span> Cat &#123;<br>    name: <span class="hljs-built_in">string</span><br>&#125;<br><span class="hljs-keyword">interface</span> Dog &#123;<br>    age: <span class="hljs-built_in">number</span><br>&#125;<br><span class="hljs-keyword">type</span> Animal = Cat | Dog<br><span class="hljs-keyword">interface</span> Pets &#123;<br>    [x: <span class="hljs-built_in">number</span>]: Dog <span class="hljs-comment">//Dog是Animal的子类型</span><br>    [x: <span class="hljs-built_in">string</span>]: Animal<br>&#125;<br></code></pre>
+
+<p>可以将索引签名设置为只读，这样就防止了给索引赋值：</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">interface</span> ReadonlyStringArray &#123;<br>    <span class="hljs-keyword">readonly</span> [index: <span class="hljs-built_in">number</span>]: <span class="hljs-built_in">string</span><br>&#125;<br><span class="hljs-keyword">let</span> myArray: ReadonlyStringArray = [<span class="hljs-string">&#x27;Alice&#x27;</span>, <span class="hljs-string">&#x27;Bob&#x27;</span>]<br>myArray[<span class="hljs-number">2</span>] = <span class="hljs-string">&#x27;Mallory&#x27;</span> <span class="hljs-comment">// error!</span><br></code></pre>
+
+<p><strong>接口实现</strong></p>
+<p>与 Java 里接口一样，一个类也可以通过实现接口去强制约束这个类符合某种契约。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">interface</span> Person &#123;<br>    name: <span class="hljs-built_in">string</span><br>    age: <span class="hljs-built_in">number</span><br>&#125;<br><span class="hljs-comment">//强制Man实现name和age属性</span><br><span class="hljs-keyword">class</span> Man <span class="hljs-keyword">implements</span> Person &#123;<br>    name: <span class="hljs-built_in">string</span><br>    age: <span class="hljs-built_in">number</span><br>&#125;<br></code></pre>
+
+<p><em>接口只是描述了类的公共部分属性，不能检查私有成员</em></p>
+<p><strong>接口继承</strong></p>
+<p>一个接口可继承成里一个接口</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">interface</span> Shape &#123;<br>    color: <span class="hljs-built_in">string</span><br>&#125;<br><span class="hljs-keyword">interface</span> Square <span class="hljs-keyword">extends</span> Shape &#123;<br>    sideLength: <span class="hljs-built_in">number</span><br>&#125;<br><span class="hljs-keyword">let</span> square = &lt;Square&gt;&#123;&#125;<br>square.color = <span class="hljs-string">&#x27;blue&#x27;</span><br>square.sideLength = <span class="hljs-number">10</span><br></code></pre>
+
+<p>多重继承，一个接口可以继承多个接口</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">interface</span> Shape &#123;<br>    color: <span class="hljs-built_in">string</span><br>&#125;<br><br><span class="hljs-keyword">interface</span> PenStroke &#123;<br>    penWidth: <span class="hljs-built_in">number</span><br>&#125;<br><br><span class="hljs-keyword">interface</span> Square <span class="hljs-keyword">extends</span> Shape, PenStroke &#123;<br>    sideLength: <span class="hljs-built_in">number</span><br>&#125;<br><span class="hljs-keyword">let</span> square = &lt;Square&gt;&#123;&#125;<br>square.color = <span class="hljs-string">&#x27;blue&#x27;</span><br>square.sideLength = <span class="hljs-number">10</span><br>square.penWidth = <span class="hljs-number">5.0</span><br></code></pre>
+
+<p><strong>混合类型</strong></p>
+<p>一个对象可以同时做为函数和对象使用，并带有额外的属性。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">interface</span> Counter &#123;<br>    (start: <span class="hljs-built_in">number</span>): <span class="hljs-built_in">string</span><br>    interval: <span class="hljs-built_in">number</span><br>    reset(): <span class="hljs-built_in">void</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getCounter</span>(<span class="hljs-params"></span>): <span class="hljs-title">Counter</span> </span>&#123;<br>    <span class="hljs-keyword">let</span> counter = &lt;Counter&gt;<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">start: <span class="hljs-built_in">number</span></span>) </span>&#123;&#125;<br>    counter.interval = <span class="hljs-number">123</span><br>    counter.reset = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>&#123;&#125;<br>    <span class="hljs-keyword">return</span> counter<br>&#125;<br><br><span class="hljs-keyword">let</span> c = getCounter()<br>c(<span class="hljs-number">10</span>)<br>c.reset()<br>c.interval = <span class="hljs-number">5.0</span><br></code></pre>
+
+<p><strong>接口继承类</strong></p>
+<p>当接口继承了一个类类型时，它会继承类的成员但不包括其实现。如果被接口继承的类包含私有属性，即 private 或者 protected 修饰的成员时，这个接口只能被它继承类的子类实现。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">class</span> Biology &#123;<br>    <span class="hljs-keyword">private</span> name: <span class="hljs-built_in">string</span><br>&#125;<br><span class="hljs-keyword">interface</span> Person <span class="hljs-keyword">extends</span> Biology &#123;<br>    age: <span class="hljs-built_in">number</span><br>&#125;<br><span class="hljs-keyword">class</span> Man <span class="hljs-keyword">extends</span> Biology <span class="hljs-keyword">implements</span> Person &#123;<br>    age: <span class="hljs-built_in">number</span><br>&#125;<br><span class="hljs-comment">//下面是错误的</span><br><span class="hljs-keyword">class</span> Man <span class="hljs-keyword">implements</span> Person &#123;<br>    age: <span class="hljs-built_in">number</span><br>&#125;<br></code></pre>
+
+  </div>
+</article>
+<div class="nav">
+  
+  <div class="nav-item-prev">
+    <a href="/2021/03/20/utils/webpack/webpack配置不处理依赖/" class="nav-link">
+      <i class="iconfont icon-left nav-prev-icon"></i>
+      <div>
+        <div class="nav-label">上一篇</div>
+        
+        <div class="nav-title">webpack打包配置不处理依赖 </div>
+        
+      </div>
+    </a>
+  </div>
+  
+  
+  <div class="nav-item-next">
+    <a href="/2021/03/20/typescript/typescript基础/" class="nav-link">
+      <div>
+        <div class="nav-label">下一篇</div>
+        
+        <div class="nav-title">typescript基础 </div>
+        
+      </div>
+      <i class="iconfont icon-right nav-next-icon"></i>
+    </a>
+  </div>
+  
+</div>
+
+<div class="card card-content toc-card" id="mobiletoc">
+  <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%8E%A5%E5%8F%A3"><span class="toc-text">使用接口</span></a></li></ol>
+</div></main>
+          <aside class="left-column">
+            
+            <div class="card card-author">
+              
+<img src="/images/avatar.jpg" class="author-img">
+
+<p class="author-name">Chenzheng Ling</p>
+<p class="author-description">Front End Developer</p>
+<div class="author-message">
+  <a class="author-posts-count" href="/archives">
+    <span>51</span>
+    <span>文章</span>
+  </a>
+  <a class="author-categories-count" href="/categories">
+    <span>11</span>
+    <span>分类</span>
+  </a>
+  <a class="author-tags-count" href="/tags">
+    <span>6</span>
+    <span>标签</span>
+  </a>
+</div>
+
+            </div>
+            
+            <div class="sticky-tablet">
+  
+  
+  <article class="display-when-two-columns spacer">
+    <div class="card card-content toc-card">
+      <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%8E%A5%E5%8F%A3"><span class="toc-text">使用接口</span></a></li></ol>
+    </div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <div class="categories-card">
+  <div class="categories-header"><i class="iconfont icon-fenlei" style="padding-right: 2px;"></i>分类</div>
+  <div class="categories-list">
+    
+      <a href="/categories/css">
+        <div class="categories-list-item">
+          css
+          <span class="categories-list-item-badge">4</span>
+        </div>
+      </a>
+    
+      <a href="/categories/es">
+        <div class="categories-list-item">
+          es
+          <span class="categories-list-item-badge">4</span>
+        </div>
+      </a>
+    
+      <a href="/categories/http">
+        <div class="categories-list-item">
+          http
+          <span class="categories-list-item-badge">3</span>
+        </div>
+      </a>
+    
+      <a href="/categories/markdown">
+        <div class="categories-list-item">
+          markdown
+          <span class="categories-list-item-badge">5</span>
+        </div>
+      </a>
+    
+      <a href="/categories/其他">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/typescript">
+        <div class="categories-list-item">
+          typescript
+          <span class="categories-list-item-badge">9</span>
+        </div>
+      </a>
+    
+      <a href="/categories/vue">
+        <div class="categories-list-item">
+          vue
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/web">
+        <div class="categories-list-item">
+          web
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+      <a href="/categories/babel">
+        <div class="categories-list-item">
+          babel
+          <span class="categories-list-item-badge">4</span>
+        </div>
+      </a>
+    
+      <a href="/categories/lerna">
+        <div class="categories-list-item">
+          lerna
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/webpack">
+        <div class="categories-list-item">
+          webpack
+          <span class="categories-list-item-badge">6</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content">
+    <div class="tags-card">
+  <div class="tags-header"><i class="iconfont icon-biaoqian" style="padding-right: 2px;"></i>热门标签</div>
+  <div class="tags-list">
+    
+    <a href="\tags\工具" title="工具"><div class="tags-list-item">工具</div></a>
+    
+    <a href="\tags\编程语言" title="编程语言"><div class="tags-list-item">编程语言</div></a>
+    
+    <a href="\tags\js基础" title="js基础"><div class="tags-list-item">js基础</div></a>
+    
+    <a href="\tags\解决方案" title="解决方案"><div class="tags-list-item">解决方案</div></a>
+    
+    <a href="\tags\网络" title="网络"><div class="tags-list-item">网络</div></a>
+    
+    <a href="\tags\框架" title="框架"><div class="tags-list-item">框架</div></a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+          </aside>
+          <aside class="right-column">
+            <div class="sticky-widescreen">
+  
+  
+  <article class="card card-content toc-card">
+    <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="toc-text">介绍</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%8E%A5%E5%8F%A3"><span class="toc-text">使用接口</span></a></li></ol>
+  </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header"><i class="iconfont icon-wenzhang_huaban" style="padding-right: 2px;"></i>最近文章</div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-03-20</div>
+        <a href="/2021/03/20/typescript/typescript模块与命名空间/"><div class="recent-posts-item-content">typescript模块与命名空间</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-03-20</div>
+        <a href="/2021/03/20/typescript/typescript声明文件/"><div class="recent-posts-item-content">typescript声明文件</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-03-20</div>
+        <a href="/2021/03/20/utils/webpack/webpack打包优化之noParse/"><div class="recent-posts-item-content">webpack打包之noParse优化</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-03-20</div>
+        <a href="/2021/03/20/utils/lerna/lerna基础/"><div class="recent-posts-item-content">lerna基础</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <footer class="footer">
+  <div class="footer-container">
+    <div class="copyright">
+      <div>
+        <span id="copyYear">Copyright ©
+          
+          2020 -
+          
+          2021
+        </span>
+        <a href="/" class="footer-link">我的博客 </a>
+      </div>
+    </div>
+
+    
+    <div class="footer-dsc">
+      
+      
+      Powered by
+      <a href="https://hexo.io/" class="footer-link" target="_blank" rel="nofollow noopener noreferrer">&nbsp;Hexo </a>
+      
+      
+      <span>&nbsp;|&nbsp;</span>
+      
+      
+      
+      Theme -
+      <a href="https://github.com/theme-kaze" class="footer-link" target="_blank"
+        rel="nofollow noopener noreferrer">&nbsp;Kaze</a>
+      
+    </div>
+    
+    
+    
+    
+</footer>
+  <a role="button" id="scrollbutton" class="basebutton" >
+  <i class="iconfont icon-arrowleft button-icon"></i>
+</a>
+<a role="button" id="menubutton" class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a role="button" id="popbutton" class="basebutton">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+
+  
+  
+  
+  <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img');
+    var i;
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a');
+      wrapper.setAttribute('data-fslightbox', 'gallery');
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'));
+      wrapper.setAttribute('style', 'width: 100%; display: flex; justify-content: center;');
+      img[i].parentElement.insertBefore(wrapper, img[i]);
+      wrapper.appendChild(img[i]);
+    }
+    refreshFsLightbox();
+  }
+</script>
+<script>loadScript("//cdn.jsdelivr.net/npm/fslightbox@3.1.0/index.min.js", addImgLayout)</script>
+  
+  
+  
+<script src="/js/main.js"></script>
+
+  
+  
+  <script>
+    var addLazyload = function () {
+      var observer = lozad('.lozad', {
+        load: function (el) {
+          el.srcset = el.getAttribute('data-src');
+        },
+        loaded: function (el) {
+          el.classList.add('loaded');
+        }
+      });
+      observer.observe();
+    }
+  </script>
+  <script>loadScript("/js/lib/lozad.min.js", addLazyload)</script>
+  
+  
+
+  
+  <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'forest'});
+    }
+  </script>
+  
+</body>
+
+</html>
