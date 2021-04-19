@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html>
+<meta  lang="zh-CN" >
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="theme-color" content="#fff" id="theme-color">
+  <link rel="icon" href="/images/me.jpg">
+  <title>我的博客</title>
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+    var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+      }
+    };
+    setDarkmode();
+  </script>
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  </script>
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_vpj3dq9ceqa.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  
+  <link rel="preload" href="//cdn.jsdelivr.net/npm/fslightbox@3.1.0/index.min.js" as="script">
+  
+  
+  <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="/css/main.css">
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_vpj3dq9ceqa.css">
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+
+  
+  
+  
+<meta name="generator" content="Hexo 5.0.2"></head>
+
+
+<body>
+  <div class="wrapper">
+    
+    <nav class="navbar">
+  <div class="navbar-logo">
+    <span class="navbar-logo-main">
+      
+      <img class="navbar-logo-img" src="/images/me.jpg">
+      
+      <span class="navbar-logo-dsc">我的博客</span>
+    </span>
+  </div>
+  <div class="navbar-menu">
+    
+    <a href="/" class="navbar-menu-item">首页 </a>
+    
+    <a href="/archives" class="navbar-menu-item">归档 </a>
+    
+    <a href="/tags" class="navbar-menu-item">标签 </a>
+    
+    <a href="/categories" class="navbar-menu-item">分类 </a>
+    
+    <a href="/about" class="navbar-menu-item">关于 </a>
+    
+    <a href="/links" class="navbar-menu-item">友链 </a>
+    
+    <a class="navbar-menu-item" id="dark"><i class="iconfont icon-weather"></i></a>
+  </div>
+</nav>
+    
+    <div class="section-wrap">
+      <div class="container">
+        <div class="columns">
+          <main class="main-column">
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      typescript基础
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <time datetime="2021-04-19T12:11:32.064Z" style="display: flex; align-items: center;">
+      <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
+      <span>2021-04-19</span>
+    </time>
+    
+    <span class="dot"></span>
+    
+    <a href="/categories/typescript/" class="post-meta-link">typescript</a>
+    
+    
+    
+    <span class="dot"></span>
+    <span>1.6k 字</span>
+    
+  </div>
+  
+  <div class="post-meta post-show-meta" style="margin-top: -10px;">
+    <div style="display: flex; align-items: center;">
+      <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
+      
+      
+        <a href="/tags/编程语言/" class="post-meta-link">编程语言</a>
+      
+    </div>
+  </div>
+  
+  </header>
+  <div id="section" class="post-content">
+    <h5 id="typescript-基本介绍"><a href="#typescript-基本介绍" class="headerlink" title="typescript 基本介绍?"></a>typescript 基本介绍?</h5><ol>
+<li>概念</li>
+</ol>
+<p>typescript 是一种由微软开发的自由和开源的编程语言。它是 javascript 的一个超集，而且本质上向这个语言添加了可选的静态类型和基于类的面向对象编程。typescipt 是强类型语言，支持类型检测。</p>
+<ol start="2">
+<li>安装(npm 方式)</li>
+</ol>
+<pre class="highlight"><code class="hljs shell">npm i -g typescript<br></code></pre>
+
+<ol start="3">
+<li>创建 index.ts 文件</li>
+</ol>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">add</span>(<span class="hljs-params">x: <span class="hljs-built_in">number</span>, y: <span class="hljs-built_in">number</span></span>) </span>&#123;<br>    <span class="hljs-keyword">return</span> x + y<br>&#125;<br></code></pre>
+
+<ol start="4">
+<li>编译文件</li>
+</ol>
+<pre class="highlight"><code class="hljs shell">tsc index.ts<br></code></pre>
+
+<ol start="5">
+<li>编译后的文件</li>
+</ol>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">add</span>(<span class="hljs-params">x, y</span>) </span>&#123;<br>    <span class="hljs-keyword">return</span> x + y<br>&#125;<br></code></pre>
+
+<h5 id="基础语法"><a href="#基础语法" class="headerlink" title="基础语法"></a>基础语法</h5><ol>
+<li>类型注解</li>
+</ol>
+<p>ts 的类型注解是一种轻量级约束，用于限定变量的类型或者函数返回值的类型。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">let</span> name: <span class="hljs-built_in">string</span><br><span class="hljs-keyword">let</span> age: <span class="hljs-built_in">number</span> = <span class="hljs-number">24</span><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span>(<span class="hljs-params"></span>): <span class="hljs-title">Boolean</span> </span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span><br>&#125;<br></code></pre>
+
+<ol start="2">
+<li>typescript 基本类型</li>
+</ol>
+<ul>
+<li>String 类型</li>
+</ul>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">let</span> str: <span class="hljs-built_in">string</span> = <span class="hljs-string">&#x27;acb&#x27;</span><br></code></pre>
+
+<ul>
+<li>Number 类型</li>
+</ul>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">let</span> n: <span class="hljs-built_in">number</span> = <span class="hljs-number">2</span><br></code></pre>
+
+<ul>
+<li>Boolean 类型</li>
+</ul>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">let</span> b: <span class="hljs-built_in">boolean</span> = <span class="hljs-literal">true</span><br></code></pre>
+
+<ul>
+<li>Array 类型</li>
+</ul>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">let</span> list: <span class="hljs-built_in">number</span>[] = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]<br><span class="hljs-keyword">let</span> arr: <span class="hljs-built_in">string</span>[] = [<span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-string">&#x27;b&#x27;</span>, <span class="hljs-string">&#x27;c&#x27;</span>]<br><span class="hljs-comment">//泛型写法</span><br><span class="hljs-keyword">let</span> list2: <span class="hljs-built_in">Array</span>&lt;<span class="hljs-built_in">number</span>&gt; = [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>]<br><span class="hljs-comment">//多种类型，可以包含数字和字符元素的数据如下</span><br><span class="hljs-keyword">let</span> list3: (<span class="hljs-built_in">number</span> | <span class="hljs-built_in">string</span>)[] = [<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;abc&#x27;</span>]<br><span class="hljs-comment">//任意类型</span><br><span class="hljs-keyword">let</span> list4: <span class="hljs-built_in">any</span>[] = [<span class="hljs-number">1</span>, <span class="hljs-string">&#x27;a&#x27;</span>, <span class="hljs-literal">true</span>]<br></code></pre>
+
+<ul>
+<li>Any 类型</li>
+</ul>
+<p>any 表示任意类型，可以直接看成是 js 中声明的类型了</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">let</span> a: <span class="hljs-built_in">any</span><br><span class="hljs-comment">//可以赋值成string</span><br>a = <span class="hljs-string">&#x27;abc&#x27;</span><br><span class="hljs-comment">//可以赋值成number</span><br>a = <span class="hljs-number">34</span><br><span class="hljs-comment">//可以赋值成数组</span><br>a = []<br></code></pre>
+
+<ul>
+<li>Enum 类型</li>
+</ul>
+<p>使用枚举我们可以定义一些带名字的常量。 使用枚举可以清晰地表达意图或创建一组有区别的用例。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">//声明</span><br><span class="hljs-built_in">enum</span> Direction &#123;<br>    UP,<br>    DOWN,<br>    LEFT,<br>    RIGHT<br>&#125;<br><span class="hljs-comment">//访问</span><br>Direction.UP<br></code></pre>
+
+<p>默认情况下，UP 值为 0，其他成员会依次自增 1</p>
+<p>不带初始化器的枚举或者被放在第一的位置，或者被放在使用了数字常量或其它常量初始化了的枚举后面。如下是不被允许的。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">add</span>(<span class="hljs-params"></span>): <span class="hljs-title">number</span> </span>&#123;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span><br>&#125;<br><span class="hljs-built_in">enum</span> Test &#123;<br>    A = add(),<br>    B <span class="hljs-comment">//error! &#x27;A&#x27; is not constant-initialized, so &#x27;B&#x27; needs an initializer</span><br>&#125;<br><span class="hljs-comment">//需要手动指定值</span><br><span class="hljs-built_in">enum</span> Test &#123;<br>    A = add(),<br>    B = <span class="hljs-number">24</span><br>&#125;<br></code></pre>
+
+<p>含字符串成员的枚举中不允许使用计算值，如下代码是不允许的。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-built_in">enum</span> Test &#123;<br>    A = add(),<br>    B = <span class="hljs-string">&#x27;23&#x27;</span> <span class="hljs-comment">//error 含字符串值成员的枚举中不允许使用计算值。</span><br>&#125;<br></code></pre>
+
+<p><strong>字符串枚举</strong><br>在一个字符串枚举里，每个成员都必须用字符串字面量，或另外一个字符串枚举成员进行初始化。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-built_in">enum</span> Direction &#123;<br>    Up = <span class="hljs-string">&#x27;UP&#x27;</span>,<br>    Down = <span class="hljs-string">&#x27;DOWN&#x27;</span>,<br>    Left = <span class="hljs-string">&#x27;LEFT&#x27;</span>,<br>    Right = <span class="hljs-string">&#x27;RIGHT&#x27;</span><br>&#125;<br></code></pre>
+
+<p><strong>异构枚举</strong><br>异构枚举是数值与字符串混合，一般来说不建议使用。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-built_in">enum</span> Test &#123;<br>    A,<br>    C,<br>    B = <span class="hljs-string">&#x27;abc&#x27;</span>,<br>    D = <span class="hljs-number">23</span>,<br>    E<br>&#125;<br></code></pre>
+
+<p>异构枚举中每一个自增成员必须在一个数值成员后面，如下代码是不行的。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-built_in">enum</span> Test &#123;<br>    A,<br>    C,<br>    B = <span class="hljs-string">&#x27;abc&#x27;</span>,<br>    D <span class="hljs-comment">//error :枚举成员必须有初始化表达式</span><br>&#125;<br></code></pre>
+
+<p><strong>const 枚举</strong><br>大多数情况下，枚举是十分有效的方案。 然而在某些情况下需求很严格。 为了避免在额外生成的代码上的开销和额外的非直接的对枚举成员的访问，我们可以使用 const 枚举。 常量枚举通过在枚举上使用 const 修饰符来定义。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">const</span> <span class="hljs-built_in">enum</span> Enum &#123;<br>    A = <span class="hljs-number">1</span>,<br>    B = A * <span class="hljs-number">2</span><br>&#125;<br><span class="hljs-keyword">const</span> <span class="hljs-built_in">enum</span> Directions &#123;<br>    Up,<br>    Down,<br>    Left,<br>    Right<br>&#125;<br></code></pre>
+
+<ul>
+<li>Tuple 类型</li>
+</ul>
+<p>元组类型允许表示一个已知元素数量和类型的数组，各元素的类型不必相同。 比如，你可以定义一对值分别为 string 和 number 类型的元组。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">//声明一个元组</span><br><span class="hljs-keyword">let</span> tup: [<span class="hljs-built_in">number</span>, <span class="hljs-built_in">string</span>]<br><span class="hljs-comment">//赋值</span><br>tup = [<span class="hljs-number">23</span>, <span class="hljs-string">&#x27;abc&#x27;</span>]<br><span class="hljs-comment">//报错</span><br>tup = [<span class="hljs-string">&#x27;abc&#x27;</span>, <span class="hljs-number">23</span>]<br></code></pre>
+
+<ul>
+<li>Null 和 Undefined 类型</li>
+</ul>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">let</span> n: <span class="hljs-literal">null</span> = <span class="hljs-literal">null</span><br><span class="hljs-keyword">let</span> u: <span class="hljs-literal">undefined</span> = <span class="hljs-literal">undefined</span><br></code></pre>
+
+<p><em>默认情况下 null 和 undefined 是所有类型的子类型。 就是说你可以把 null 和 undefined 赋值给 number 类型的变量。</em></p>
+<ul>
+<li>Unknown 类型</li>
+</ul>
+<p>unknown 可以赋值任何类型</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">let</span> n: unknown<br>n = <span class="hljs-string">&#x27;abc&#x27;</span><br>n = <span class="hljs-number">23</span><br>n = &#123;&#125;<br></code></pre>
+
+<p>any 和 unknown 的最大区别是, unknown 是 top type (任何类型都是它的 subtype) , 而 any 即是 top type, 又是 bottom type (它是任何类型的 subtype ) ,这导致 any 基本上就是放弃了任何类型检查。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">let</span> a: <span class="hljs-built_in">any</span> = <span class="hljs-string">&#x27;aaa&#x27;</span><br>a.test()<br></code></pre>
+
+<p>上面的代码编译时并不会检查，所以可以顺利通过编译，这样会产生一个运行时错误。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">let</span> a: unknown = <span class="hljs-string">&#x27;aaa&#x27;</span><br>a.test() <span class="hljs-comment">//error &#x27;a&#x27;上不存在属性test</span><br></code></pre>
+
+<ul>
+<li>Object 类型</li>
+</ul>
+<p>object 类型表示非原始类型。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">let</span> o: <span class="hljs-built_in">object</span><br>o = []<br>o = &#123;&#125;<br>o = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>()<br></code></pre>
+
+<ul>
+<li>Never 类型</li>
+</ul>
+<p>表示永不存在的类型，never 类型是任何类型的子类型，也可以赋值给任何类型；然而，没有类型是 never 的子类型或可以赋值给 never 类型（除了 never 本身之外）。 即使 any 也不可以赋值给 never。</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-comment">// 返回never的函数必须存在无法达到的终点</span><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">error</span>(<span class="hljs-params">message: <span class="hljs-built_in">string</span></span>): <span class="hljs-title">never</span> </span>&#123;<br>    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(message)<br>&#125;<br><br><span class="hljs-comment">// 推断的返回值类型为never</span><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">fail</span>(<span class="hljs-params"></span>) </span>&#123;<br>    <span class="hljs-keyword">return</span> error(<span class="hljs-string">&#x27;Something failed&#x27;</span>)<br>&#125;<br><br><span class="hljs-comment">// 返回never的函数必须存在无法达到的终点</span><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">infiniteLoop</span>(<span class="hljs-params"></span>): <span class="hljs-title">never</span> </span>&#123;<br>    <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;&#125;<br>&#125;<br></code></pre>
+
+<p>引用 vue 作者尤雨溪的一个<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/354601204/answer/888551021">例子</a></p>
+<p>假设我们有一个联合类型</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">interface</span> Foo &#123;<br>    <span class="hljs-keyword">type</span>: <span class="hljs-string">&#x27;foo&#x27;</span><br>&#125;<br><br><span class="hljs-keyword">interface</span> Bar &#123;<br>    <span class="hljs-keyword">type</span>: <span class="hljs-string">&#x27;bar&#x27;</span><br>&#125;<br><span class="hljs-keyword">type</span> All = Foo | Bar<br></code></pre>
+
+<p>在 switch 当中判断 type，TS 是可以收窄类型的 (discriminated union)</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">handleValue</span>(<span class="hljs-params">val: All</span>) </span>&#123;<br>    <span class="hljs-keyword">switch</span> (val.type) &#123;<br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;foo&#x27;</span>:<br>            <span class="hljs-comment">// 这里 val 被收窄为 Foo</span><br>            <span class="hljs-keyword">break</span><br>        <span class="hljs-keyword">case</span> <span class="hljs-string">&#x27;bar&#x27;</span>:<br>            <span class="hljs-comment">// val 在这里是 Bar</span><br>            <span class="hljs-keyword">break</span><br>        <span class="hljs-keyword">default</span>:<br>            <span class="hljs-comment">// val 在这里是 never</span><br>            <span class="hljs-keyword">const</span> exhaustiveCheck: <span class="hljs-built_in">never</span> = val<br>            <span class="hljs-keyword">break</span><br>    &#125;<br>&#125;<br></code></pre>
+
+<p>在 default 里面我们把被收窄为 never 的 val 赋值给一个显式声明为 never 的变量。如果一切逻辑正确，那么这里应该能够编译通过。但是假如后来有一天你的同事改了 All 的类型：</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-keyword">type</span> All = Foo | Bar | Baz<br></code></pre>
+
+<p>然而他忘记了在 handleValue 里面加上针对 Baz 的处理逻辑，这个时候在 default branch 里面 val 会被收窄为 Baz，导致无法赋值给 never，产生一个编译错误。所以通过这个办法，你可以确保 handleValue 总是穷尽 (exhaust) 了所有 All 的可能类型。</p>
+<ul>
+<li>Void 类型</li>
+</ul>
+<p>void 类型像是与 any 类型相反，它表示没有任何类型。 当一个函数没有返回值时，你通常会见到其返回值类型是 void</p>
+<pre class="highlight"><code class="hljs typescript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">test</span>(<span class="hljs-params"></span>): <span class="hljs-title">void</span> </span>&#123;<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&#x27;hello world&#x27;</span>)<br>&#125;<br></code></pre>
+
+  </div>
+</article>
+<div class="nav">
+  
+  <div class="nav-item-prev">
+    <a href="/2021/04/19/utils/common/husky/" class="nav-link">
+      <i class="iconfont icon-left nav-prev-icon"></i>
+      <div>
+        <div class="nav-label">上一篇</div>
+        
+        <div class="nav-title">husky 基本使用 </div>
+        
+      </div>
+    </a>
+  </div>
+  
+  
+  <div class="nav-item-next">
+    <a href="/2021/04/19/typescript/typescript高级类型/" class="nav-link">
+      <div>
+        <div class="nav-label">下一篇</div>
+        
+        <div class="nav-title">typescript高级类型 </div>
+        
+      </div>
+      <i class="iconfont icon-right nav-next-icon"></i>
+    </a>
+  </div>
+  
+</div>
+
+<div class="card card-content toc-card" id="mobiletoc">
+  <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#typescript-%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D"><span class="toc-text">typescript 基本介绍?</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95"><span class="toc-text">基础语法</span></a></li></ol>
+</div></main>
+          <aside class="left-column">
+            
+            <div class="card card-author">
+              
+<img src="/images/avatar.jpg" class="author-img">
+
+<p class="author-name">Chenzheng Ling</p>
+<p class="author-description">Front End Developer</p>
+<div class="author-message">
+  <a class="author-posts-count" href="/archives">
+    <span>62</span>
+    <span>文章</span>
+  </a>
+  <a class="author-categories-count" href="/categories">
+    <span>12</span>
+    <span>分类</span>
+  </a>
+  <a class="author-tags-count" href="/tags">
+    <span>9</span>
+    <span>标签</span>
+  </a>
+</div>
+
+            </div>
+            
+            <div class="sticky-tablet">
+  
+  
+  <article class="display-when-two-columns spacer">
+    <div class="card card-content toc-card">
+      <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#typescript-%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D"><span class="toc-text">typescript 基本介绍?</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95"><span class="toc-text">基础语法</span></a></li></ol>
+    </div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <div class="categories-card">
+  <div class="categories-header"><i class="iconfont icon-fenlei" style="padding-right: 2px;"></i>分类</div>
+  <div class="categories-list">
+    
+      <a href="/categories/css">
+        <div class="categories-list-item">
+          css
+          <span class="categories-list-item-badge">5</span>
+        </div>
+      </a>
+    
+      <a href="/categories/es">
+        <div class="categories-list-item">
+          es
+          <span class="categories-list-item-badge">5</span>
+        </div>
+      </a>
+    
+      <a href="/categories/http">
+        <div class="categories-list-item">
+          http
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/markdown">
+        <div class="categories-list-item">
+          markdown
+          <span class="categories-list-item-badge">5</span>
+        </div>
+      </a>
+    
+      <a href="/categories/其他">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/typescript">
+        <div class="categories-list-item">
+          typescript
+          <span class="categories-list-item-badge">9</span>
+        </div>
+      </a>
+    
+      <a href="/categories/vue">
+        <div class="categories-list-item">
+          vue
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/web">
+        <div class="categories-list-item">
+          web
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/babel">
+        <div class="categories-list-item">
+          babel
+          <span class="categories-list-item-badge">4</span>
+        </div>
+      </a>
+    
+      <a href="/categories/通用工具">
+        <div class="categories-list-item">
+          通用工具
+          <span class="categories-list-item-badge">2</span>
+        </div>
+      </a>
+    
+      <a href="/categories/lerna">
+        <div class="categories-list-item">
+          lerna
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/webpack">
+        <div class="categories-list-item">
+          webpack
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content">
+    <div class="tags-card">
+  <div class="tags-header"><i class="iconfont icon-biaoqian" style="padding-right: 2px;"></i>热门标签</div>
+  <div class="tags-list">
+    
+    <a href="\tags\工具" title="工具"><div class="tags-list-item">工具</div></a>
+    
+    <a href="\tags\编程语言" title="编程语言"><div class="tags-list-item">编程语言</div></a>
+    
+    <a href="\tags\网络" title="网络"><div class="tags-list-item">网络</div></a>
+    
+    <a href="\tags\js基础" title="js基础"><div class="tags-list-item">js基础</div></a>
+    
+    <a href="\tags\解决方案" title="解决方案"><div class="tags-list-item">解决方案</div></a>
+    
+    <a href="\tags\mac" title="mac"><div class="tags-list-item">mac</div></a>
+    
+    <a href="\tags\husky" title="husky"><div class="tags-list-item">husky</div></a>
+    
+    <a href="\tags\框架" title="框架"><div class="tags-list-item">框架</div></a>
+    
+    <a href="\tags\问题" title="问题"><div class="tags-list-item">问题</div></a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+          </aside>
+          <aside class="right-column">
+            <div class="sticky-widescreen">
+  
+  
+  <article class="card card-content toc-card">
+    <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+<ol class="toc"><li class="toc-item toc-level-5"><a class="toc-link" href="#typescript-%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D"><span class="toc-text">typescript 基本介绍?</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E8%AF%AD%E6%B3%95"><span class="toc-text">基础语法</span></a></li></ol>
+  </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header"><i class="iconfont icon-wenzhang_huaban" style="padding-right: 2px;"></i>最近文章</div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-04-19</div>
+        <a href="/2021/04/19/utils/webpack/webpack打包优化之noParse/"><div class="recent-posts-item-content">webpack打包之noParse优化</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-04-19</div>
+        <a href="/2021/04/19/utils/webpack/loader介绍/"><div class="recent-posts-item-content">webpack loader介绍</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-04-19</div>
+        <a href="/2021/04/19/web/iframe/"><div class="recent-posts-item-content">iframe介绍</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-04-19</div>
+        <a href="/2021/04/19/utils/webpack/webpack配置不处理依赖/"><div class="recent-posts-item-content">webpack打包配置不处理依赖</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <footer class="footer">
+  <div class="footer-container">
+    <div class="copyright">
+      <div>
+        <span id="copyYear">Copyright ©
+          
+          2020 -
+          
+          2021
+        </span>
+        <a href="/" class="footer-link">我的博客 </a>
+      </div>
+    </div>
+
+    
+    <div class="footer-dsc">
+      
+      
+      Powered by
+      <a href="https://hexo.io/" class="footer-link" target="_blank" rel="nofollow noopener noreferrer">&nbsp;Hexo </a>
+      
+      
+      <span>&nbsp;|&nbsp;</span>
+      
+      
+      
+      Theme -
+      <a href="https://github.com/theme-kaze" class="footer-link" target="_blank"
+        rel="nofollow noopener noreferrer">&nbsp;Kaze</a>
+      
+    </div>
+    
+    
+    
+    
+</footer>
+  <a role="button" id="scrollbutton" class="basebutton" >
+  <i class="iconfont icon-arrowleft button-icon"></i>
+</a>
+<a role="button" id="menubutton" class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a role="button" id="popbutton" class="basebutton">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+
+  
+  
+  
+  <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img');
+    var i;
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a');
+      wrapper.setAttribute('data-fslightbox', 'gallery');
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'));
+      wrapper.setAttribute('style', 'width: 100%; display: flex; justify-content: center;');
+      img[i].parentElement.insertBefore(wrapper, img[i]);
+      wrapper.appendChild(img[i]);
+    }
+    refreshFsLightbox();
+  }
+</script>
+<script>loadScript("//cdn.jsdelivr.net/npm/fslightbox@3.1.0/index.min.js", addImgLayout)</script>
+  
+  
+  
+<script src="/js/main.js"></script>
+
+  
+  
+  <script>
+    var addLazyload = function () {
+      var observer = lozad('.lozad', {
+        load: function (el) {
+          el.srcset = el.getAttribute('data-src');
+        },
+        loaded: function (el) {
+          el.classList.add('loaded');
+        }
+      });
+      observer.observe();
+    }
+  </script>
+  <script>loadScript("/js/lib/lozad.min.js", addLazyload)</script>
+  
+  
+
+  
+  <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'forest'});
+    }
+  </script>
+  
+</body>
+
+</html>
