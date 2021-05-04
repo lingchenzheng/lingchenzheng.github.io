@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html>
+<meta  lang="zh-CN" >
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="theme-color" content="#fff" id="theme-color">
+  <link rel="icon" href="/images/me.jpg">
+  <title>我的博客</title>
+  <script>
+    // control reverse button
+    var reverseDarkList = {
+      dark: 'light',
+      light: 'dark'
+    };
+    var themeColor = {
+      dark: '#1c1c1e',
+      light: '#fff'
+    }
+    // get the data of css prefers-color-scheme
+    var getCssMediaQuery = function() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+    // reverse current darkmode setting function
+    var reverseDarkModeSetting = function() {
+      var setting = localStorage.getItem('user-color-scheme');
+      if(reverseDarkList[setting]) {
+        setting = reverseDarkList[setting];
+      } else if(setting === null) {
+        setting = reverseDarkList[getCssMediaQuery()];
+      } else {
+        return;
+      }
+      localStorage.setItem('user-color-scheme', setting);
+      return setting;
+    };
+    // apply current darkmode setting
+    var setDarkmode = function(mode) {
+      var setting = mode || localStorage.getItem('user-color-scheme');
+      if(setting === getCssMediaQuery()) {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[setting];
+      } else if(reverseDarkList[setting]) {
+        document.documentElement.setAttribute('data-user-color-scheme', setting);
+        document.getElementById('theme-color').content = themeColor[setting];
+      } else {
+        document.documentElement.removeAttribute('data-user-color-scheme');
+        localStorage.removeItem('user-color-scheme');
+        document.getElementById('theme-color').content = themeColor[getCssMediaQuery()];
+      }
+    };
+    setDarkmode();
+  </script>
+  <script>
+    function loadScript(url, cb) {
+      var script = document.createElement('script');
+      script.src = url;
+      if (cb) script.onload = cb;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  </script>
+  
+  <link rel="preload" href="//at.alicdn.com/t/font_1946621_vpj3dq9ceqa.css" as="style" >
+  <link rel="preload" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css" as="style" >
+  
+  <link rel="preload" href="//cdn.jsdelivr.net/npm/fslightbox@3.1.0/index.min.js" as="script">
+  
+  
+  <link rel="preload" href="/js/lib/lozad.min.js" as="script">
+  
+  
+  
+  
+  
+  
+  
+  
+<link rel="stylesheet" href="/css/main.css">
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1946621_vpj3dq9ceqa.css">
+
+  
+  
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1952792_89b4ac4k4up.css">
+
+  
+  
+  
+<meta name="generator" content="Hexo 5.0.2"></head>
+
+
+<body>
+  <div class="wrapper">
+    
+    <nav class="navbar">
+  <div class="navbar-logo">
+    <span class="navbar-logo-main">
+      
+      <img class="navbar-logo-img" src="/images/me.jpg">
+      
+      <span class="navbar-logo-dsc">我的博客</span>
+    </span>
+  </div>
+  <div class="navbar-menu">
+    
+    <a href="/" class="navbar-menu-item">首页 </a>
+    
+    <a href="/archives" class="navbar-menu-item">归档 </a>
+    
+    <a href="/tags" class="navbar-menu-item">标签 </a>
+    
+    <a href="/categories" class="navbar-menu-item">分类 </a>
+    
+    <a href="/about" class="navbar-menu-item">关于 </a>
+    
+    <a href="/links" class="navbar-menu-item">友链 </a>
+    
+    <a class="navbar-menu-item" id="dark"><i class="iconfont icon-weather"></i></a>
+  </div>
+</nav>
+    
+    <div class="section-wrap">
+      <div class="container">
+        <div class="columns">
+          <main class="main-column">
+<article class="card card-content">
+  <header>
+    <h1 class="post-title">
+      前端获取wma文件时长
+    </h1>
+  </header>
+  <div class="post-meta post-show-meta">
+    <time datetime="2021-05-04T02:54:14.516Z" style="display: flex; align-items: center;">
+      <i class="iconfont icon-calendar" style="margin-right: 2px;"></i>
+      <span>2021-05-04</span>
+    </time>
+    
+    <span class="dot"></span>
+    
+    <a href="/categories/其他/" class="post-meta-link">其他</a>
+    
+    
+    
+    <span class="dot"></span>
+    <span>742 字</span>
+    
+  </div>
+  
+  <div class="post-meta post-show-meta" style="margin-top: -10px;">
+    <div style="display: flex; align-items: center;">
+      <i class="iconfont icon-biaoqian" style="margin-right: 2px; font-size: 1.15rem;"></i>
+      
+      
+        <a href="/tags/解决方案/" class="post-meta-link">解决方案</a>
+      
+    </div>
+  </div>
+  
+  </header>
+  <div id="section" class="post-content">
+    <p><strong>简介</strong></p>
+<blockquote>
+<p>wma 是微软推出的一种音频存储格式，由于版权问题，目前浏览器的 audio/vedio 标签都不支持播放 wma 文件，由于项目需求需要前端读取本地音频时长等相关信息传到后端，所以只能另辟蹊径。</p>
+</blockquote>
+<p><strong>思路</strong></p>
+<blockquote>
+<p>读取二进制文件，根据文件头来解析文件属性信息，获取音频时长</p>
+</blockquote>
+<p>下图为通过 windows media 工具来读取 wma 文件，分析文件内容组成<br><img  srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="/images/other/%E5%89%8D%E7%AB%AFjs%E8%8E%B7%E5%8F%96wma%E6%96%87%E4%BB%B6%E6%97%B6%E9%95%BF/1.png" class="lozad post-image"src="/images/other/%E5%89%8D%E7%AB%AFjs%E8%8E%B7%E5%8F%96wma%E6%96%87%E4%BB%B6%E6%97%B6%E9%95%BF/1.png"></p>
+<p><strong>经过多个文件分析对比，得出如下结果:</strong></p>
+<ol>
+<li>头对象由多个部分组成</li>
+<li>不同文件，头部大小不一样，头对象组成部分个数不一样，组成部分排列顺序也不一样</li>
+<li>文件属性内容固定，Object ID 都一样（文件时长相关信息在此）</li>
+<li>文件的前 30 个字节固定，16 个字节标识这是 wma 文件，然后 8 个字节存储头文件大小，4 字节存储头有几个组成部分，最后 2 个是保留字节。</li>
+</ol>
+<p><strong>根据上面的结论，我们需要拿到头组成部分中的文件属性这个部分就可以解析出文件时长</strong></p>
+<p><img src="/images/other/%E5%89%8D%E7%AB%AFjs%E8%8E%B7%E5%8F%96wma%E6%96%87%E4%BB%B6%E6%97%B6%E9%95%BF/2.png" alt="文件属性" srcset="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20300%20300'%3E%3C/svg%3E" data-src="/images/other/%E5%89%8D%E7%AB%AFjs%E8%8E%B7%E5%8F%96wma%E6%96%87%E4%BB%B6%E6%97%B6%E9%95%BF/2.png" class="lozad post-image"></p>
+<p><strong>实现步骤设计如下</strong></p>
+<ol>
+<li>截取 0-16 个字节，判断是否为 wma 文件(如果确定为 wma 文件可以省略)</li>
+<li>截取 16-24 个字节，获取头对象的大小</li>
+<li>根据第二步获取的头大小，截取头部数据</li>
+<li>拿到头部二进制数据，从 30 个字节往后，截取 16 个字节，根据这 16 个字节判断是否为文件属性部分</li>
+<li>如果是，根据图二的结构，设置偏移量，获取文件时长二进制数组</li>
+<li>如果不是，则再往后读取 8 个字节，获取当前部分大小</li>
+<li>通过第七步获取的大小设置偏移量，重复第四步</li>
+</ol>
+<p><strong>简单实现代码如下</strong></p>
+<pre class="highlight"><code class="hljs javascript"><span class="hljs-keyword">let</span> input = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&#x27;input&#x27;</span>)<br>input.addEventListener(<span class="hljs-string">&#x27;change&#x27;</span>, <span class="hljs-function"><span class="hljs-params">e</span> =&gt;</span> &#123;<br>    <span class="hljs-keyword">let</span> file = e.target.files[<span class="hljs-number">0</span>]<br>    file.slice(<span class="hljs-number">0</span>, <span class="hljs-number">16</span>)<br>        .arrayBuffer()<br>        .then(<span class="hljs-function"><span class="hljs-params">buffer</span> =&gt;</span> &#123;<br>            <span class="hljs-built_in">console</span>.log(buffer)<br>        &#125;)<br>    <span class="hljs-keyword">return</span><br>    <span class="hljs-keyword">if</span> (file &amp;&amp; file <span class="hljs-keyword">instanceof</span> Blob) &#123;<br>        <span class="hljs-keyword">let</span> reader = <span class="hljs-keyword">new</span> FileReader()<br>        reader.onload = <span class="hljs-function"><span class="hljs-params">evt</span> =&gt;</span> &#123;<br>            <span class="hljs-keyword">let</span> &#123; result &#125; = evt.target<br>            <span class="hljs-built_in">console</span>.log(result)<br>            <span class="hljs-comment">// parseFile(result)</span><br>        &#125;<br>        reader.readAsArrayBuffer(file.slice(<span class="hljs-number">0</span>, <span class="hljs-number">16</span>))<br>    &#125;<br>&#125;)<br><span class="hljs-keyword">const</span> FILE_PROPERTY_ID = [<br>    <span class="hljs-number">0xa1</span>,<br>    <span class="hljs-number">0xdc</span>,<br>    <span class="hljs-number">0xab</span>,<br>    <span class="hljs-number">0x8c</span>,<br>    <span class="hljs-number">0x47</span>,<br>    <span class="hljs-number">0xa9</span>,<br>    <span class="hljs-number">0xcf</span>,<br>    <span class="hljs-number">0x11</span>,<br>    <span class="hljs-number">0x8e</span>,<br>    <span class="hljs-number">0xe4</span>,<br>    <span class="hljs-number">0x00</span>,<br>    <span class="hljs-number">0xc0</span>,<br>    <span class="hljs-number">0x0c</span>,<br>    <span class="hljs-number">0x20</span>,<br>    <span class="hljs-number">0x53</span>,<br>    <span class="hljs-number">0x65</span><br>]<br><span class="hljs-keyword">const</span> ID_BYTE_LEN = <span class="hljs-number">16</span><br><span class="hljs-keyword">const</span> DURATION_OFFSET = <span class="hljs-number">64</span><br><span class="hljs-keyword">const</span> START = <span class="hljs-number">30</span><br><span class="hljs-keyword">const</span> BIT_LEN = <span class="hljs-number">8</span><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">parseFile</span>(<span class="hljs-params">ab</span>) </span>&#123;<br>    <span class="hljs-keyword">let</span> uint8 = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Uint8Array</span>(ab)<br>    <span class="hljs-keyword">let</span> getFilePropertiesBytes = <span class="hljs-function"><span class="hljs-params">index</span> =&gt;</span> &#123;<br>        <span class="hljs-keyword">let</span> start = index<br>        <span class="hljs-keyword">let</span> end = start + ID_BYTE_LEN<br>        <span class="hljs-keyword">let</span> idBytes = uint8.slice(start, end)<br>        <span class="hljs-comment">//id相等，则当前fram tag为文件属性</span><br>        <span class="hljs-keyword">if</span> (idBytes.toString() === FILE_PROPERTY_ID.toString()) &#123;<br>            start = start + DURATION_OFFSET<br>            end = start + BIT_LEN<br>            <span class="hljs-keyword">let</span> durationBytes = uint8.slice(start, end)<br>            <span class="hljs-keyword">return</span> toNum(durationBytes)<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-keyword">let</span> countBytes = uint8.slice(end, end + BIT_LEN)<br>            <span class="hljs-keyword">let</span> framLen = toNum(countBytes)<br>            start = start + framLen<br>            <span class="hljs-keyword">return</span> getFilePropertiesBytes(start)<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">let</span> duration = getFilePropertiesBytes(START)<br>    <span class="hljs-built_in">console</span>.log(duration)<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">toNum</span>(<span class="hljs-params">bytes</span>) </span>&#123;<br>    <span class="hljs-keyword">let</span> total = <span class="hljs-number">0</span><br>    <span class="hljs-comment">//采用的小端存储</span><br>    bytes.forEach(<span class="hljs-function">(<span class="hljs-params">num, i</span>) =&gt;</span> &#123;<br>        <span class="hljs-keyword">if</span> (num &gt; <span class="hljs-number">0</span>) &#123;<br>            total += num * <span class="hljs-built_in">Math</span>.pow(<span class="hljs-number">2</span>, i * BIT_LEN)<br>        &#125;<br>    &#125;)<br>    <span class="hljs-keyword">return</span> total<br>&#125;<br></code></pre>
+
+<p>如果文章对您有帮助请进入链接 (<a target="_blank" rel="noopener" href="https://github.com/lingchenzheng/lingchenzheng.github.io">https://github.com/lingchenzheng/lingchenzheng.github.io</a>) 给一个 star 吧 😄</p>
+
+  </div>
+</article>
+<div class="nav">
+  
+  <div class="nav-item-prev">
+    <a href="/2021/05/04/css/inline-block缝隙/" class="nav-link">
+      <i class="iconfont icon-left nav-prev-icon"></i>
+      <div>
+        <div class="nav-label">上一篇</div>
+        
+        <div class="nav-title">inline-block元素产生缝隙 </div>
+        
+      </div>
+    </a>
+  </div>
+  
+  
+  <div class="nav-item-next">
+    <a href="/2021/05/04/http/状态码5xx/" class="nav-link">
+      <div>
+        <div class="nav-label">下一篇</div>
+        
+        <div class="nav-title">状态码5xx，服务端错误 </div>
+        
+      </div>
+      <i class="iconfont icon-right nav-next-icon"></i>
+    </a>
+  </div>
+  
+</div>
+
+<div class="card card-content toc-card" id="mobiletoc">
+  <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+
+</div></main>
+          <aside class="left-column">
+            
+            <div class="card card-author">
+              
+<img src="/images/avatar.jpg" class="author-img">
+
+<p class="author-name">Chenzheng Ling</p>
+<p class="author-description">Front End Developer</p>
+<div class="author-message">
+  <a class="author-posts-count" href="/archives">
+    <span>65</span>
+    <span>文章</span>
+  </a>
+  <a class="author-categories-count" href="/categories">
+    <span>14</span>
+    <span>分类</span>
+  </a>
+  <a class="author-tags-count" href="/tags">
+    <span>9</span>
+    <span>标签</span>
+  </a>
+</div>
+
+            </div>
+            
+            <div class="sticky-tablet">
+  
+  
+  <article class="display-when-two-columns spacer">
+    <div class="card card-content toc-card">
+      <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+
+    </div>
+  </article>
+  
+  
+  <article class="card card-content">
+    <div class="categories-card">
+  <div class="categories-header"><i class="iconfont icon-fenlei" style="padding-right: 2px;"></i>分类</div>
+  <div class="categories-list">
+    
+      <a href="/categories/css">
+        <div class="categories-list-item">
+          css
+          <span class="categories-list-item-badge">5</span>
+        </div>
+      </a>
+    
+      <a href="/categories/es">
+        <div class="categories-list-item">
+          es
+          <span class="categories-list-item-badge">5</span>
+        </div>
+      </a>
+    
+      <a href="/categories/http">
+        <div class="categories-list-item">
+          http
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/markdown">
+        <div class="categories-list-item">
+          markdown
+          <span class="categories-list-item-badge">5</span>
+        </div>
+      </a>
+    
+      <a href="/categories/其他">
+        <div class="categories-list-item">
+          其他
+          <span class="categories-list-item-badge">8</span>
+        </div>
+      </a>
+    
+      <a href="/categories/scss">
+        <div class="categories-list-item">
+          scss
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/typescript">
+        <div class="categories-list-item">
+          typescript
+          <span class="categories-list-item-badge">9</span>
+        </div>
+      </a>
+    
+      <a href="/categories/vue">
+        <div class="categories-list-item">
+          vue
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/web">
+        <div class="categories-list-item">
+          web
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+      <a href="/categories/babel">
+        <div class="categories-list-item">
+          babel
+          <span class="categories-list-item-badge">4</span>
+        </div>
+      </a>
+    
+      <a href="/categories/通用工具">
+        <div class="categories-list-item">
+          通用工具
+          <span class="categories-list-item-badge">2</span>
+        </div>
+      </a>
+    
+      <a href="/categories/lerna">
+        <div class="categories-list-item">
+          lerna
+          <span class="categories-list-item-badge">2</span>
+        </div>
+      </a>
+    
+      <a href="/categories/rollup">
+        <div class="categories-list-item">
+          rollup
+          <span class="categories-list-item-badge">1</span>
+        </div>
+      </a>
+    
+      <a href="/categories/webpack">
+        <div class="categories-list-item">
+          webpack
+          <span class="categories-list-item-badge">7</span>
+        </div>
+      </a>
+    
+  </div>
+</div>
+  </article>
+  
+  <article class="card card-content">
+    <div class="tags-card">
+  <div class="tags-header"><i class="iconfont icon-biaoqian" style="padding-right: 2px;"></i>热门标签</div>
+  <div class="tags-list">
+    
+    <a href="\tags\工具" title="工具"><div class="tags-list-item">工具</div></a>
+    
+    <a href="\tags\编程语言" title="编程语言"><div class="tags-list-item">编程语言</div></a>
+    
+    <a href="\tags\网络" title="网络"><div class="tags-list-item">网络</div></a>
+    
+    <a href="\tags\js基础" title="js基础"><div class="tags-list-item">js基础</div></a>
+    
+    <a href="\tags\解决方案" title="解决方案"><div class="tags-list-item">解决方案</div></a>
+    
+    <a href="\tags\mac" title="mac"><div class="tags-list-item">mac</div></a>
+    
+    <a href="\tags\husky" title="husky"><div class="tags-list-item">husky</div></a>
+    
+    <a href="\tags\框架" title="框架"><div class="tags-list-item">框架</div></a>
+    
+    <a href="\tags\问题" title="问题"><div class="tags-list-item">问题</div></a>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+          </aside>
+          <aside class="right-column">
+            <div class="sticky-widescreen">
+  
+  
+  <article class="card card-content toc-card">
+    <div class="toc-header"><i class="iconfont icon-menu" style="padding-right: 2px;"></i>目录</div>
+
+  </article>
+  
+  
+  <article class="card card-content">
+    <div class="recent-posts-card">
+  <div class="recent-posts-header"><i class="iconfont icon-wenzhang_huaban" style="padding-right: 2px;"></i>最近文章</div>
+  <div class="recent-posts-list">
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-05-04</div>
+        <a href="/2021/05/04/typescript/typescript基础/"><div class="recent-posts-item-content">typescript基础</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-05-04</div>
+        <a href="/2021/05/04/scss/scss学习篇一/"><div class="recent-posts-item-content">scss学习篇（一）</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-05-04</div>
+        <a href="/2021/05/04/typescript/typescript关键字infer/"><div class="recent-posts-item-content">typescript关键字infer</div></a>
+      </div>
+    
+      <div class="recent-posts-item">
+        <div class="recent-posts-item-title">2021-05-04</div>
+        <a href="/2021/05/04/utils/webpack/webpack打包优化之noParse/"><div class="recent-posts-item-content">webpack打包之noParse优化</div></a>
+      </div>
+    
+  </div>
+</div>
+  </article>
+  
+  
+</div>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <footer class="footer">
+  <div class="footer-container">
+    <div class="copyright">
+      <div>
+        <span id="copyYear">Copyright ©
+          
+          2020 -
+          
+          2021
+        </span>
+        <a href="/" class="footer-link">我的博客 </a>
+      </div>
+    </div>
+
+    
+    <div class="footer-dsc">
+      
+      
+      Powered by
+      <a href="https://hexo.io/" class="footer-link" target="_blank" rel="nofollow noopener noreferrer">&nbsp;Hexo </a>
+      
+      
+      <span>&nbsp;|&nbsp;</span>
+      
+      
+      
+      Theme -
+      <a href="https://github.com/theme-kaze" class="footer-link" target="_blank"
+        rel="nofollow noopener noreferrer">&nbsp;Kaze</a>
+      
+    </div>
+    
+    
+    
+    
+</footer>
+  <a role="button" id="scrollbutton" class="basebutton" >
+  <i class="iconfont icon-arrowleft button-icon"></i>
+</a>
+<a role="button" id="menubutton" class="basebutton">
+  <i class="iconfont icon-menu button-icon"></i>
+</a>
+<a role="button" id="popbutton" class="basebutton">
+  <i class="iconfont icon-expand button-icon"></i>
+</a>
+
+  
+  
+  
+  <script>
+  var addImgLayout = function () {
+    var img = document.querySelectorAll('.post-content img');
+    var i;
+    for (i = 0; i < img.length; i++) {
+      var wrapper = document.createElement('a');
+      wrapper.setAttribute('data-fslightbox', 'gallery');
+      wrapper.setAttribute('href', img[i].getAttribute('data-src'));
+      wrapper.setAttribute('style', 'width: 100%; display: flex; justify-content: center;');
+      img[i].parentElement.insertBefore(wrapper, img[i]);
+      wrapper.appendChild(img[i]);
+    }
+    refreshFsLightbox();
+  }
+</script>
+<script>loadScript("//cdn.jsdelivr.net/npm/fslightbox@3.1.0/index.min.js", addImgLayout)</script>
+  
+  
+  
+<script src="/js/main.js"></script>
+
+  
+  
+  <script>
+    var addLazyload = function () {
+      var observer = lozad('.lozad', {
+        load: function (el) {
+          el.srcset = el.getAttribute('data-src');
+        },
+        loaded: function (el) {
+          el.classList.add('loaded');
+        }
+      });
+      observer.observe();
+    }
+  </script>
+  <script>loadScript("/js/lib/lozad.min.js", addLazyload)</script>
+  
+  
+
+  
+  <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>
+  <script>
+    if (window.mermaid) {
+      mermaid.initialize({theme: 'forest'});
+    }
+  </script>
+  
+</body>
+
+</html>
